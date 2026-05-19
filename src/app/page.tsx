@@ -26,34 +26,13 @@ const Home = async () => {
   return (
     <>
       <Header />
-      <div className="space-y-6 pt-16.5">
-        {/* <div className="px-5">
-          <Image
-            src="/banner-01.jpg"
-            alt="Leve uma vida com estilo"
-            height={0}
-            width={0}
-            sizes="100vw"
-            className="h-auto w-full rounded-xl"
-          />
-        </div> */}
+      <div className="space-y-6 pt-16.5 max-w-screen-xl mx-auto flex flex-col justify-center">
         <CarouselWithProgress/>
 
         <ProductList products={products} title="Mais vendidos" />
 
-        <div className="px-5">
+        <div className="px-5 w-full">
           <CategorySelector categories={categories} />
-        </div>
-
-        <div className="px-5">
-          <Image
-            src="/banner-02.png"
-            alt="Leve uma vida com estilo"
-            height={0}
-            width={0}
-            sizes="100vw"
-            className="h-auto w-full"
-          />
         </div>
 
         <ProductList products={newlyCreatedProducts} title="Novos produtos" />

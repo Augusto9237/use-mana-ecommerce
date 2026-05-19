@@ -9,6 +9,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import AutoScroll from "embla-carousel-auto-scroll"
 import { Progress } from "@/components/ui/progress";
 
 const images = [
@@ -40,7 +41,20 @@ export default function CarouselWithProgress() {
 
   return (
     <div className="mx-auto max-w-sm py-4">
-      <Carousel className="w-full max-w-sm" setApi={setApi}>
+      <Carousel className="w-full max-w-sm" setApi={setApi}
+        plugins={[
+          AutoScroll({
+            speed: 0.5,
+            startDelay: 0,
+            stopOnInteraction: false
+          })
+        ]}
+        opts={{
+          align: "start",
+          loop: true,
+        }}
+
+      >
         <CarouselContent>
           {images.map((image) => (
             <CarouselItem key={image}>

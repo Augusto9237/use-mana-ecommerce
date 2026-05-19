@@ -40,11 +40,11 @@ export default function CarouselWithProgress() {
   }, [api]);
 
   return (
-    <div className="mx-auto max-w-sm py-4">
-      <Carousel className="w-full max-w-sm" setApi={setApi}
+    <div className="w-full py-4">
+      <Carousel className="w-full" setApi={setApi}
         plugins={[
           AutoScroll({
-            speed: 0.5,
+            speed: 0.4,
             startDelay: 0,
             stopOnInteraction: false
           })
@@ -53,14 +53,13 @@ export default function CarouselWithProgress() {
           align: "start",
           loop: true,
         }}
-
       >
         <CarouselContent>
           {images.map((image) => (
             <CarouselItem key={image}>
               <img
-                alt="dddepth-248"
-                className="size-full rounded-xl object-cover"
+                alt="carousel-item"
+                className="size-full object-cover sm:aspect-video"
                 src={image}
               />
             </CarouselItem>

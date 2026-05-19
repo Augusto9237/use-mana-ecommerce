@@ -53,7 +53,7 @@ export default function CarouselWithProgress() {
           ))}
         </CarouselContent>
       </Carousel>
-      <Progress className="mt-5 mx-auto w-24" value={progress} />
+      <Progress className="mt-5 mx-auto w-24 h-2" value={progress} />
     </div>
   );
 }

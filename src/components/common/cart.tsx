@@ -24,7 +24,7 @@ export const Cart = () => {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" size="icon" className="hover:bg-foreground">
-          <ShoppingBasketIcon className="stroke-primary"/>
+          <ShoppingBasketIcon/>
         </Button>
       </SheetTrigger>
       <SheetContent>

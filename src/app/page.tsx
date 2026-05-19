@@ -7,7 +7,7 @@ import { Header } from "@/components/common/header";
 import ProductList from "@/components/common/product-list";
 import { db } from "@/db";
 import { productTable } from "@/db/schema";
-import CarouselWithProgress from "@/components/customized/carousel/carousel-08";
+import CarouselWithProgress from "@/components/common/carousel";
 
 const Home = async () => {
   const products = await db.query.productTable.findMany({

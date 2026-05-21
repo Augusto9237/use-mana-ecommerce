@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 import AddToCartButton from "./add-to-cart-button";
+import { SizeSelector } from "./size-selector.";
 
 interface ProductActionsProps {
   productVariantId: string;
@@ -25,16 +26,22 @@ const ProductActions = ({ productVariantId }: ProductActionsProps) => {
   return (
     <>
       <div className="px-5">
-        <div className="space-y-4">
-          <h3 className="font-medium">Quantidade</h3>
-          <div className="flex w-[100px] items-center justify-between rounded-lg border">
-            <Button size="icon" variant="ghost" onClick={handleDecrement}>
-              <MinusIcon />
-            </Button>
-            <p>{quantity}</p>
-            <Button size="icon" variant="ghost" onClick={handleIncrement}>
-              <PlusIcon />
-            </Button>
+        <div className="flex items-center justify-between w-full">
+          <div className="space-y-4">
+            <h3 className="font-medium">Tamanho</h3>
+            <SizeSelector />
+          </div>
+          <div className="space-y-4">
+            <h3 className="font-medium">Quantidade</h3>
+            <div className="flex w-[100px] items-center justify-between rounded-lg border">
+              <Button size="icon" variant="ghost" onClick={handleDecrement}>
+                <MinusIcon />
+              </Button>
+              <p>{quantity}</p>
+              <Button size="icon" variant="ghost" onClick={handleIncrement}>
+                <PlusIcon />
+              </Button>
+            </div>
           </div>
         </div>
       </div>

@@ -11,6 +11,7 @@ import { formatCentsToBRL } from "@/helpers/money";
 
 import ProductActions from "./components/product-actions";
 import VariantSelector from "./components/variant-selector";
+import { SizeSelector } from "./components/size-selector.";
 
 interface ProductVariantPageProps {
   params: Promise<{ slug: string }>;

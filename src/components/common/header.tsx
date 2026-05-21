@@ -1,6 +1,6 @@
 "use client";
 
-import { LogInIcon, LogOutIcon, MenuIcon } from "lucide-react";
+import { LogInIcon, LogOutIcon, MapPinHouse, MenuIcon, Package } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -34,7 +34,7 @@ export const Header = () => {
           />
         </Link>
 
-        <InputSearch/>
+        <InputSearch />
         <div className="flex items-center gap-3 md:gap-6">
           <Sheet>
             <SheetTrigger asChild>
@@ -49,32 +49,43 @@ export const Header = () => {
               <div className="px-5">
                 {session?.user ? (
                   <>
-                    <div className="flex justify-between space-y-6">
-                      <div className="flex items-center gap-3">
-                        <Avatar>
-                          <AvatarImage
-                            src={session?.user?.image as string | undefined}
-                          />
-                          <AvatarFallback>
-                            {session?.user?.name?.split(" ")?.[0]?.[0]}
-                            {session?.user?.name?.split(" ")?.[1]?.[0]}
-                          </AvatarFallback>
-                        </Avatar>
+                    <div className="flex flex-col gap-6">
+                      <div className="flex justify-between">
+                        <div className="flex items-center gap-3">
+                          <Avatar>
+                            <AvatarImage
+                              src={session?.user?.image as string | undefined}
+                            />
+                            <AvatarFallback>
+                              {session?.user?.name?.split(" ")?.[0]?.[0]}
+                              {session?.user?.name?.split(" ")?.[1]?.[0]}
+                            </AvatarFallback>
+                          </Avatar>
 
-                        <div>
-                          <h3 className="font-semibold">{session?.user?.name}</h3>
-                          <span className="text-muted-foreground block text-xs">
-                            {session?.user?.email}
-                          </span>
+                          <div>
+                            <h3 className="font-semibold">{session?.user?.name}</h3>
+                            <span className="text-muted-foreground block text-xs">
+                              {session?.user?.email}
+                            </span>
+                          </div>
                         </div>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => authClient.signOut()}
+                        >
+                          <LogOutIcon />
+                        </Button>
                       </div>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => authClient.signOut()}
-                      >
-                        <LogOutIcon />
-                      </Button>
+                      <Link href="/my-orders" className="flex items-center gap-3 font-semibold">
+                        <Package />
+                        Meus Pedidos
+                      </Link>
+
+                      <Link href="/address" className="flex items-center gap-3 font-semibold">
+                        <MapPinHouse />
+                        Meu Endereço
+                      </Link>
                     </div>
                   </>
                 ) : (

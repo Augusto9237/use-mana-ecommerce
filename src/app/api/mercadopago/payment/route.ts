@@ -3,7 +3,7 @@ import { orderTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest) {
     const reqUrl = new URL(req.url);
     const { searchParams } = req.nextUrl;
     const status = searchParams.get('collection_status');

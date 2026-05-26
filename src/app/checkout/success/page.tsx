@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -14,10 +16,46 @@ import {
 } from "@/components/ui/dialog";
 
 const CheckoutSuccessPage = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const preferenceId = searchParams.get("preference_id");
+  const [isVerifying, setIsVerifying] = useState(true);
+
+  useEffect(() => {
+    // If preference_id is present, it means Mercado Pago redirected here
+    // Wait a moment for webhook to be processed, then redirect
+    if (preferenceId) {
+      const timer = setTimeout(() => {
+        setIsVerifying(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+    setIsVerifying(false);
+  }, [preferenceId]);
+
+  if (isVerifying) {
+    return (
+      <>
+        <Header />
+        <Dialog open={true} onOpenChange={() => { }}>
+          <DialogContent className="text-center">
+            <div className="flex justify-center">
+              <div className="h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600"></div>
+            </div>
+            <DialogTitle>Processando pagamento...</DialogTitle>
+            <DialogDescription>
+              Aguarde enquanto confirmamos seu pagamento.
+            </DialogDescription>
+          </DialogContent>
+        </Dialog>
+      </>
+    );
+  }
+
   return (
     <>
       <Header />
-      <Dialog open={true} onOpenChange={() => {}}>
+      <Dialog open={true} >
         <DialogContent className="text-center">
           <Image
             src="/illustration.svg"
@@ -33,7 +71,11 @@ const CheckoutSuccessPage = () => {
           </DialogDescription>
 
           <DialogFooter>
-            <Button className="rounded-full" size="lg">
+            <Button
+              className="rounded-full"
+              size="lg"
+              onClick={() => router.push("/my-orders")}
+            >
               Ver meus pedidos
             </Button>
             <Button

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-const CheckoutSuccessPage = () => {
+const CheckoutSuccessContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const preferenceId = searchParams.get("preference_id");
@@ -90,6 +90,29 @@ const CheckoutSuccessPage = () => {
         </DialogContent>
       </Dialog>
     </>
+  );
+};
+
+const CheckoutSuccessPage = () => {
+  return (
+    <Suspense fallback={
+      <>
+        <Header />
+        <Dialog open={true} onOpenChange={() => { }}>
+          <DialogContent className="text-center">
+            <div className="flex justify-center">
+              <div className="h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600"></div>
+            </div>
+            <DialogTitle>Carregando...</DialogTitle>
+            <DialogDescription>
+              Carregando informações da página.
+            </DialogDescription>
+          </DialogContent>
+        </Dialog>
+      </>
+    }>
+      <CheckoutSuccessContent />
+    </Suspense>
   );
 };
 

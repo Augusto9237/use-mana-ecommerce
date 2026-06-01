@@ -26,8 +26,8 @@ const Home = async () => {
   return (
     <>
       <Header />
-      <div className="space-y-6 pt-16.5 max-w-screen-xl mx-auto flex flex-col justify-center">
-        <CarouselWithProgress/>
+      <div className="space-y-6 pt-16.5 pb-8 max-w-screen-xl mx-auto flex flex-col justify-center">
+        <CarouselWithProgress />
 
         <ProductList products={products} title="Mais vendidos" />
 
@@ -36,8 +36,9 @@ const Home = async () => {
         </div>
 
         <ProductList products={newlyCreatedProducts} title="Novos produtos" />
-        <Footer />
+
       </div>
+      <Footer />
     </>
   );
 };

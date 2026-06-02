@@ -91,7 +91,7 @@ export function FormAddress() {
             <DialogTrigger asChild>
                 <Button><PlusCircle/> Novo Endereço</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-h-[94dvh] overflow-hidden flex flex-col">
                 <DialogHeader>
                     <DialogTitle>Endereço de entrega
                     </DialogTitle>
@@ -99,9 +99,9 @@ export function FormAddress() {
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
-                        className="mt-4 space-y-4"
+                        className="flex flex-col flex-1 min-h-0"
                     >
-                        <div className="grid grid-cols-1 gap-4 overflow-y-auto">
+                        <div className="flex-1 overflow-y-auto space-y-4 pr-2">
                             <FormField
                                 control={form.control}
                                 name="fullName"
@@ -264,7 +264,7 @@ export function FormAddress() {
                             />
                         </div>
 
-                        <DialogFooter className="pt-4">
+                        <div className="mt-4 border-t pt-4">
                             <Button
                                 type="submit"
                                 className="w-full"
@@ -278,7 +278,7 @@ export function FormAddress() {
                                     ? "Salvando..."
                                     : "Salvar endereço"}
                             </Button>
-                        </DialogFooter>
+                        </div>
                     </form>
                 </Form>
             </DialogContent>

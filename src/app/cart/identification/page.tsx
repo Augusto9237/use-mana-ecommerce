@@ -46,7 +46,7 @@ const IdentificationPage = async () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <div className="space-y-4 px-5 pt-20 pb-8 flex-1 w-full max-w-screen-xl mx-auto">
+      <div className="space-y-4 px-5 pt-20 pb-8 flex-1 w-full h-full max-w-screen-xl mx-auto">
         <Addresses
           shippingAddresses={shippingAddresses}
           defaultShippingAddressId={cart.shippingAddress?.id || null}

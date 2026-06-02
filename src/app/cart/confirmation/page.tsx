@@ -45,9 +45,9 @@ const ConfirmationPage = async () => {
     redirect("/cart/identification");
   }
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
       <Header />
-      <div className="space-y-4 px-5 pt-20 pb-8 max-w-7xl mx-auto flex-1 h-full">
+      <div className="space-y-4 px-5 pt-20 pb-8 w-full max-w-7xl mx-auto flex-1 h-full">
         <Card>
           <CardHeader>
             <CardTitle>Identificação</CardTitle>

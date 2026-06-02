@@ -89,7 +89,8 @@ export function FormAddress() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button><PlusCircle/> Novo Endereço</Button>
+                <Button variant="secondary"><PlusCircle />
+                    <span className="max-sm:hidden">Novo</span> Endereço</Button>
             </DialogTrigger>
             <DialogContent className="max-h-[94dvh] overflow-hidden flex flex-col">
                 <DialogHeader>

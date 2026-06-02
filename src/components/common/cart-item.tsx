@@ -94,7 +94,7 @@ const CartItem = ({
         <Button variant="outline" size="icon" onClick={handleDeleteClick}>
           <TrashIcon />
         </Button>
-        <p className="text-sm font-bold">
+        <p className="text-sm max-sm:text-xs font-bold">
           {formatCentsToBRL(productVariantPriceInCents)}
         </p>
       </div>

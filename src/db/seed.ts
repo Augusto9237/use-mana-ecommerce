@@ -604,6 +604,7 @@ async function main() {
           name: variantData.color,
           productId: productId,
           color: variantData.color,
+          size: "Único",
           imageUrl: variantImages[0] || "",
           priceInCents: variantData.price,
           slug: generateSlug(`${productData.name}-${variantData.color}`),

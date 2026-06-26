@@ -14,6 +14,12 @@ interface ProductItemProps {
 
 const ProductItem = ({ product, textContainerClassName }: ProductItemProps) => {
   const firstVariant = product.variants[0];
+  
+  // Evitar renderizar produto sem variantes
+  if (!firstVariant) {
+    return null;
+  }
+
   return (
     <Link
       href={`/product-variant/${firstVariant.slug}`}

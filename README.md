@@ -1,5 +1,65 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Painel de Administração
+
+### Acesso ao Painel Admin
+
+A aplicação inclui um **painel de administração privado** para gerenciamento de produtos. Apenas usuários com role `admin` podem acessar.
+
+#### Como Acessar:
+1. Faça login com uma conta de administrador
+2. No menu lateral (ícone de menu), você verá a opção **"Painel Admin"**
+3. Ou acesse diretamente: `http://localhost:3000/admin`
+
+#### Funcionalidades:
+
+- **Criar Produtos**: `/admin/products/create`
+  - Adicione novos produtos ao catálogo
+  - Preencha nome, descrição, categoria e slug
+  - Cada produto pode ter múltiplas variantes
+
+- **Listar Produtos**: `/admin/products`
+  - Visualize todos os produtos cadastrados
+  - Veja a quantidade de variantes por produto
+  - Acesse a edição e gerenciamento de variantes
+
+- **Gerenciar Variantes**: `/admin/products/[productId]/variants`
+  - Crie variantes (cores, tamanhos, versões) de um produto
+  - Defina preço em centavos (ex: 9999 = R$ 99,99)
+  - Adicione URL de imagem para cada variante
+
+#### Estrutura de Dados:
+
+- **Usuário com role admin**: Tem acesso completo ao painel
+- **Produto**: Contém nome, descrição, categoria e slug
+- **Variante de Produto**: Cores/versões específicas do produto com preço e imagem
+
+#### Tecnologias Utilizadas:
+
+- **Autenticação**: Better Auth
+- **Banco de Dados**: PostgreSQL com Drizzle ORM
+- **Validação**: Zod schemas
+- **Formulários**: React Hook Form
+- **UI**: Shadcn/ui components
+
+#### Para Habilitar Acesso Admin em um Usuário:
+
+Use a interface do banco de dados ou execute uma migração para atualizar a coluna `role` do usuário:
+
+```sql
+UPDATE "user" SET role = 'admin' WHERE email = 'seu-email@example.com';
+```
+
+### Migrações de Banco de Dados
+
+Após atualizar o schema, execute:
+
+```bash
+npm run migrate
+# ou
+npx drizzle-kit generate --name descriptive_name
+```
+
 ## Getting Started
 
 First, run the development server:

@@ -18,4 +18,4 @@ export const {
     useSession
 } = authClient;
 
-export type Session = typeof authClient.$Infer.Session.user
+export type Session = typeof authClient.$Infer.Session

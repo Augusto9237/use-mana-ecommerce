@@ -9,6 +9,8 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
+export const roleEnum = pgEnum("role", ["user", "admin"]);
+
 export const userTable = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -17,6 +19,7 @@ export const userTable = pgTable("user", {
     .$defaultFn(() => false)
     .notNull(),
   image: text("image"),
+  role: roleEnum("role").default("user").notNull(),
   createdAt: timestamp("created_at")
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
@@ -82,6 +85,7 @@ export const categoryTable = pgTable("category", {
   id: uuid().primaryKey().defaultRandom(),
   name: text().notNull(),
   slug: text().notNull().unique(),
+  imageUrl: text("image_url"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -116,6 +120,7 @@ export const productVariantTable = pgTable("product_variant", {
   name: text().notNull(),
   slug: text().notNull().unique(),
   color: text().notNull(),
+  size: text().notNull(),
   priceInCents: integer("price_in_cents").notNull(),
   imageUrl: text("image_url").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),

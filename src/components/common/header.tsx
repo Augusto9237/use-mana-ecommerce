@@ -1,6 +1,6 @@
 "use client";
 
-import { LogInIcon, LogOutIcon, MapPinHouse, MenuIcon, Package } from "lucide-react";
+import { LogInIcon, LogOutIcon, MapPinHouse, MenuIcon, Package, Settings } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -82,10 +82,17 @@ export const Header = () => {
                         Meus Pedidos
                       </Link>
 
-                      <Link href="/address" className="flex items-center gap-3 font-semibold">
+                      <Link href="/addreses" className="flex items-center gap-3 font-semibold">
                         <MapPinHouse />
                         Meu Endereço
                       </Link>
+
+                      {session?.user?.role === "admin" && (
+                        <Link href="/admin" className="flex items-center gap-3 font-semibold text-blue-600">
+                          <Settings />
+                          Painel Admin
+                        </Link>
+                      )}
                     </div>
                   </>
                 ) : (

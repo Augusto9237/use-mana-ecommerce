@@ -25,6 +25,7 @@ import {
 import { AdminLayout } from "@/components/admin/admin-layout";
 import { CreateProductForm } from "@/components/admin/create-product-form";
 import { ProductActionsDropdown } from "./components/product-actions-dropdown";
+import Image from "next/image";
 
 type UserWithRole = { role?: string };
 
@@ -73,7 +74,6 @@ export default async function AdminProductsPage() {
     },
   });
 
-  console.log("products", products);
 
   return (
     <AdminLayout>
@@ -113,40 +113,48 @@ export default async function AdminProductsPage() {
             </CardContent>
           </Card>
         ) : (
-          <Card>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Slug</TableHead>
-                    <TableHead>Categoria</TableHead>
-                    <TableHead>Variantes</TableHead>
-                    <TableHead>Criado em</TableHead>
-                    <TableHead className="w-20">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {products.map((product) => (
-                    <TableRow key={product.id}>
-                      <TableCell className="font-medium">{product.name}</TableCell>
-                      <TableCell>{product.slug}</TableCell>
-                      <TableCell>{product.category?.name || "-"}</TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{product.variants.length}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        {new Date(product.createdAt).toLocaleDateString("pt-BR")}
-                      </TableCell>
-                      <TableCell className="w-20">
-                        <ProductActionsDropdown productId={product.id} />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-24">Imagem</TableHead>
+                <TableHead>Nome</TableHead>
+                <TableHead>Slug</TableHead>
+                <TableHead>Descrição</TableHead>
+                <TableHead>Categoria</TableHead>
+                <TableHead>Variantes</TableHead>
+                <TableHead>Criado em</TableHead>
+                <TableHead className="w-20">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {products.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell className="w-24">
+                    <Image
+                      src={product.variants[0]?.imageUrl || ""}
+                      alt={product.name}
+                      width={40}
+                      height={40}
+                      className="rounded-sm"
+                    />
+                  </TableCell>
+                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell>{product.slug}</TableCell>
+                  <TableCell>{product.description}</TableCell>
+                  <TableCell>{product.category?.name || "-"}</TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">{product.variants.length}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    {new Date(product.createdAt).toLocaleDateString("pt-BR")}
+                  </TableCell>
+                  <TableCell className="w-20">
+                    <ProductActionsDropdown product={product} categories={categories} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         )}
       </div>
     </AdminLayout>

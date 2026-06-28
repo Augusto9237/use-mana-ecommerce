@@ -5,17 +5,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
-
 import {
   Sheet,
-  SheetClose,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet"
+} from "@/components/ui/sheet";
 
 import {
   Form,
@@ -41,36 +38,61 @@ import {
   CreateProductSchema,
   createProductSchema,
 } from "@/actions/create-product/schema";
-import { Plus } from "lucide-react";
+import { updateProduct } from "@/actions/update-product";
+import { Plus, Pencil } from "lucide-react";
+
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  categoryId: string;
+  slug: string;
+}
 
 interface CreateProductFormProps {
-  categories: Array<{ id: string; name: string }>
+  categories: Array<{ id: string; name: string }>;
+  product?: Product;
+  trigger?: React.ReactNode;
 }
 
 export function CreateProductForm({
-  categories
+  categories,
+  product,
+  trigger,
 }: CreateProductFormProps) {
+  const isEditing = !!product;
   const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const form = useForm<CreateProductSchema>({
     resolver: zodResolver(createProductSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      categoryId: "",
-      slug: "",
+      name: product?.name ?? "",
+      description: product?.description ?? "",
+      categoryId: product?.categoryId ?? "",
+      slug: product?.slug ?? "",
     },
   });
 
   async function onSubmit(data: CreateProductSchema) {
     setIsLoading(true);
     try {
-      await createProduct(data);
-      toast.success("Produto criado com sucesso!");
-      form.reset();
+      if (isEditing) {
+        await updateProduct({ id: product.id, ...data });
+        toast.success("Produto atualizado com sucesso!");
+      } else {
+        await createProduct(data);
+        toast.success("Produto criado com sucesso!");
+        form.reset();
+      }
+      setOpen(false);
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Erro ao criar produto";
+        error instanceof Error
+          ? error.message
+          : isEditing
+            ? "Erro ao atualizar produto"
+            : "Erro ao criar produto";
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -78,16 +100,20 @@ export function CreateProductForm({
   }
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button>
-          <Plus />
-          Novo produto
-        </Button>
+        {trigger ?? (
+          <Button>
+            <Plus />
+            Novo produto
+          </Button>
+        )}
       </SheetTrigger>
       <SheetContent className="min-w-lg">
         <SheetHeader>
-          <SheetTitle>Criar Produto</SheetTitle>
+          <SheetTitle>
+            {isEditing ? "Editar Produto" : "Criar Produto"}
+          </SheetTitle>
         </SheetHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-5">
@@ -176,7 +202,13 @@ export function CreateProductForm({
 
             <SheetFooter className="p-0">
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Criando..." : "Criar Produto"}
+                {isLoading
+                  ? isEditing
+                    ? "Salvando..."
+                    : "Criando..."
+                  : isEditing
+                    ? "Salvar Alterações"
+                    : "Criar Produto"}
               </Button>
             </SheetFooter>
           </form>

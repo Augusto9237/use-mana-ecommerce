@@ -16,7 +16,6 @@ import {
   Search,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
@@ -73,51 +72,51 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="flex min-h-screen bg-background">
       <TooltipProvider delayDuration={0}>
-      <SidebarProvider>
-        {/* Sidebar */}
-        <AppSidebar />
+        <SidebarProvider>
+          {/* Sidebar */}
+          <AppSidebar />
 
-        {/* Main Content */}
-        <div className="flex-1">
-          {/* Top Header */}
-          <header className="bg-background">
-            <div className="flex items-center justify-between p-6">
-              {/* Search */}
-              <div className="flex-1 max-w-md">
-                <div className="relative">
-                  <Search className="absolute left-3 top-2" size={18} />
-                  <Input
-                    placeholder="Buscar no painel"
-                    className="pl-10"
-                  />
+          {/* Main Content */}
+          <div className="flex-1 relative pt-14">
+            {/* Top Header */}
+            <header className="backdrop-blur-md bg-background/20 fixed inset-x-0 pl-[var(--sidebar-width)] top-0">
+              <div className="flex items-center justify-between p-6">
+                {/* Search */}
+                <div className="flex-1 max-w-md">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-2" size={18} />
+                    <Input
+                      placeholder="Buscar no painel"
+                      className="pl-10"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* Right section */}
-              <div className="flex items-center gap-6">
-                <Button variant="ghost" size="icon" className="relative">
-                  <Bell size={20} />
-                  <span className="absolute top-2 right-2 w-2 h-2 bg-blue-600 rounded-full" />
-                </Button>
-
-                <div className="flex items-center gap-3 pl-6 border-l border-gray-200">
-                  <span className="text-sm font-medium text-gray-700">
-                    Administrador
-                  </span>
-                  <Button variant="ghost" size="sm">
-                    ▼
+                {/* Right section */}
+                <div className="flex items-center gap-6">
+                  <Button variant="ghost" size="icon" className="relative">
+                    <Bell size={20} />
+                    <span className="absolute top-2 right-2 w-2 h-2 bg-blue-600 rounded-full" />
                   </Button>
+
+                  <div className="flex items-center gap-3 pl-6 border-l border-gray-200">
+                    <span className="text-sm font-medium text-gray-700">
+                      Administrador
+                    </span>
+                    <Button variant="ghost" size="sm">
+                      ▼
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </header>
+            </header>
 
-          {/* Page Content */}
-          <main className="p-8">
-            {children}
-          </main>
-        </div>
-      </SidebarProvider>
+            {/* Page Content */}
+            <main className="p-8">
+              {children}
+            </main>
+          </div>
+        </SidebarProvider>
       </TooltipProvider>
     </div>
   );

@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { CreateProductVariantForm } from "@/components/admin/create-product-variant-form";
 import { AdminLayout } from "@/components/admin/admin-layout";
+import { VariantActionsDropdown } from "../../components/variant-actions-dropdown";
 
 interface AdminVariantsPageProps {
   params: {
@@ -126,66 +127,68 @@ export default async function AdminVariantsPage({
           <CreateProductVariantForm productId={product.id} />
         </div>
 
-        <Card>
-          <CardContent>
-            {product.variants.length === 0 ? (
-              <p className="text-gray-600 text-center">
-                Nenhuma variante cadastrada
-              </p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Imagem</TableHead>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Cor</TableHead>
-                    <TableHead>Preço</TableHead>
-                    <TableHead>Slug</TableHead>
-                    <TableHead>Criada em</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {product.variants.map((variant) => (
-                    <TableRow key={variant.id}>
-                      <TableCell>
-                        <Image
-                          src={variant.imageUrl}
-                          alt={variant.name}
-                          width={40}
-                          height={40}
-                          className="rounded object-cover"
-                        />
-                      </TableCell>
-                      <TableCell className="font-medium">
-                        {variant.name}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="w-4 h-4 rounded border"
-                            style={{
-                              backgroundColor: variant.color,
-                            }}
-                          />
-                          {variant.color}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {priceInReais(variant.priceInCents)}
-                      </TableCell>
-                      <TableCell>{variant.slug}</TableCell>
-                      <TableCell>
-                        {new Date(variant.createdAt).toLocaleDateString(
-                          "pt-BR"
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
+        {product.variants.length === 0 ? (
+          <p className="text-gray-600 text-center">
+            Nenhuma variante cadastrada
+          </p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-24">Imagem</TableHead>
+                <TableHead>Nome</TableHead>
+                <TableHead>Cor</TableHead>
+                <TableHead>Tamanho</TableHead>
+                <TableHead>Preço</TableHead>
+                <TableHead>Slug</TableHead>
+                <TableHead>Criada em</TableHead>
+                <TableHead className="w-20">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {product.variants.map((variant) => (
+                <TableRow key={variant.id}>
+                  <TableCell className="w-24">
+                    <Image
+                      src={variant.imageUrl}
+                      alt={variant.name}
+                      width={40}
+                      height={40}
+                      className="rounded object-cover"
+                    />
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    {variant.name}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-4 h-4 rounded border"
+                        style={{
+                          backgroundColor: variant.color,
+                        }}
+                      />
+                      {variant.color}
+                    </div>
+                  </TableCell>
+                  <TableCell>{variant.size}</TableCell>
+                  <TableCell>
+                    {priceInReais(variant.priceInCents)}
+                  </TableCell>
+                  <TableCell>{variant.slug}</TableCell>
+                  <TableCell>
+                    {new Date(variant.createdAt).toLocaleDateString(
+                      "pt-BR"
+                    )}
+                  </TableCell>
+                  <TableCell className="w-20">
+                    <VariantActionsDropdown variant={variant} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </div>
     </AdminLayout>
   );

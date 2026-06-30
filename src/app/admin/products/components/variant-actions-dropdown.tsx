@@ -23,8 +23,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CreateProductForm } from "@/components/admin/create-product-form";
-import { deleteProduct } from "@/actions/delete-product";
+import { CreateProductVariantForm } from "@/components/admin/create-product-variant-form";
+import { deleteProductVariant } from "@/actions/delete-product-variant";
 
 interface Variant {
   id: string;
@@ -48,20 +48,20 @@ export function VariantActionsDropdown({
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  // async function handleDelete() {
-  //   setIsDeleting(true);
-  //   try {
-  //     await deleteProduct(product.id);
-  //     toast.success("Produto excluído com sucesso!");
-  //   } catch (error) {
-  //     const message =
-  //       error instanceof Error ? error.message : "Erro ao excluir produto";
-  //     toast.error(message);
-  //   } finally {
-  //     setIsDeleting(false);
-  //     setConfirmOpen(false);
-  //   }
-  // }
+  async function handleDelete() {
+    setIsDeleting(true);
+    try {
+      await deleteProductVariant(variant.id);
+      toast.success("Variante excluída com sucesso!");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Erro ao excluir variante";
+      toast.error(message);
+    } finally {
+      setIsDeleting(false);
+      setConfirmOpen(false);
+    }
+  }
 
   return (
     <>
@@ -78,10 +78,7 @@ export function VariantActionsDropdown({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-32">
           <DropdownMenuItem asChild>
-            <Button variant="ghost" className="w-full justify-start gap-2">
-              <Pencil />
-              Editar
-            </Button>
+            <CreateProductVariantForm productId={variant.productId} variant={variant} trigger={<Button variant="ghost" className="w-full justify-start gap-2"><Pencil />Editar</Button>} />
           </DropdownMenuItem>
 
           <DropdownMenuItem asChild>
@@ -100,17 +97,17 @@ export function VariantActionsDropdown({
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Excluir produto</AlertDialogTitle>
+            <AlertDialogTitle>Excluir variante</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir o produto{" "}
+              Tem certeza que deseja excluir a variante{" "}
               <span className="font-semibold text-foreground">{variant.name}</span>?
             </AlertDialogDescription>
-            <p className="text-xs text-muted-foreground">Esta ação não pode ser desfeita e todas as variantes associadas também serão removidas.</p>
+            <p className="text-xs text-muted-foreground">Esta ação não pode ser desfeita.</p>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel variant="ghost" disabled={isDeleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              // onClick={handleDelete}
+              onClick={handleDelete}
               disabled={isDeleting}
               variant="destructive"
             >

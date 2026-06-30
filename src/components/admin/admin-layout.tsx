@@ -79,7 +79,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           {/* Main Content */}
           <div className="flex-1 relative pt-14">
             {/* Top Header */}
-            <header className="backdrop-blur-md bg-background/20 fixed inset-x-0 pl-[var(--sidebar-width)] top-0">
+            <header className="backdrop-blur-md bg-background/30 fixed inset-x-0 pl-[var(--sidebar-width)] top-0">
               <div className="flex items-center justify-between p-6">
                 {/* Search */}
                 <div className="flex-1 max-w-md">

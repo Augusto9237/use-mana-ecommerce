@@ -3,7 +3,18 @@ import Link from "next/link";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
+import { count } from "drizzle-orm";
+import { productTable } from "@/db/schema";
 import { Button } from "@/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -25,11 +36,19 @@ import {
 import { AdminLayout } from "@/components/admin/admin-layout";
 import { CreateProductForm } from "@/components/admin/create-product-form";
 import { ProductActionsDropdown } from "./components/product-actions-dropdown";
+import { ProductImageDialog } from "./components/product-image-dialog";
 import Image from "next/image";
 
 type UserWithRole = { role?: string };
 
-export default async function AdminProductsPage() {
+export default async function AdminProductsPage(props: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const searchParams = await props.searchParams;
+  const currentPage = Number(searchParams.page) || 1;
+  const limit = 10;
+  const offset = (currentPage - 1) * limit;
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -67,12 +86,54 @@ export default async function AdminProductsPage() {
 
   const categories = await db.query.categoryTable.findMany();
 
+  const [{ count: totalProducts }] = await db
+    .select({ count: count() })
+    .from(productTable);
+
+  const totalPages = Math.ceil(totalProducts / limit);
+
   const products = await db.query.productTable.findMany({
+    limit,
+    offset,
     with: {
       category: true,
       variants: true,
     },
+    orderBy: (products, { desc }) => [desc(products.createdAt)],
   });
+
+  // Generate page numbers to show
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+
+      if (currentPage > 3) {
+        pages.push("...");
+      }
+
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      if (currentPage < totalPages - 2) {
+        pages.push("...");
+      }
+
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
 
 
   return (
@@ -130,12 +191,9 @@ export default async function AdminProductsPage() {
               {products.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell className="w-24">
-                    <Image
+                    <ProductImageDialog
                       src={product.variants[0]?.imageUrl || ""}
                       alt={product.name}
-                      width={40}
-                      height={40}
-                      className="rounded-sm"
                     />
                   </TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
@@ -155,6 +213,48 @@ export default async function AdminProductsPage() {
               ))}
             </TableBody>
           </Table>
+        )}
+
+        {/* Paginação */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-6">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href={`/admin/products?page=${currentPage - 1}`}
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                    tabIndex={currentPage === 1 ? -1 : undefined}
+                    aria-disabled={currentPage === 1}
+                  />
+                </PaginationItem>
+
+                {getPageNumbers().map((page, index) => (
+                  <PaginationItem key={index}>
+                    {page === "..." ? (
+                      <PaginationEllipsis />
+                    ) : (
+                      <PaginationLink
+                        href={`/admin/products?page=${page}`}
+                        isActive={currentPage === page}
+                      >
+                        {page}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext
+                    href={`/admin/products?page=${currentPage + 1}`}
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                    tabIndex={currentPage === totalPages ? -1 : undefined}
+                    aria-disabled={currentPage === totalPages}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
         )}
       </div>
     </AdminLayout>

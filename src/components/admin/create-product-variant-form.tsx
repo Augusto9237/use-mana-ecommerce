@@ -23,41 +23,69 @@ import {
 } from "@/actions/create-product/schema";
 import { SheetContent, SheetHeader, SheetTitle, SheetTrigger, Sheet, SheetFooter } from "../ui/sheet";
 import { Plus } from "lucide-react";
+import { updateProductVariant } from "@/actions/update-product-variant";
+
+interface Variant {
+  id: string;
+  productId: string;
+  name: string;
+  slug: string;
+  size: string;
+  color: string;
+  priceInCents: number;
+  imageUrl: string;
+}
 
 interface CreateProductVariantFormProps {
   productId: string;
+  variant?: Variant;
+  trigger?: React.ReactNode;
   onSuccess?: () => void;
 }
 
 export function CreateProductVariantForm({
   productId,
+  variant,
+  trigger,
   onSuccess,
 }: CreateProductVariantFormProps) {
+  const isEditing = !!variant;
   const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const form = useForm<CreateProductVariantSchema>({
     resolver: zodResolver(createProductVariantSchema),
     defaultValues: {
       productId,
-      name: "",
-      slug: "",
-      size: "",
-      color: "",
-      priceInCents: 0,
-      imageUrl: "",
+      name: variant?.name ?? "",
+      slug: variant?.slug ?? "",
+      size: variant?.size ?? "",
+      color: variant?.color ?? "",
+      priceInCents: variant?.priceInCents ?? 0,
+      imageUrl: variant?.imageUrl ?? "",
     },
   });
 
   async function onSubmit(data: CreateProductVariantSchema) {
     setIsLoading(true);
     try {
-      await createProductVariant(data);
-      toast.success("Variante criada com sucesso!");
-      form.reset();
+      if (isEditing) {
+        await updateProductVariant({ id: variant.id, ...data });
+        toast.success("Variante atualizada com sucesso!");
+      } else {
+        await createProductVariant(data);
+        toast.success("Variante criada com sucesso!");
+        form.reset({ productId, name: "", slug: "", size: "", color: "", priceInCents: 0, imageUrl: "" });
+      }
+      setOpen(false);
       onSuccess?.();
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Erro ao criar variante";
+        error instanceof Error
+          ? error.message
+          : isEditing
+            ? "Erro ao atualizar variante"
+            : "Erro ao criar variante";
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -65,16 +93,18 @@ export function CreateProductVariantForm({
   }
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button>
-          <Plus />
-          Nova Variante
-        </Button>
+        {trigger ?? (
+          <Button>
+            <Plus />
+            Nova Variante
+          </Button>
+        )}
       </SheetTrigger>
       <SheetContent className="min-w-lg">
         <SheetHeader>
-          <SheetTitle>Criar Variante</SheetTitle>
+          <SheetTitle>{isEditing ? "Editar Variante" : "Criar Variante"}</SheetTitle>
         </SheetHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-5">
@@ -199,7 +229,13 @@ export function CreateProductVariantForm({
 
             <SheetFooter className="p-0">
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Criando..." : "Criar Variante"}
+                {isLoading
+                  ? isEditing
+                    ? "Salvando..."
+                    : "Criando..."
+                  : isEditing
+                    ? "Salvar Alterações"
+                    : "Criar Variante"}
               </Button>
             </SheetFooter>
           </form>

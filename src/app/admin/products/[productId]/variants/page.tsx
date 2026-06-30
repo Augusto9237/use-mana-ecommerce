@@ -5,8 +5,18 @@ import { notFound } from "next/navigation";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
+import { count, eq } from "drizzle-orm";
+import { productVariantTable } from "@/db/schema";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import {
   Table,
   TableBody,
@@ -26,19 +36,29 @@ import {
 import { CreateProductVariantForm } from "@/components/admin/create-product-variant-form";
 import { AdminLayout } from "@/components/admin/admin-layout";
 import { VariantActionsDropdown } from "../../components/variant-actions-dropdown";
+import { ProductImageDialog } from "../../components/product-image-dialog";
 
 interface AdminVariantsPageProps {
-  params: {
+  params: Promise<{
     productId: string;
-  };
+  }>;
+  searchParams: Promise<{
+    page?: string;
+  }>;
 }
 
 type UserWithRole = { role?: string };
 
 export default async function AdminVariantsPage({
   params,
+  searchParams,
 }: AdminVariantsPageProps) {
   const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  const currentPage = Number(resolvedSearchParams.page) || 1;
+  const limit = 10;
+  const offset = (currentPage - 1) * limit;
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -77,7 +97,6 @@ export default async function AdminVariantsPage({
   const product = await db.query.productTable.findFirst({
     where: (product, { eq }) => eq(product.id, resolvedParams.productId),
     with: {
-      variants: true,
       category: true,
     },
   });
@@ -85,6 +104,53 @@ export default async function AdminVariantsPage({
   if (!product) {
     notFound();
   }
+
+  const [{ count: totalVariants }] = await db
+    .select({ count: count() })
+    .from(productVariantTable)
+    .where(eq(productVariantTable.productId, resolvedParams.productId));
+
+  const totalPages = Math.ceil(totalVariants / limit);
+
+  const variants = await db.query.productVariantTable.findMany({
+    where: (variant, { eq }) => eq(variant.productId, resolvedParams.productId),
+    limit,
+    offset,
+    orderBy: (variant, { desc }) => [desc(variant.createdAt)],
+  });
+
+  // Generate page numbers to show
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+
+      if (currentPage > 3) {
+        pages.push("...");
+      }
+
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      if (currentPage < totalPages - 2) {
+        pages.push("...");
+      }
+
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
 
   const priceInReais = (priceInCents: number) => {
     return (priceInCents / 100).toLocaleString("pt-BR", {
@@ -127,7 +193,7 @@ export default async function AdminVariantsPage({
           <CreateProductVariantForm productId={product.id} />
         </div>
 
-        {product.variants.length === 0 ? (
+        {totalVariants === 0 ? (
           <p className="text-gray-600 text-center">
             Nenhuma variante cadastrada
           </p>
@@ -146,15 +212,12 @@ export default async function AdminVariantsPage({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {product.variants.map((variant) => (
+              {variants.map((variant) => (
                 <TableRow key={variant.id}>
                   <TableCell className="w-24">
-                    <Image
+                    <ProductImageDialog
                       src={variant.imageUrl}
                       alt={variant.name}
-                      width={40}
-                      height={40}
-                      className="rounded object-cover"
                     />
                   </TableCell>
                   <TableCell className="font-medium">
@@ -188,6 +251,48 @@ export default async function AdminVariantsPage({
               ))}
             </TableBody>
           </Table>
+        )}
+
+        {/* Paginação */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-6">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href={`/admin/products/${resolvedParams.productId}/variants?page=${currentPage - 1}`}
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                    tabIndex={currentPage === 1 ? -1 : undefined}
+                    aria-disabled={currentPage === 1}
+                  />
+                </PaginationItem>
+
+                {getPageNumbers().map((page, index) => (
+                  <PaginationItem key={index}>
+                    {page === "..." ? (
+                      <PaginationEllipsis />
+                    ) : (
+                      <PaginationLink
+                        href={`/admin/products/${resolvedParams.productId}/variants?page=${page}`}
+                        isActive={currentPage === page}
+                      >
+                        {page}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext
+                    href={`/admin/products/${resolvedParams.productId}/variants?page=${currentPage + 1}`}
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                    tabIndex={currentPage === totalPages ? -1 : undefined}
+                    aria-disabled={currentPage === totalPages}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
         )}
       </div>
     </AdminLayout>

@@ -24,6 +24,9 @@ export function OrderFilters() {
 
   // Debounce search input
   useEffect(() => {
+    const currentSearch = searchParams.get("search") || "";
+    if (search === currentSearch) return;
+
     const delayDebounceFn = setTimeout(() => {
       const params = new URLSearchParams(searchParams.toString());
       if (search) {
@@ -59,7 +62,7 @@ export function OrderFilters() {
   const hasFilters = searchParams.has("search") || searchParams.has("status");
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-muted/20 p-4 rounded-xl border">
+    <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
       <div className="relative w-full md:max-w-md">
         <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
         <Input

@@ -125,7 +125,7 @@ export default async function AdminCategoriesPage(props: {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Categorias</BreadcrumbPage>
+                  <BreadcrumbPage className="text-primary">Categorias</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

@@ -15,7 +15,7 @@ const CategorySelector = ({ categories }: CategorySelectorProps) => {
       {categories.map((category) => (
         <div key={category.id} className="relative rounded-lg overflow-hidden h-[200px] md:min-h-[400px] md:h-full">
           <img
-            src="https://dlkmodas.fbitsstatic.net/img/p/calca-legging-preta-com-cadarco-basica-dlk-77581/287332-1.jpg?w=1000&h=1428&v=no-value"
+            src={category.imageUrl || "/placeholder-category.png"}
             alt={category.name}
             className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300 absolute inset-0"
           />
@@ -24,7 +24,7 @@ const CategorySelector = ({ categories }: CategorySelectorProps) => {
             <div className="p-3">
               <h4 className="text-lg font-bold leading-tight">{category.name}</h4>
               <Link href={`/category/${category.slug}`} className="text-primary font-semibold text-sm items-center flex gap-1">
-                Comprar <ChevronRight size={16}/>
+                Comprar <ChevronRight size={16} />
               </Link>
             </div>
           </div>

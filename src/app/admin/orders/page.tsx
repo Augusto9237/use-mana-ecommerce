@@ -176,7 +176,7 @@ export default async function AdminOrdersPage(props: {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Pedidos</BreadcrumbPage>
+                  <BreadcrumbPage className="text-primary">Pedidos</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

@@ -14,7 +14,21 @@ import {
   LogOut,
   Bell,
   Search,
+  UserCircle,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -77,20 +91,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           <AppSidebar />
 
           {/* Main Content */}
-          <div className="flex-1 relative pt-14">
+          <div className="flex-1 relative pt-6">
             {/* Top Header */}
-            <header className="backdrop-blur-md bg-background/30 fixed inset-x-0 pl-[var(--sidebar-width)] top-0">
-              <div className="flex items-center justify-between p-6">
-                {/* Search */}
-                <div className="flex-1 max-w-md">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-2" size={18} />
-                    <Input
-                      placeholder="Buscar no painel"
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
+            <header className="backdrop-blur-md bg-background/30 fixed right-0 w-[calc(100%-var(--sidebar-width))] top-0 z-10">
+              <div className="flex items-center justify-end py-3 px-8">
 
                 {/* Right section */}
                 <div className="flex items-center gap-6">
@@ -99,14 +103,34 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     <span className="absolute top-2 right-2 w-2 h-2 bg-blue-600 rounded-full" />
                   </Button>
 
-                  <div className="flex items-center gap-3 pl-6 border-l border-gray-200">
-                    <span className="text-sm font-medium text-gray-700">
-                      Administrador
-                    </span>
-                    <Button variant="ghost" size="sm">
-                      ▼
-                    </Button>
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={session?.user?.image || undefined} alt={session?.user?.name || "User"} />
+                          <AvatarFallback><UserCircle className="h-5 w-5" /></AvatarFallback>
+                        </Avatar>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                      <DropdownMenuLabel className="font-normal">
+                        <div className="flex flex-col space-y-1">
+                          <p className="text-sm font-medium leading-none">{session?.user?.name}</p>
+                          <p className="text-xs leading-none text-muted-foreground">
+                            {session?.user?.email}
+                          </p>
+                        </div>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={() => authClient.signOut()}
+                        variant="destructive"
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Sair</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
             </header>

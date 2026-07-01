@@ -117,7 +117,7 @@ export function OrderDetailsDialog({ order }: OrderDetailsDialogProps) {
           <span className="sr-only">Ver Detalhes</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] flex flex-col p-0 overflow-hidden">
+      <DialogContent style={{ maxWidth: '600px' }} className="h-[90vh] max-h-[90vh] flex flex-col p-0 pb-6 overflow-hidden">
         <DialogHeader className="p-6 pb-4 border-b">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
@@ -134,30 +134,13 @@ export function OrderDetailsDialog({ order }: OrderDetailsDialogProps) {
                 })}
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              {isPending && <Loader2 className="size-4 animate-spin text-muted-foreground" />}
-              <Select
-                value={order.status}
-                onValueChange={handleStatusChange}
-                disabled={isPending}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Alterar status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">Pendente</SelectItem>
-                  <SelectItem value="paid">Pago</SelectItem>
-                  <SelectItem value="canceled">Cancelado</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 p-6">
+        <ScrollArea className="flex-1 min-h-0 px-6">
           <div className="flex flex-col gap-6">
             {/* Top: Cliente e Endereço */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-6">
               {/* Informações do Cliente */}
               <div>
                 <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
@@ -276,24 +259,21 @@ export function OrderDetailsDialog({ order }: OrderDetailsDialogProps) {
 
             <Separator />
 
-            {/* Bottom: Resumo Financeiro */}
-            <div className="flex justify-end">
-              <div className="bg-muted/30 p-4 rounded-xl space-y-2.5 border border-muted/50 w-full md:max-w-md">
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>Subtotal</span>
-                  <span>{formatCentsToBRL(order.totalPriceInCents)}</span>
-                </div>
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>Frete</span>
-                  <span className="text-emerald-600 font-medium">Grátis</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between font-semibold text-foreground">
-                  <span>Total</span>
-                  <span className="text-lg">
-                    {formatCentsToBRL(order.totalPriceInCents)}
-                  </span>
-                </div>
+            <div className="bg-card p-4 rounded-xl space-y-2.5 border border-muted/50 w-full">
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>Subtotal</span>
+                <span>{formatCentsToBRL(order.totalPriceInCents)}</span>
+              </div>
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>Frete</span>
+                <span className="text-emerald-600 font-medium">Grátis</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between font-semibold text-foreground">
+                <span>Total</span>
+                <span className="text-lg">
+                  {formatCentsToBRL(order.totalPriceInCents)}
+                </span>
               </div>
             </div>
           </div>

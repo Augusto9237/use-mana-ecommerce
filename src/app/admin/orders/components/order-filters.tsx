@@ -95,8 +95,8 @@ export function OrderFilters() {
         </Select>
 
         {hasFilters && (
-          <Button variant="ghost" onClick={handleClear} className="gap-1">
-            Limpar
+          <Button variant="ghost" size="icon" onClick={handleClear} className="gap-1">
+            <X className="size-4" />
           </Button>
         )}
       </div>

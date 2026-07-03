@@ -33,6 +33,7 @@ interface Variant {
   size: string;
   color: string;
   priceInCents: number;
+  stock: number;
   imageUrl: string;
 }
 
@@ -62,6 +63,7 @@ export function CreateProductVariantForm({
       size: variant?.size ?? "",
       color: variant?.color ?? "",
       priceInCents: variant?.priceInCents ?? 0,
+      stock: variant?.stock ?? 0,
       imageUrl: variant?.imageUrl ?? "",
     },
   });
@@ -75,7 +77,7 @@ export function CreateProductVariantForm({
       } else {
         await createProductVariant(data);
         toast.success("Variante criada com sucesso!");
-        form.reset({ productId, name: "", slug: "", size: "", color: "", priceInCents: 0, imageUrl: "" });
+        form.reset({ productId, name: "", slug: "", size: "", color: "", priceInCents: 0, stock: 0, imageUrl: "" });
       }
       setOpen(false);
       onSuccess?.();
@@ -202,6 +204,29 @@ export function CreateProductVariantForm({
                   </FormControl>
                   <FormDescription>
                     Ex: 9999 = R$ 99,99
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="stock"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Estoque</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      disabled={isLoading}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      value={field.value}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Quantidade disponível em estoque
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

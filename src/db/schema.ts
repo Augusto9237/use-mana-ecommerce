@@ -122,6 +122,7 @@ export const productVariantTable = pgTable("product_variant", {
   color: text().notNull(),
   size: text().notNull(),
   priceInCents: integer("price_in_cents").notNull(),
+  stock: integer("stock").notNull().default(0),
   imageUrl: text("image_url").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

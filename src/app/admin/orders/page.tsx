@@ -151,9 +151,9 @@ export default async function AdminOrdersPage(props: {
   const getStatusBadge = (orderStatus: typeof orderTable.$inferSelect.status) => {
     switch (orderStatus) {
       case "paid":
-        return <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white">Pago</Badge>;
+        return <Badge>Pago</Badge>;
       case "pending":
-        return <Badge variant="outline" className="border-amber-500 text-amber-600 bg-amber-50">Pendente</Badge>;
+        return <Badge variant="outline">Pendente</Badge>;
       case "canceled":
         return <Badge variant="destructive">Cancelado</Badge>;
       default:

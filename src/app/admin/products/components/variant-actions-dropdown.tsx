@@ -36,6 +36,7 @@ interface Variant {
   color: string;
   size: string;
   priceInCents: number;
+  stock: number;
 }
 
 interface VariantActionsDropdownProps {

@@ -607,6 +607,7 @@ async function main() {
           size: "Único",
           imageUrl: variantImages[0] || "",
           priceInCents: variantData.price,
+          stock: 10,
           slug: generateSlug(`${productData.name}-${variantData.color}`),
         });
       }

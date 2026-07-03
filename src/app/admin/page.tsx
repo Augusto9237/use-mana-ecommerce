@@ -51,90 +51,86 @@ export default async function AdminPage() {
   return (
     <AdminLayout>
       <div className="space-y-8">
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold ">Dashboard</h1>
-          <p className=" mt-2">Bem-vindo de volta, {session.user.name}!</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Dashboard</h1>
+            <p className="text-sm text-muted-foreground">Bem-vindo de volta, {session.user.name}!</p>
+          </div>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Total de Produtos</CardTitle>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-muted-foreground/10 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs">
+          <Card className="@container/card">
+            <CardHeader>
+              <CardTitle className="text-sm">Total de Produtos</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{totalProducts.length}</div>
-              <p className="text-xs text-gray-500 mt-1">Produtos cadastrados</p>
+              <div className="text-3xl font-extrabold">{totalProducts.length}</div>
+              <p className="text-sm text-muted-foreground mt-1">Produtos cadastrados</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Total de Pedidos</CardTitle>
+          <Card className="@container/card">
+            <CardHeader>
+              <CardTitle className="text-sm">Total de Pedidos</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{totalOrders.length}</div>
-              <p className="text-xs text-gray-500 mt-1">Pedidos realizados</p>
+              <div className="text-3xl font-extrabold">{totalOrders.length}</div>
+              <p className="text-sm text-muted-foreground mt-1">Pedidos realizados</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Receita</CardTitle>
+          <Card className="@container/card">
+            <CardHeader>
+              <CardTitle className="text-sm">Receita (Este mês)</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">R$ 0,00</div>
-              <p className="text-xs text-gray-500 mt-1">Este mês</p>
+              <div className="text-3xl font-extrabold">R$ 0,00</div>
+              <p className="text-sm text-muted-foreground mt-1">Estimativa</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Clientes</CardTitle>
+          <Card className="@container/card">
+            <CardHeader>
+              <CardTitle className="text-sm">Clientes</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-gray-500 mt-1">Registrados</p>
+              <div className="text-3xl font-extrabold">0</div>
+              <p className="text-sm text-muted-foreground mt-1">Registrados</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Ações Rápidas</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Link href="/admin/products/create">
-                <Button className="w-full" variant="default">
-                  + Novo Produto
-                </Button>
-              </Link>
-              <Link href="/admin/products">
-                <Button className="w-full" variant="outline">
-                  Ver Produtos
-                </Button>
-              </Link>
-              <Link href="/admin/orders">
-                <Button className="w-full" variant="outline">
-                  Ver Pedidos
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Visão Geral</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">Resumo rápido das métricas e gráficos (placeholder).</p>
+                <div className="mt-4 h-48 bg-muted/40 rounded" />
+              </CardContent>
+            </Card>
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Informações</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600">
-                Bem-vindo ao painel administrativo da RD Fitness. Use o menu lateral para navegar entre as diferentes seções do painel.
-              </p>
-            </CardContent>
-          </Card>
+          <div className="lg:col-span-1">
+            <Card>
+              <CardHeader>
+                <CardTitle>Ações Rápidas</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Link href="/admin/products/create">
+                  <Button className="w-full">Criar Produto</Button>
+                </Link>
+                <Link href="/admin/products">
+                  <Button className="w-full" variant="outline">Gerenciar Produtos</Button>
+                </Link>
+                <Link href="/admin/orders">
+                  <Button className="w-full" variant="ghost">Ver Pedidos</Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </AdminLayout>

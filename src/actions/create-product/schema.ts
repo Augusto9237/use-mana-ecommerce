@@ -17,6 +17,10 @@ export const createProductVariantSchema = z.object({
     .number()
     .int()
     .positive("Preço deve ser maior que zero"),
+  stock: z
+    .number()
+    .int()
+    .nonnegative("Estoque deve ser zero ou maior"),
   imageUrl: z.string().url("URL de imagem inválida"),
 });
 

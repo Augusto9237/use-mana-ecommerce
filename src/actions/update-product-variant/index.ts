@@ -16,6 +16,7 @@ const updateProductVariantSchema = z.object({
   size: z.string().min(1),
   color: z.string().min(1),
   priceInCents: z.number().int().positive(),
+  stock: z.number().int().nonnegative(),
   imageUrl: z.string().url(),
 });
 
@@ -64,6 +65,7 @@ export const updateProductVariant = async (data: UpdateProductVariantSchema) => 
       size: data.size,
       color: data.color,
       priceInCents: data.priceInCents,
+      stock: data.stock,
       imageUrl: data.imageUrl,
     })
     .where(eq(productVariantTable.id, data.id))

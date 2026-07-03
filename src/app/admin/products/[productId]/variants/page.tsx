@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { count, eq } from "drizzle-orm";
+import { and, count, eq, gt, ilike, or } from "drizzle-orm";
 import { productVariantTable } from "@/db/schema";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,6 +37,7 @@ import { CreateProductVariantForm } from "@/components/admin/create-product-vari
 import { AdminLayout } from "@/components/admin/admin-layout";
 import { VariantActionsDropdown } from "../../components/variant-actions-dropdown";
 import { ProductImageDialog } from "../../components/product-image-dialog";
+import { VariantFilters } from "./components/variant-filters";
 
 interface AdminVariantsPageProps {
   params: Promise<{
@@ -44,6 +45,8 @@ interface AdminVariantsPageProps {
   }>;
   searchParams: Promise<{
     page?: string;
+    search?: string;
+    stock?: string;
   }>;
 }
 
@@ -105,15 +108,41 @@ export default async function AdminVariantsPage({
     notFound();
   }
 
+  const search = resolvedSearchParams.search || "";
+  const stockFilter = resolvedSearchParams.stock || "";
+
+  const filters: any[] = [
+    eq(productVariantTable.productId, resolvedParams.productId),
+  ];
+
+  if (search) {
+    filters.push(
+      or(
+        ilike(productVariantTable.name, `%${search}%`),
+        ilike(productVariantTable.color, `%${search}%`),
+        ilike(productVariantTable.size, `%${search}%`),
+        ilike(productVariantTable.slug, `%${search}%`)
+      )
+    );
+  }
+
+  if (stockFilter === "in-stock") {
+    filters.push(gt(productVariantTable.stock, 0));
+  } else if (stockFilter === "out-of-stock") {
+    filters.push(eq(productVariantTable.stock, 0));
+  }
+
+  const whereClause = filters.length > 0 ? and(...filters) : undefined;
+
   const [{ count: totalVariants }] = await db
     .select({ count: count() })
     .from(productVariantTable)
-    .where(eq(productVariantTable.productId, resolvedParams.productId));
+    .where(whereClause);
 
   const totalPages = Math.ceil(totalVariants / limit);
 
   const variants = await db.query.productVariantTable.findMany({
-    where: (variant, { eq }) => eq(variant.productId, resolvedParams.productId),
+    where: whereClause,
     limit,
     offset,
     orderBy: (variant, { desc }) => [desc(variant.createdAt)],
@@ -193,6 +222,10 @@ export default async function AdminVariantsPage({
           <CreateProductVariantForm productId={product.id} />
         </div>
 
+        <div className="mt-6">
+          <VariantFilters />
+        </div>
+
         {totalVariants === 0 ? (
           <p className="text-gray-600 text-center">
             Nenhuma variante cadastrada
@@ -206,6 +239,7 @@ export default async function AdminVariantsPage({
                 <TableHead>Cor</TableHead>
                 <TableHead>Tamanho</TableHead>
                 <TableHead>Preço</TableHead>
+                <TableHead>Estoque</TableHead>
                 <TableHead>Slug</TableHead>
                 <TableHead>Criada em</TableHead>
                 <TableHead className="w-20">Ações</TableHead>
@@ -238,6 +272,7 @@ export default async function AdminVariantsPage({
                   <TableCell>
                     {priceInReais(variant.priceInCents)}
                   </TableCell>
+                  <TableCell>{variant.stock}</TableCell>
                   <TableCell>{variant.slug}</TableCell>
                   <TableCell>
                     {new Date(variant.createdAt).toLocaleDateString(
@@ -260,7 +295,12 @@ export default async function AdminVariantsPage({
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
-                    href={`/admin/products/${resolvedParams.productId}/variants?page=${currentPage - 1}`}
+                    href={`/admin/products/${resolvedParams.productId}/variants?${new URLSearchParams({
+                      ...Object.fromEntries(Object.entries(resolvedSearchParams).filter(
+                        ([key]) => key !== "page"
+                      )),
+                      page: String(currentPage - 1),
+                    }).toString()}`}
                     className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
                     tabIndex={currentPage === 1 ? -1 : undefined}
                     aria-disabled={currentPage === 1}
@@ -273,7 +313,12 @@ export default async function AdminVariantsPage({
                       <PaginationEllipsis />
                     ) : (
                       <PaginationLink
-                        href={`/admin/products/${resolvedParams.productId}/variants?page=${page}`}
+                        href={`/admin/products/${resolvedParams.productId}/variants?${new URLSearchParams({
+                          ...Object.fromEntries(Object.entries(resolvedSearchParams).filter(
+                            ([key]) => key !== "page"
+                          )),
+                          page: String(page),
+                        }).toString()}`}
                         isActive={currentPage === page}
                       >
                         {page}
@@ -284,7 +329,12 @@ export default async function AdminVariantsPage({
 
                 <PaginationItem>
                   <PaginationNext
-                    href={`/admin/products/${resolvedParams.productId}/variants?page=${currentPage + 1}`}
+                    href={`/admin/products/${resolvedParams.productId}/variants?${new URLSearchParams({
+                      ...Object.fromEntries(Object.entries(resolvedSearchParams).filter(
+                        ([key]) => key !== "page"
+                      )),
+                      page: String(currentPage + 1),
+                    }).toString()}`}
                     className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
                     tabIndex={currentPage === totalPages ? -1 : undefined}
                     aria-disabled={currentPage === totalPages}

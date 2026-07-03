@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { count } from "drizzle-orm";
+import { and, count, eq, ilike, or } from "drizzle-orm";
 import { productTable } from "@/db/schema";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,15 +37,18 @@ import { AdminLayout } from "@/components/admin/admin-layout";
 import { CreateProductForm } from "@/components/admin/create-product-form";
 import { ProductActionsDropdown } from "./components/product-actions-dropdown";
 import { ProductImageDialog } from "./components/product-image-dialog";
+import { ProductFilters } from "./components/product-filters";
 import Image from "next/image";
 
 type UserWithRole = { role?: string };
 
 export default async function AdminProductsPage(props: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; search?: string; category?: string }>;
 }) {
   const searchParams = await props.searchParams;
   const currentPage = Number(searchParams.page) || 1;
+  const search = searchParams.search || "";
+  const category = searchParams.category || "";
   const limit = 10;
   const offset = (currentPage - 1) * limit;
 
@@ -90,9 +93,33 @@ export default async function AdminProductsPage(props: {
     .select({ count: count() })
     .from(productTable);
 
-  const totalPages = Math.ceil(totalProducts / limit);
+  const filters = [];
+
+  if (category) {
+    filters.push(eq(productTable.categoryId, category));
+  }
+
+  if (search) {
+    filters.push(
+      or(
+        ilike(productTable.name, `%${search}%`),
+        ilike(productTable.description, `%${search}%`),
+        ilike(productTable.slug, `%${search}%`)
+      )
+    );
+  }
+
+  const whereClause = filters.length ? and(...filters) : undefined;
+
+  const totalPagesCount = await db
+    .select({ count: count() })
+    .from(productTable)
+    .where(whereClause);
+
+  const totalPages = Math.ceil(totalPagesCount[0].count / limit);
 
   const products = await db.query.productTable.findMany({
+    where: whereClause,
     limit,
     offset,
     with: {
@@ -140,7 +167,7 @@ export default async function AdminProductsPage(props: {
     <AdminLayout>
       <div className="space-y-6">
         {/* Breadcrumb e Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <Breadcrumb className="mb-2">
               <BreadcrumbList>
@@ -162,6 +189,8 @@ export default async function AdminProductsPage(props: {
           </div>
           <CreateProductForm categories={categories} />
         </div>
+
+        <ProductFilters categories={categories} />
 
         {/* Table */}
         {products.length === 0 ? (

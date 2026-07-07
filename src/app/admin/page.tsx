@@ -11,6 +11,16 @@ import { AdminLayout } from "@/components/admin/admin-layout";
 import Image from "next/image";
 import { formatCentsToBRL } from "@/helpers/money";
 import { Boxes, DollarSign, ReceiptText, Users } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { OrderDetailsDialog } from "./orders/components/order-details-dialog";
 
 type UserWithRole = { role?: string };
 
@@ -105,9 +115,26 @@ export default async function AdminPage() {
     }
   }
 
+  const latestOrders = [...totalOrders]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 10);
+
   const topProducts = [...variantStats.values()]
     .sort((a, b) => b.orderCount - a.orderCount)
     .slice(0, 10);
+
+  const getStatusBadge = (orderStatus: typeof totalOrders[number]["status"]) => {
+    switch (orderStatus) {
+      case "paid":
+        return <Badge>Pago</Badge>;
+      case "pending":
+        return <Badge variant="outline">Pendente</Badge>;
+      case "canceled":
+        return <Badge variant="destructive">Cancelado</Badge>;
+      default:
+        return <Badge>{orderStatus}</Badge>;
+    }
+  };
 
   return (
     <AdminLayout>
@@ -177,11 +204,61 @@ export default async function AdminPage() {
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>Visão Geral</CardTitle>
+                <CardTitle>Últimos Pedidos</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">Resumo rápido das métricas e gráficos (placeholder).</p>
-                <div className="mt-4 h-48 bg-muted/40 rounded" />
+              <CardContent className="p-0">
+                {latestOrders.length === 0 ? (
+                  <p className="text-sm text-muted-foreground px-6 pb-6">Nenhum pedido registrado ainda.</p>
+                ) : (
+                  <div className="px-6">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[120px] pl-6">Pedido ID</TableHead>
+                          <TableHead>Cliente</TableHead>
+                          <TableHead>Data</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead className="text-right">Total</TableHead>
+                          <TableHead className="w-[100px] text-center pr-6">Ações</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {latestOrders.map((order) => (
+                          <TableRow key={order.id}>
+                            <TableCell className="font-mono text-xs text-muted-foreground pl-6">
+                              #{order.id.slice(0, 8)}...
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex flex-col">
+                                <span className="font-medium text-foreground">
+                                  {order.recipientName}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {order.email}
+                                </span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {new Date(order.createdAt).toLocaleDateString("pt-BR")} às{" "}
+                              {new Date(order.createdAt).toLocaleTimeString("pt-BR", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </TableCell>
+                            <TableCell>{getStatusBadge(order.status)}</TableCell>
+                            <TableCell className="text-right font-semibold">
+                              {formatCentsToBRL(order.totalPriceInCents)}
+                            </TableCell>
+                            <TableCell className="text-center pr-6">
+                              {/* Cast object schema type compatibility */}
+                              <OrderDetailsDialog order={order as any} />
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

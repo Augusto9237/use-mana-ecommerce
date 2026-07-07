@@ -252,18 +252,6 @@ export const orderTable = pgTable("order", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const orderRelations = relations(orderTable, ({ one, many }) => ({
-  user: one(userTable, {
-    fields: [orderTable.userId],
-    references: [userTable.id],
-  }),
-  shippingAddress: one(shippingAddressTable, {
-    fields: [orderTable.shippingAddressId],
-    references: [shippingAddressTable.id],
-  }),
-  items: many(orderItemTable),
-}));
-
 export const orderItemTable = pgTable("order_item", {
   id: uuid().primaryKey().defaultRandom(),
   orderId: uuid("order_id")
@@ -276,6 +264,18 @@ export const orderItemTable = pgTable("order_item", {
   priceInCents: integer("price_in_cents").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+export const orderRelations = relations(orderTable, ({ one, many }) => ({
+  user: one(userTable, {
+    fields: [orderTable.userId],
+    references: [userTable.id],
+  }),
+  shippingAddress: one(shippingAddressTable, {
+    fields: [orderTable.shippingAddressId],
+    references: [shippingAddressTable.id],
+  }),
+  items: many(orderItemTable),
+}));
 
 export const orderItemRelations = relations(orderItemTable, ({ one }) => ({
   order: one(orderTable, {

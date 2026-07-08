@@ -72,6 +72,7 @@ export default async function AdminPage() {
               id: true,
               name: true,
               imageUrl: true,
+              priceInCents: true,
             },
             with: {
               product: {
@@ -88,7 +89,7 @@ export default async function AdminPage() {
 
   const totalRevenue = totalOrders.reduce((sum, order) => sum + order.totalPriceInCents, 0);
 
-  type VariantStat = { productName: string; variantName: string; imageUrl: string; count: number; orderCount: number };
+  type VariantStat = { productName: string; variantName: string; imageUrl: string; count: number; orderCount: number; priceInCents: number };
   const variantStats = new Map<string, VariantStat>();
 
   for (const { items } of totalOrders) {
@@ -103,6 +104,7 @@ export default async function AdminPage() {
         imageUrl: v.imageUrl,
         count: 0,
         orderCount: 0,
+        priceInCents: v.priceInCents,
       };
 
       stat.count += quantity;
@@ -278,11 +280,11 @@ export default async function AdminPage() {
                 ) : (
                   <ol className="divide-y divide-border">
                     {topProducts.map((product, index) => (
-                      <Card key={`${product.productName}-${product.variantName}`} className="flex flex-row items-center gap-3 px-4 py-3">
+                      <Card key={`${product.productName}-${product.variantName}`} className="flex flex-row items-center gap-3 p-3 rounded-xl">
                         <span className="text-sm font-bold text-muted-foreground w-5 shrink-0 text-center">
                           {index + 1}
                         </span>
-                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md border bg-muted">
+                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-muted">
                           <Image
                             src={product.imageUrl}
                             alt={product.variantName}
@@ -290,14 +292,21 @@ export default async function AdminPage() {
                             className="object-cover"
                           />
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{product.productName}</p>
-                          <div className="flex items-center gap-2">
-                            <p className="text-xs text-muted-foreground truncate">{product.variantName}</p> &middot;
-                            <p className="text-xs text-muted-foreground flex gap-2">
-                              {product.orderCount} {product.orderCount === 1 ? "pedido" : "pedidos"} &middot; {product.count} {product.count === 1 ? "unid." : "unids."}
-                            </p>
+                        <div className="flex-1 min-w-0 flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium truncate">{product.productName}</p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-xs text-muted-foreground truncate">{product.variantName}</p> &middot;
+                              <p className="text-xs text-muted-foreground flex gap-2">
+                                x{product.count}
+                              </p> &middot;
+                              <p className="text-xs text-muted-foreground flex gap-2">
+                                {formatCentsToBRL(product.priceInCents)}
+                              </p>
+                            </div>
+
                           </div>
+                          <p className="text-sm font-medium truncate">{formatCentsToBRL(product.priceInCents * product.count)}</p>
                         </div>
                       </Card>
                     ))}

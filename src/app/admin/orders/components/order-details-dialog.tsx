@@ -143,7 +143,7 @@ export function OrderDetailsDialog({ order }: OrderDetailsDialogProps) {
             <div className="flex flex-col gap-6">
               {/* Informações do Cliente */}
               <div>
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
+                <h3 className="font-semibold tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
                   <User className="size-4" />
                   Informações do Cliente
                 </h3>
@@ -189,7 +189,7 @@ export function OrderDetailsDialog({ order }: OrderDetailsDialogProps) {
 
               {/* Endereço de Entrega */}
               <div>
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
+                <h3 className="font-semibold tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
                   <MapPin className="size-4" />
                   Endereço de Entrega
                 </h3>
@@ -218,7 +218,7 @@ export function OrderDetailsDialog({ order }: OrderDetailsDialogProps) {
 
             {/* Middle: Itens do Pedido */}
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
+              <h3 className="font-semibold tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
                 <Package className="size-4" />
                 Itens do Pedido
               </h3>

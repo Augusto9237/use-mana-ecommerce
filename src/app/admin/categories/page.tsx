@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { count } from "drizzle-orm";
+import { count, ilike } from "drizzle-orm";
 import { categoryTable } from "@/db/schema";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -36,42 +36,33 @@ import { AdminLayout } from "@/components/admin/admin-layout";
 import { CreateCategoryForm } from "@/components/admin/create-category-form";
 import { CategoryActionsDropdown } from "./components/category-actions-dropdown";
 import { ProductImageDialog } from "../products/components/product-image-dialog";
-
-type UserWithRole = { role?: string };
+import { CategoryFilters } from "./components/category-filters";
 
 export default async function AdminCategoriesPage(props: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; search?: string }>;
 }) {
   const searchParams = await props.searchParams;
   const currentPage = Number(searchParams.page) || 1;
   const limit = 10;
   const offset = (currentPage - 1) * limit;
 
+  const search = searchParams.search || "";
+
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  // if (!session?.user) {
-  //   return (
-  //     <div className="flex items-center justify-center min-h-screen">
-  //       <div className="text-center">
-  //         <h1 className="text-2xl font-bold mb-4">Acesso Negado</h1>
-  //         <p className="text-gray-600 mb-6">Você precisa estar autenticado</p>
-  //         <Link href="/authentication">
-  //           <Button>Fazer Login</Button>
-  //         </Link>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  const whereClause = search ? ilike(categoryTable.name, `%${search}%`) : undefined;
 
   const [{ count: totalCategories }] = await db
     .select({ count: count() })
-    .from(categoryTable);
+    .from(categoryTable)
+    .where(whereClause);
 
   const totalPages = Math.ceil(totalCategories / limit);
 
   const categories = await db.query.categoryTable.findMany({
+    where: whereClause,
     limit,
     offset,
     orderBy: (categories, { desc }) => [desc(categories.createdAt)],
@@ -110,6 +101,13 @@ export default async function AdminCategoriesPage(props: {
     return pages;
   };
 
+  const paginationHref = (page: number) => {
+    const params = new URLSearchParams();
+    params.set("page", page.toString());
+    if (search) params.set("search", search);
+    return `/admin/categories?${params.toString()}`;
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -137,11 +135,14 @@ export default async function AdminCategoriesPage(props: {
           <CreateCategoryForm />
         </div>
 
+        {/* Filtros */}
+        <CategoryFilters />
+
         {/* Table */}
         {categories.length === 0 ? (
           <Card>
-            <CardContent className="py-4 text-center">
-              <p className="text-gray-600 mb-4">Nenhuma categoria cadastrada</p>
+            <CardContent className="py-8 text-center">
+              <p className="text-gray-600 mb-4">Nenhuma categoria encontrada</p>
               <CreateCategoryForm />
             </CardContent>
           </Card>
@@ -186,7 +187,7 @@ export default async function AdminCategoriesPage(props: {
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
-                    href={`/admin/categories?page=${currentPage - 1}`}
+                    href={paginationHref(currentPage - 1)}
                     className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
                     tabIndex={currentPage === 1 ? -1 : undefined}
                     aria-disabled={currentPage === 1}
@@ -199,7 +200,7 @@ export default async function AdminCategoriesPage(props: {
                       <PaginationEllipsis />
                     ) : (
                       <PaginationLink
-                        href={`/admin/categories?page=${page}`}
+                        href={paginationHref(page as number)}
                         isActive={currentPage === page}
                       >
                         {page}
@@ -210,7 +211,7 @@ export default async function AdminCategoriesPage(props: {
 
                 <PaginationItem>
                   <PaginationNext
-                    href={`/admin/categories?page=${currentPage + 1}`}
+                    href={paginationHref(currentPage + 1)}
                     className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
                     tabIndex={currentPage === totalPages ? -1 : undefined}
                     aria-disabled={currentPage === totalPages}

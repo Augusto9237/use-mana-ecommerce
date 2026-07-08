@@ -203,8 +203,12 @@ export default async function AdminPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <Card>
-              <CardHeader>
+              <CardHeader className="flex justify-between items-center">
                 <CardTitle>Últimos Pedidos</CardTitle>
+
+                <Link href={"/admin/orders"}>
+                  <span className="text-sm text-muted-foreground hover:underline hover:text-forenground">Ver todos</span>
+                </Link>
               </CardHeader>
               <CardContent className="p-0">
                 {latestOrders.length === 0 ? (
@@ -268,13 +272,13 @@ export default async function AdminPage() {
               <CardHeader>
                 <CardTitle>Produtos Mais Vendidos</CardTitle>
               </CardHeader>
-              <CardContent className="p-0">
+              <CardContent className="p-0 px-6">
                 {topProducts.length === 0 ? (
                   <p className="text-sm text-muted-foreground px-6 pb-6">Nenhum pedido registrado ainda.</p>
                 ) : (
                   <ol className="divide-y divide-border">
                     {topProducts.map((product, index) => (
-                      <li key={`${product.productName}-${product.variantName}`} className="flex items-center gap-3 px-4 py-3">
+                      <Card key={`${product.productName}-${product.variantName}`} className="flex flex-row items-center gap-3 px-4 py-3">
                         <span className="text-sm font-bold text-muted-foreground w-5 shrink-0 text-center">
                           {index + 1}
                         </span>
@@ -295,7 +299,7 @@ export default async function AdminPage() {
                             </p>
                           </div>
                         </div>
-                      </li>
+                      </Card>
                     ))}
                   </ol>
                 )}

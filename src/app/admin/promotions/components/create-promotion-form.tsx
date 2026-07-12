@@ -1,0 +1,199 @@
+"use client";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+
+import {
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { createPromotion } from "@/actions/create-promotion";
+import {
+  CreatePromotionSchema,
+  createPromotionSchema,
+} from "@/actions/create-promotion/schema";
+import { Plus } from "lucide-react";
+
+interface CreatePromotionFormProps {
+  trigger?: React.ReactNode;
+}
+
+export function CreatePromotionForm({ trigger }: CreatePromotionFormProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const form = useForm<CreatePromotionSchema>({
+    resolver: zodResolver(createPromotionSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      imageUrl: "",
+      linkUrl: "",
+      isActive: true,
+    },
+  });
+
+  async function onSubmit(data: CreatePromotionSchema) {
+    setIsLoading(true);
+    try {
+      await createPromotion(data);
+      toast.success("Promoção criada com sucesso!");
+      form.reset();
+      setOpen(false);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Erro ao criar promoção";
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        {trigger ?? (
+          <Button>
+            <Plus />
+            Nova promoção
+          </Button>
+        )}
+      </SheetTrigger>
+      <SheetContent className="min-w-lg">
+        <SheetHeader>
+          <SheetTitle>Criar Promoção</SheetTitle>
+        </SheetHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-5">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Título</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Ex: Promoção de Verão"
+                      disabled={isLoading}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Descrição</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Descreva a promoção em detalhes..."
+                      disabled={isLoading}
+                      rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>Mínimo de 10 caracteres</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="imageUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>URL da Imagem</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="https://exemplo.com/imagem.jpg"
+                      disabled={isLoading}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    URL pública da imagem da promoção
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="linkUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>URL do Link</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="https://exemplo.com/promocao"
+                      disabled={isLoading}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Para onde o usuário será redirecionado ao clicar
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="isActive"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel>Promoção ativa</FormLabel>
+                    <FormDescription>
+                      Promoções ativas ficam visíveis para os usuários
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      disabled={isLoading}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <SheetFooter className="p-0">
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Criando..." : "Criar Promoção"}
+              </Button>
+            </SheetFooter>
+          </form>
+        </Form>
+      </SheetContent>
+    </Sheet>
+  );
+}

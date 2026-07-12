@@ -57,8 +57,8 @@ const menuItems = [
     icon: Users,
   },
   {
-    label: "Cupons",
-    href: "/admin/coupons",
+    label: "Promoções",
+    href: "/admin/promotions",
     icon: Ticket,
   },
   {

@@ -159,6 +159,17 @@ export const shippingAddressTable = pgTable("shipping_address", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const promotionTable = pgTable("promotion", {
+  id: uuid().primaryKey().defaultRandom(),
+  imageUrl: text("image_url").notNull(),
+  title: text().notNull(),
+  description: text().notNull(),
+  linkUrl: text("link_url").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+
 export const shippingAddressRelations = relations(
   shippingAddressTable,
   ({ one, many }) => ({

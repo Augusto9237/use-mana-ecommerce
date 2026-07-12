@@ -1,4 +1,4 @@
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import Image from "next/image";
 
 import CategorySelector from "@/components/common/category-selector";
@@ -6,7 +6,7 @@ import Footer from "@/components/common/footer";
 import { Header } from "@/components/common/header";
 import ProductList from "@/components/common/product-list";
 import { db } from "@/db";
-import { productTable } from "@/db/schema";
+import { productTable, promotionTable } from "@/db/schema";
 import CarouselWithProgress from "@/components/common/carousel";
 
 const Home = async () => {
@@ -15,6 +15,11 @@ const Home = async () => {
       variants: true,
     },
   });
+
+  const promotions = await db.query.promotionTable.findMany({
+    where: eq(promotionTable.isActive, true),
+  });
+
   const newlyCreatedProducts = await db.query.productTable.findMany({
     orderBy: [desc(productTable.createdAt)],
     with: {
@@ -27,7 +32,7 @@ const Home = async () => {
     <>
       <Header />
       <div className="space-y-6 pt-16.5 pb-8 max-w-screen-xl mx-auto flex flex-col justify-center">
-        <CarouselWithProgress />
+        <CarouselWithProgress promotions={promotions} />
 
         <ProductList products={products} title="Mais vendidos" />
 

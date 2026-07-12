@@ -35,6 +35,7 @@ import {
 import { AdminLayout } from "@/components/admin/admin-layout";
 import { CreatePromotionForm } from "./components/create-promotion-form";
 import Image from "next/image";
+import { PromotionBannerDialog } from "./components/promotion-banner-dialog";
 
 export default async function AdminPromotionsPage(props: {
   searchParams: Promise<{ page?: string; search?: string }>;
@@ -151,16 +152,9 @@ export default async function AdminPromotionsPage(props: {
                 <TableRow key={promotion.id}>
                   <TableCell className="w-24">
                     {promotion.imageUrl ? (
-                      <Image
-                        src={promotion.imageUrl}
-                        alt={promotion.title}
-                        width={64}
-                        height={64}
-                        className="rounded object-cover w-16 h-16"
-                        unoptimized
-                      />
+                      <PromotionBannerDialog src={promotion.imageUrl} alt={promotion.title} />
                     ) : (
-                      <div className="w-16 h-16 bg-muted rounded flex items-center justify-center text-xs text-muted-foreground">
+                      <div className="w-16 h-12 bg-muted rounded flex items-center justify-center text-xs text-muted-foreground">
                         Sem imagem
                       </div>
                     )}

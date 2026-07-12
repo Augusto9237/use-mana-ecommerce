@@ -11,20 +11,32 @@ import {
 } from "@/components/ui/carousel";
 import AutoScroll from "embla-carousel-auto-scroll"
 import { Progress } from "@/components/ui/progress";
+import Image from "next/image";
 
-const images = [
-  "https://images.tcdn.com.br/img/img_prod/1358169/690b881f7089e_banner_fitness_mobile.png",
-  "https://adaptive-images.uooucdn.com.br/tr:w-1920,h-1500,c-at_max,pr-true,q-80/a22573-ogxytxlxwt0/g/60/24/88/a6eba23ec406f5c23a1bda6aba.jpg",
-  "https://www.armybr.com.br/cdn/shop/files/banner-shaped-to-move-B-mobile_9323e828-fa79-4275-858b-0f3d8e43645d.jpg?v=1777571072&width=750",
-  "https://www.useglowsfitness.com.br/app-glows/assets/images/dinamica/album/65/x65-banner-categorias-mobile-130226-f8a418.png.pagespeed.ic.nsE_8TDaqN.jpg",
-  "https://www.fffuel.co/images/dddepth-preview/dddepth-012.jpg",
-];
-export default function CarouselWithProgress() {
+interface promotions {
+  id: string;
+  createdAt: Date;
+  description: string;
+  imageUrl: string;
+  title: string;
+  linkUrl: string;
+  isActive: boolean;
+}
+
+interface CarouselWithProgressProps {
+  promotions: promotions[]
+}
+
+const baseUrl = process.env.NEXT_PUBLIC_URL;
+
+export default function CarouselWithProgress({ promotions }: CarouselWithProgressProps) {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
   const [count, setCount] = React.useState(0);
 
   const progress = (current * 100) / count;
+
+  console.log("baseUrl", baseUrl);
 
   React.useEffect(() => {
     if (!api) {
@@ -55,13 +67,18 @@ export default function CarouselWithProgress() {
         }}
       >
         <CarouselContent>
-          {images.map((image) => (
-            <CarouselItem key={image}>
-              <img
-                alt="carousel-item"
-                className="size-full object-cover sm:aspect-video"
-                src={image}
-              />
+          {promotions.map((p) => (
+            <CarouselItem key={p.id}>
+              <a href={p.linkUrl}>
+                <Image
+                  alt="carousel-item"
+                  className="size-full object-cover sm:aspect-video"
+                  src={p.imageUrl}
+                  width={1920}
+                  height={1080}
+                  unoptimized
+                />
+              </a>
             </CarouselItem>
           ))}
         </CarouselContent>

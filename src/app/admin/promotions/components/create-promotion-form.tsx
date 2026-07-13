@@ -31,37 +31,61 @@ import {
   CreatePromotionSchema,
   createPromotionSchema,
 } from "@/actions/create-promotion/schema";
+import { updatePromotion } from "@/actions/update-promotion";
 import { Plus } from "lucide-react";
 
+interface Promotion {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  linkUrl: string;
+  isActive: boolean;
+}
+
 interface CreatePromotionFormProps {
+  promotion?: Promotion;
   trigger?: React.ReactNode;
 }
 
-export function CreatePromotionForm({ trigger }: CreatePromotionFormProps) {
+export function CreatePromotionForm({
+  promotion,
+  trigger,
+}: CreatePromotionFormProps) {
+  const isEditing = !!promotion;
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
   const form = useForm<CreatePromotionSchema>({
     resolver: zodResolver(createPromotionSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      imageUrl: "",
-      linkUrl: "",
-      isActive: true,
+      title: promotion?.title ?? "",
+      description: promotion?.description ?? "",
+      imageUrl: promotion?.imageUrl ?? "",
+      linkUrl: promotion?.linkUrl ?? "",
+      isActive: promotion?.isActive ?? true,
     },
   });
 
   async function onSubmit(data: CreatePromotionSchema) {
     setIsLoading(true);
     try {
-      await createPromotion(data);
-      toast.success("Promoção criada com sucesso!");
-      form.reset();
+      if (isEditing) {
+        await updatePromotion({ id: promotion.id, ...data });
+        toast.success("Promoção atualizada com sucesso!");
+      } else {
+        await createPromotion(data);
+        toast.success("Promoção criada com sucesso!");
+        form.reset();
+      }
       setOpen(false);
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Erro ao criar promoção";
+        error instanceof Error
+          ? error.message
+          : isEditing
+            ? "Erro ao atualizar promoção"
+            : "Erro ao criar promoção";
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -80,7 +104,9 @@ export function CreatePromotionForm({ trigger }: CreatePromotionFormProps) {
       </SheetTrigger>
       <SheetContent className="min-w-lg">
         <SheetHeader>
-          <SheetTitle>Criar Promoção</SheetTitle>
+          <SheetTitle>
+            {isEditing ? "Editar Promoção" : "Criar Promoção"}
+          </SheetTitle>
         </SheetHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-5">
@@ -188,7 +214,13 @@ export function CreatePromotionForm({ trigger }: CreatePromotionFormProps) {
 
             <SheetFooter className="p-0">
               <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Criando..." : "Criar Promoção"}
+                {isLoading
+                  ? isEditing
+                    ? "Salvando..."
+                    : "Criando..."
+                  : isEditing
+                    ? "Salvar Alterações"
+                    : "Criar Promoção"}
               </Button>
             </SheetFooter>
           </form>

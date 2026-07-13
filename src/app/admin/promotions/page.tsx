@@ -36,6 +36,9 @@ import { AdminLayout } from "@/components/admin/admin-layout";
 import { CreatePromotionForm } from "./components/create-promotion-form";
 import Image from "next/image";
 import { PromotionBannerDialog } from "./components/promotion-banner-dialog";
+import { PromotionsActionsDropdown } from "./components/promotion-actions-dropdown";
+
+const url = `${process.env.HOST_URL}`;
 
 export default async function AdminPromotionsPage(props: {
   searchParams: Promise<{ page?: string; search?: string }>;
@@ -145,6 +148,7 @@ export default async function AdminPromotionsPage(props: {
                 <TableHead>Link</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Criado em</TableHead>
+                <TableHead className="w-10">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -163,12 +167,12 @@ export default async function AdminPromotionsPage(props: {
                   <TableCell>{promotion.description}</TableCell>
                   <TableCell>
                     <a
-                      href={promotion.linkUrl}
+                      href={`${url}${promotion.linkUrl}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary underline truncate max-w-[150px] block"
                     >
-                      {promotion.linkUrl}
+                      {url}{promotion.linkUrl}
                     </a>
                   </TableCell>
                   <TableCell>
@@ -178,6 +182,9 @@ export default async function AdminPromotionsPage(props: {
                   </TableCell>
                   <TableCell>
                     {new Date(promotion.createdAt).toLocaleDateString("pt-BR")}
+                  </TableCell>
+                  <TableCell>
+                    <PromotionsActionsDropdown promotion={promotion} />
                   </TableCell>
                 </TableRow>
               ))}

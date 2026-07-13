@@ -122,7 +122,7 @@ export default async function AdminPage() {
     .slice(0, 10);
 
   const topProducts = [...variantStats.values()]
-    .sort((a, b) => b.orderCount - a.orderCount)
+    .sort((a, b) => b.count - a.count)
     .slice(0, 10);
 
   const getStatusBadge = (orderStatus: typeof totalOrders[number]["status"]) => {
@@ -274,11 +274,11 @@ export default async function AdminPage() {
               <CardHeader>
                 <CardTitle>Produtos Mais Vendidos</CardTitle>
               </CardHeader>
-              <CardContent className="p-0 px-6">
+              <CardContent className="p-0 px-6 gap-3 flex flex-col">
                 {topProducts.length === 0 ? (
                   <p className="text-sm text-muted-foreground px-6 pb-6">Nenhum pedido registrado ainda.</p>
                 ) : (
-                  <ol className="divide-y divide-border">
+                  <>
                     {topProducts.map((product, index) => (
                       <Card key={`${product.productName}-${product.variantName}`} className="flex flex-row items-center gap-3 p-3 rounded-xl">
                         <span className="text-sm font-bold text-muted-foreground w-5 shrink-0 text-center">
@@ -310,7 +310,7 @@ export default async function AdminPage() {
                         </div>
                       </Card>
                     ))}
-                  </ol>
+                  </>
                 )}
               </CardContent>
             </Card>

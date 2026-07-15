@@ -259,6 +259,10 @@ export const orderTable = pgTable("order", {
   email: text().notNull(),
   cpfOrCnpj: text().notNull(),
   totalPriceInCents: integer("total_price_in_cents").notNull(),
+  shippingFeeInCents: integer("shipping_fee_in_cents").notNull().default(0),
+  uberQuoteId: text("uber_quote_id"),
+  uberDeliveryId: text("uber_delivery_id"),
+  uberDeliveryStatus: text("uber_delivery_status"),
   status: orderStatus().notNull().default("pending"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

@@ -7,12 +7,25 @@ import { Button } from "@/components/ui/button";
 import { useFinishOrder } from "@/hooks/mutations/use-finish-order";
 import { useRouter } from "next/navigation";
 
-const FinishOrderButton = () => {
+interface FinishOrderButtonProps {
+  uberQuoteId?: string;
+  shippingFeeInCents?: number;
+  disabled?: boolean;
+}
+
+const FinishOrderButton = ({
+  uberQuoteId,
+  shippingFeeInCents,
+  disabled,
+}: FinishOrderButtonProps) => {
   const finishOrderMutation = useFinishOrder();
   const route = useRouter();
 
   const handleFinishOrder = async () => {
-    const { orderId } = await finishOrderMutation.mutateAsync();
+    const { orderId } = await finishOrderMutation.mutateAsync({
+      uberQuoteId,
+      shippingFeeInCents,
+    });
 
     const { initPoint } = await createCheckoutPreference({
       orderId,
@@ -31,7 +44,7 @@ const FinishOrderButton = () => {
         className="w-full rounded-full"
         size="lg"
         onClick={handleFinishOrder}
-        disabled={finishOrderMutation.isPending}
+        disabled={finishOrderMutation.isPending || disabled}
       >
         {finishOrderMutation.isPending && (
           <Loader2 className="h-4 w-4 animate-spin" />

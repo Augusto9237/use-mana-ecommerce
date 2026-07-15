@@ -72,6 +72,18 @@ export const createCheckoutPreference = async (
     unit_price: oi.productVariant.priceInCents / 100,
   }));
 
+  if (order.shippingFeeInCents && order.shippingFeeInCents > 0) {
+    items.push({
+      id: "shipping-uber",
+      title: "Frete (Uber Direct)",
+      description: "Entrega expressa via Uber Direct",
+      picture_url: "",
+      category_id: "shipping",
+      quantity: 1,
+      unit_price: order.shippingFeeInCents / 100,
+    });
+  }
+
   // Calculate total
   const totalInCents = order.items.reduce(
     (sum, item) => sum + item.productVariant.priceInCents * item.quantity,

@@ -47,6 +47,37 @@ export const createCheckoutSession = async (
     },
   });
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  const lineItems = orderItems.map((orderItem) => {
+    return {
+      price_data: {
+        currency: "brl",
+        product_data: {
+          name: `${orderItem.productVariant.product.name} - ${orderItem.productVariant.name}`,
+          description: orderItem.productVariant.product.description,
+          images: [orderItem.productVariant.imageUrl],
+        },
+        // Em centavos
+        unit_amount: orderItem.priceInCents,
+      },
+      quantity: orderItem.quantity,
+    };
+  });
+
+  if (order.shippingFeeInCents && order.shippingFeeInCents > 0) {
+    lineItems.push({
+      price_data: {
+        currency: "brl",
+        product_data: {
+          name: "Frete (Uber Direct)",
+          description: "Entrega expressa via Uber Direct",
+          images: [],
+        },
+        unit_amount: order.shippingFeeInCents,
+      },
+      quantity: 1,
+    });
+  }
+
   const checkoutSession = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     mode: "payment",
@@ -55,21 +86,7 @@ export const createCheckoutSession = async (
     metadata: {
       orderId,
     },
-    line_items: orderItems.map((orderItem) => {
-      return {
-        price_data: {
-          currency: "brl",
-          product_data: {
-            name: `${orderItem.productVariant.product.name} - ${orderItem.productVariant.name}`,
-            description: orderItem.productVariant.product.description,
-            images: [orderItem.productVariant.imageUrl],
-          },
-          // Em centavos
-          unit_amount: orderItem.priceInCents,
-        },
-        quantity: orderItem.quantity,
-      };
-    }),
+    line_items: lineItems,
   });
   return checkoutSession;
 };

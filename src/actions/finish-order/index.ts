@@ -13,13 +13,17 @@ import {
 } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
-export const finishOrder = async () => {
+import { finishOrderSchema, FinishOrderSchema } from "./schema";
+
+export const finishOrder = async (data?: FinishOrderSchema) => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
   if (!session) {
     throw new Error("Unauthorized");
   }
+
+  const { uberQuoteId, shippingFeeInCents } = finishOrderSchema.parse(data || {});
 
   const cart = await db.query.cartTable.findFirst({
     where: eq(cartTable.userId, session.user.id),
@@ -38,10 +42,13 @@ export const finishOrder = async () => {
   if (!cart.shippingAddress) {
     throw new Error("Shipping address not found");
   }
-  const totalPriceInCents = cart.items.reduce(
+  const itemsTotal = cart.items.reduce(
     (acc, item) => acc + item.productVariant.priceInCents * item.quantity,
     0,
   );
+  const shippingFee = shippingFeeInCents || 0;
+  const totalPriceInCents = itemsTotal + shippingFee;
+
   let orderId: string | undefined;
   await db.transaction(async (tx) => {
     if (!cart.shippingAddress) {
@@ -64,6 +71,9 @@ export const finishOrder = async () => {
         street: cart.shippingAddress.street,
         userId: session.user.id,
         totalPriceInCents,
+        shippingFeeInCents: shippingFee,
+        uberQuoteId,
+        uberDeliveryStatus: uberQuoteId ? "pending_payment" : null,
         shippingAddressId: cart.shippingAddress!.id,
       })
       .returning();

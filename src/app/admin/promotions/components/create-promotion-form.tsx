@@ -174,16 +174,16 @@ export function CreatePromotionForm({
               name="linkUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>URL do Link</FormLabel>
+                  <FormLabel>Link de Destino</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="https://exemplo.com/promocao"
+                      placeholder="Ex: /product-variant/mochila-preta ou https://exemplo.com"
                       disabled={isLoading}
                       {...field}
                     />
                   </FormControl>
                   <FormDescription>
-                    Para onde o usuário será redirecionado ao clicar
+                    Para onde o usuário será redirecionado (ex: /product-variant/mochila-preta ou URL completa)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

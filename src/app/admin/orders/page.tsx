@@ -107,6 +107,8 @@ export default async function AdminOrdersPage(props: {
     orderBy: (orders, { desc }) => [desc(orders.createdAt)],
   });
 
+  console.log("orders", orders);
+
   // Generate page numbers to show
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];

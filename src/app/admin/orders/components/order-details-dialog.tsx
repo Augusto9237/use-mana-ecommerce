@@ -54,6 +54,7 @@ interface OrderDetailsDialogProps {
     email: string;
     cpfOrCnpj: string;
     totalPriceInCents: number;
+    shippingFeeInCents: number;
     status: "pending" | "paid" | "canceled";
     createdAt: Date;
     user: {
@@ -262,11 +263,11 @@ export function OrderDetailsDialog({ order }: OrderDetailsDialogProps) {
             <div className="bg-card p-4 rounded-xl space-y-2.5 border border-muted/50 w-full">
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Subtotal</span>
-                <span>{formatCentsToBRL(order.totalPriceInCents)}</span>
+                <span>{formatCentsToBRL(order.totalPriceInCents - order.shippingFeeInCents)}</span>
               </div>
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Frete</span>
-                <span className="text-emerald-600 font-medium">Grátis</span>
+                <span className="text-emerald-600 font-medium">{formatCentsToBRL(order.shippingFeeInCents)}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-semibold text-foreground">

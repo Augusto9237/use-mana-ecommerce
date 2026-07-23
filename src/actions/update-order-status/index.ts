@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { orderTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
+import { cancelUberDelivery } from "@/lib/uber";
 import { UpdateOrderStatusSchema, updateOrderStatusSchema } from "./schema";
 
 type UserWithRole = { role?: string };
@@ -36,10 +37,23 @@ export const updateOrderStatus = async (data: UpdateOrderStatusSchema) => {
     throw new Error("Pedido não encontrado");
   }
 
+  let uberDeliveryStatus = existingOrder.uberDeliveryStatus;
+
+  if (data.status === "canceled" && existingOrder.uberDeliveryId) {
+    try {
+      await cancelUberDelivery(existingOrder.uberDeliveryId);
+      uberDeliveryStatus = "canceled";
+    } catch (error) {
+      console.error("Erro ao cancelar entrega Uber ao atualizar status do pedido:", error);
+      throw new Error("Falha ao atualizar a entrega Uber. O pedido não foi alterado.");
+    }
+  }
+
   const [updatedOrder] = await db
     .update(orderTable)
     .set({
       status: data.status,
+      uberDeliveryStatus,
     })
     .where(eq(orderTable.id, data.orderId))
     .returning();

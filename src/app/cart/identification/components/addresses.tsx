@@ -8,7 +8,13 @@ import z from "zod";
 import { getCart } from "@/actions/get-cart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldLabel,
+  FieldTitle,
+} from "@/components/ui/field";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { shippingAddressTable } from "@/db/schema";
 import { useCreateShippingAddress } from "@/hooks/mutations/use-create-shipping-address";
@@ -93,20 +99,14 @@ const Addresses = ({
             )}
 
             {addresses?.map((address) => (
-              <Card key={address.id}>
-                <CardContent>
-                  <div className="flex items-start space-x-2">
-                    <RadioGroupItem value={address.id} id={address.id} />
-                    <div className="flex-1">
-                      <Label htmlFor={address.id} className="cursor-pointer">
-                        <div>
-                          <p className="text-sm">{formatAddress(address)}</p>
-                        </div>
-                      </Label>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <FieldLabel key={address.id} htmlFor={address.id}>
+                <Field orientation="horizontal">
+                  <FieldContent>
+                    <FieldTitle>{formatAddress(address)}</FieldTitle>
+                  </FieldContent>
+                  <RadioGroupItem value={address.id} id={address.id} />
+                </Field>
+              </FieldLabel>
             ))}
           </RadioGroup>
         )}

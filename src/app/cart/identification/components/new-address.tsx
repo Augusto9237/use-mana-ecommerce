@@ -1,29 +1,35 @@
-import { Button } from "@/components/ui/button"
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { PlusCircle, Pencil } from "lucide-react";
+import { PatternFormat } from "react-number-format";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import z from "zod";
+
+import { shippingAddressTable } from "@/db/schema";
+import { useCreateShippingAddress } from "@/hooks/mutations/use-create-shipping-address";
+import { useUpdateShippingAddress } from "@/hooks/mutations/use-update-shipping-address";
+import { useUpdateCartShippingAddress } from "@/hooks/mutations/use-update-cart-shipping-address";
+import { Button } from "@/components/ui/button";
 import {
     Dialog,
-    DialogClose,
     DialogContent,
-    DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { toast } from "sonner"
+} from "@/components/ui/dialog";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
-import { formatAddress } from "../../helpers/address";
-import z from "zod";
-import { useCreateShippingAddress } from "@/hooks/mutations/use-create-shipping-address"
-import { useUpdateCartShippingAddress } from "@/hooks/mutations/use-update-cart-shipping-address"
-import { useUserAddresses } from "@/hooks/queries/use-user-addresses"
-import { shippingAddressTable } from "@/db/schema"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { PatternFormat } from "react-number-format"
-import { Plus, PlusCircle } from "lucide-react"
+type ShippingAddress = typeof shippingAddressTable.$inferSelect;
 
 const formSchema = z.object({
     email: z.email("E-mail inválido"),
@@ -41,60 +47,96 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-interface AddressesProps {
-    shippingAddresses: (typeof shippingAddressTable.$inferSelect)[];
-    defaultShippingAddressId: string | null;
+interface FormAddressProps {
+    /** When provided the form will act as an edit form, pre-filled with the address data. */
+    address?: ShippingAddress;
+    /** Custom trigger element. Defaults to an icon button when editing, or a "Novo Endereço" button when creating. */
+    trigger?: React.ReactNode;
+    /** Called after a successful create or update. */
+    onSuccess?: () => void;
 }
 
-export function FormAddress() {
+export function FormAddress({ address, trigger, onSuccess }: FormAddressProps) {
+    const isEditing = !!address;
 
     const createShippingAddressMutation = useCreateShippingAddress();
+    const updateShippingAddressMutation = useUpdateShippingAddress();
     const updateCartShippingAddressMutation = useUpdateCartShippingAddress();
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            email: "",
-            fullName: "",
-            cpf: "",
-            phone: "",
-            zipCode: "",
-            address: "",
-            number: "",
-            complement: "",
-            neighborhood: "",
-            city: "",
-            state: "",
+            email: address?.email ?? "",
+            fullName: address?.recipientName ?? "",
+            cpf: address?.cpfOrCnpj ?? "",
+            phone: address?.phone ?? "",
+            zipCode: address?.zipCode ?? "",
+            address: address?.street ?? "",
+            number: address?.number ?? "",
+            complement: address?.complement ?? "",
+            neighborhood: address?.neighborhood ?? "",
+            city: address?.city ?? "",
+            state: address?.state ?? "",
         },
     });
 
+    const isPending =
+        createShippingAddressMutation.isPending ||
+        updateShippingAddressMutation.isPending ||
+        updateCartShippingAddressMutation.isPending;
+
     const onSubmit = async (values: FormValues) => {
         try {
-            const newAddress =
-                await createShippingAddressMutation.mutateAsync(values);
-            toast.success("Endereço criado com sucesso!");
-            form.reset();
+            if (isEditing) {
+                await updateShippingAddressMutation.mutateAsync({
+                    id: address.id,
+                    ...values,
+                });
+                toast.success("Endereço atualizado com sucesso!");
+            } else {
+                const newAddress =
+                    await createShippingAddressMutation.mutateAsync(values);
+                toast.success("Endereço criado com sucesso!");
+                form.reset();
 
-            await updateCartShippingAddressMutation.mutateAsync({
-                shippingAddressId: newAddress.id,
-            });
-            toast.success("Endereço vinculado ao carrinho!");
+                await updateCartShippingAddressMutation.mutateAsync({
+                    shippingAddressId: newAddress.id,
+                });
+                toast.success("Endereço vinculado ao carrinho!");
+            }
+
+            onSuccess?.();
         } catch (error) {
-            toast.error("Erro ao criar endereço. Tente novamente.");
+            toast.error(
+                isEditing
+                    ? "Erro ao atualizar endereço. Tente novamente."
+                    : "Erro ao criar endereço. Tente novamente.",
+            );
             console.error(error);
         }
     };
 
+    const defaultTrigger = isEditing ? (
+        <Button variant="ghost" size="icon" className="size-8">
+            <Pencil className="size-4" />
+            <span className="sr-only">Editar endereço</span>
+        </Button>
+    ) : (
+        <Button variant="secondary">
+            <PlusCircle />
+            <span className="max-sm:hidden">Novo</span> Endereço
+        </Button>
+    );
 
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="secondary"><PlusCircle />
-                    <span className="max-sm:hidden">Novo</span> Endereço</Button>
+                {trigger ?? defaultTrigger}
             </DialogTrigger>
             <DialogContent className="max-h-[94dvh] overflow-hidden flex flex-col">
                 <DialogHeader>
-                    <DialogTitle>Endereço de entrega
+                    <DialogTitle>
+                        {isEditing ? "Editar endereço" : "Endereço de entrega"}
                     </DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
@@ -112,6 +154,24 @@ export function FormAddress() {
                                         <FormControl>
                                             <Input
                                                 placeholder="Digite seu nome completo"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>E-mail</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="email"
+                                                placeholder="seuemail@exemplo.com"
                                                 {...field}
                                             />
                                         </FormControl>
@@ -269,21 +329,18 @@ export function FormAddress() {
                             <Button
                                 type="submit"
                                 className="w-full"
-                                disabled={
-                                    createShippingAddressMutation.isPending ||
-                                    updateCartShippingAddressMutation.isPending
-                                }
+                                disabled={isPending}
                             >
-                                {createShippingAddressMutation.isPending ||
-                                    updateCartShippingAddressMutation.isPending
+                                {isPending
                                     ? "Salvando..."
-                                    : "Salvar endereço"}
+                                    : isEditing
+                                        ? "Salvar alterações"
+                                        : "Salvar endereço"}
                             </Button>
                         </div>
                     </form>
                 </Form>
             </DialogContent>
-
-        </Dialog >
-    )
+        </Dialog>
+    );
 }

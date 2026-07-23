@@ -1,8 +1,9 @@
 import { shippingAddressTable } from "@/db/schema";
 import { InferModel } from "drizzle-orm";
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import AddressCardActions from "./address-card-actions";
+import { formatAddress } from "@/app/cart/helpers/address";
 
 type ShippingAddress = InferModel<typeof shippingAddressTable>;
 
@@ -24,12 +25,8 @@ export function AddressCard({ address }: { address: ShippingAddress }) {
 
   return (
     <Card>
-      <CardContent className="text-sm flex items-center justify-between">
-        <span>{`${street}, ${number}${complement ? ` - ${complement}` : ""}`}</span>
-        <div>{`${neighborhood} — ${city} / ${state}`}</div>
-        <div>{zipCode}</div>
-        <div >{phone} • {email}</div>
-        <div >CPF/CNPJ: {cpfOrCnpj}</div>
+      <CardContent className="flex items-center justify-between">
+        <CardTitle>{formatAddress(address)}</CardTitle>
         <AddressCardActions address={{
           id: address.id,
           recipientName,

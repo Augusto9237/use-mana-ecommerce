@@ -12,7 +12,6 @@ import {
   Phone,
   User,
   Mail,
-  Loader2,
   Eye,
 } from "lucide-react";
 
@@ -23,19 +22,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatCentsToBRL } from "@/helpers/money";
 import { updateOrderStatus } from "@/actions/update-order-status";
+import { updateUberDeliveryStatus } from "@/actions/update-uber-delivery-status";
 
 interface OrderDetailsDialogProps {
   order: {
@@ -56,6 +49,8 @@ interface OrderDetailsDialogProps {
     totalPriceInCents: number;
     shippingFeeInCents: number;
     status: "pending" | "paid" | "canceled";
+    uberDeliveryId?: string | null;
+    uberDeliveryStatus?: string | null;
     createdAt: Date;
     user: {
       name: string;
@@ -81,6 +76,7 @@ interface OrderDetailsDialogProps {
 export function OrderDetailsDialog({ order }: OrderDetailsDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [isUberUpdating, startUberTransition] = useTransition();
 
   const handleStatusChange = (newStatus: "pending" | "paid" | "canceled") => {
     startTransition(async () => {
@@ -92,6 +88,22 @@ export function OrderDetailsDialog({ order }: OrderDetailsDialogProps) {
         toast.success("Status do pedido atualizado com sucesso!");
       } catch (error) {
         const message = error instanceof Error ? error.message : "Erro ao atualizar status";
+        toast.error(message);
+      }
+    });
+  };
+
+  const handleUberAction = (action: "sync" | "cancel") => {
+    startUberTransition(async () => {
+      try {
+        await updateUberDeliveryStatus(order.id, action);
+        toast.success(
+          action === "cancel"
+            ? "Entrega Uber cancelada com sucesso!"
+            : "Status da entrega Uber sincronizado com sucesso!"
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Erro ao atualizar entrega Uber";
         toast.error(message);
       }
     });
@@ -259,6 +271,43 @@ export function OrderDetailsDialog({ order }: OrderDetailsDialogProps) {
             </div>
 
             <Separator />
+
+            {order.uberDeliveryId && (
+              <div className="rounded-xl border border-muted/50 bg-muted/20 p-4 space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Entrega Uber</p>
+                    <p className="text-xs text-muted-foreground">
+                      ID: {order.uberDeliveryId}
+                    </p>
+                  </div>
+                  <Badge variant="outline" className="text-xs">
+                    {order.uberDeliveryStatus || "Sem status"}
+                  </Badge>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleUberAction("sync")}
+                    disabled={isUberUpdating}
+                  >
+                    {isUberUpdating ? "Sincronizando..." : "Sincronizar status"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleUberAction("cancel")}
+                    disabled={isUberUpdating}
+                  >
+                    Cancelar entrega
+                  </Button>
+                </div>
+              </div>
+            )}
 
             <div className="bg-card p-4 rounded-xl space-y-2.5 border border-muted/50 w-full">
               <div className="flex justify-between text-sm text-muted-foreground">

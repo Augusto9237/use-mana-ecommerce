@@ -1,6 +1,6 @@
 import { Header } from "@/components/common/header";
 import { getUserAddresses } from "@/actions/get-user-addresses";
-import AddressCard from "@/components/common/address-card";
+import AddressCard from "@/app/addreses/components/address-card";
 import type { InferModel } from "drizzle-orm";
 import { shippingAddressTable } from "@/db/schema";
 
@@ -20,7 +20,7 @@ export default async function MyAddressPage() {
             <Header />
             <div className="px-5 max-w-screen-xl mx-auto pt-20 flex-1">
                 <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-2xl font-bold">Meus Endereços</h1>
+                    <h2 className="text-2xl font-bold">Meus Endereços</h2>
                 </div>
 
                 {Array.isArray(addresses) && addresses.length > 0 ? (

@@ -11,6 +11,7 @@ import { auth } from "@/lib/auth";
 import CartSummary from "../components/cart-summary";
 import { formatAddress } from "../helpers/address";
 import FinishOrderButton from "./components/finish-order-button";
+import ButtonMercadoPago from "./components/button-mercadopago";
 
 const ConfirmationPage = async () => {
   const session = await auth.api.getSession({
@@ -73,7 +74,12 @@ const ConfirmationPage = async () => {
               </p>
             )}
 
-            <FinishOrderButton
+            {/* <FinishOrderButton
+              uberQuoteId={uberQuoteId}
+              shippingFeeInCents={shippingFeeInCents}
+              disabled={uberUnavailable}
+            /> */}
+            <ButtonMercadoPago
               uberQuoteId={uberQuoteId}
               shippingFeeInCents={shippingFeeInCents}
               disabled={uberUnavailable}

@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusCircle, Pencil } from "lucide-react";
+import { PlusCircle, Pencil, Plus } from "lucide-react";
 import { PatternFormat } from "react-number-format";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -123,7 +123,7 @@ export function FormAddress({ address, trigger, onSuccess }: FormAddressProps) {
         </Button>
     ) : (
         <Button variant="secondary">
-            <PlusCircle />
+            <Plus />
             <span className="max-sm:hidden">Novo</span> Endereço
         </Button>
     );

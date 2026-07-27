@@ -67,7 +67,7 @@ const Addresses = ({
         shippingAddressId: selectedAddress,
       });
       toast.success("Endereço selecionado para entrega!");
-      router.push("/cart/confirmation");
+      router.refresh();
     } catch (error) {
       toast.error("Erro ao selecionar endereço. Tente novamente.");
       console.error(error);
@@ -77,7 +77,7 @@ const Addresses = ({
   return (
     <Card>
       <CardHeader className="flex items-center justify-between">
-        <CardTitle>Identificação</CardTitle>
+        <CardTitle>Endereço de entrega</CardTitle>
         <FormAddress />
       </CardHeader>
       <CardContent>
@@ -119,8 +119,8 @@ const Addresses = ({
               disabled={updateCartShippingAddressMutation.isPending}
             >
               {updateCartShippingAddressMutation.isPending
-                ? "Processando..."
-                : "Ir para pagamento"}
+                ? "Calculando..."
+                : "Calcular frete"}
             </Button>
           </div>
         )}

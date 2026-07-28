@@ -14,6 +14,8 @@ import { calculateUberQuote } from "@/actions/calculate-uber-quote";
 import DeliverySummary from "./components/delivery-summary";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 const IdentificationPage = async () => {
   const session = await auth.api.getSession({
@@ -48,22 +50,17 @@ const IdentificationPage = async () => {
     0,
   );
 
-  // Calcular cotação de frete da Uber Direct
-  const uberQuote = await calculateUberQuote();
-  const shippingFeeInCents = uberQuote && !("error" in uberQuote) ? uberQuote.feeInCents : 0;
-  const totalInCents = cartTotalInCents + shippingFeeInCents;
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <div className="space-y-4 px-5 pt-20 pb-8 flex-1 w-full h-full max-w-screen-xl mx-auto">
-        <Addresses
-          shippingAddresses={shippingAddresses}
-          defaultShippingAddressId={cart.shippingAddress?.id || null}
-        />
-        <DeliverySummary
-          shippingFeeInCents={shippingFeeInCents}
-        />
+        <Card>
+          <Addresses
+            shippingAddresses={shippingAddresses}
+            defaultShippingAddressId={cart.shippingAddress?.id || null}
+          />
+        </Card>
       </div>
       <div className="flex w-full justify-end px-5 py-5 gap-5">
         <Link href="/">

@@ -12,7 +12,7 @@ const DeliverySummary = ({
   shippingFeeInCents = 0,
 }: DeliverySummaryProps) => {
   return (
-    <Card>
+    <>
       <CardHeader>
         <CardTitle>Frete</CardTitle>
       </CardHeader>
@@ -26,7 +26,7 @@ const DeliverySummary = ({
           </p>
         </div>
       </CardContent>
-    </Card>
+    </>
   );
 };
 

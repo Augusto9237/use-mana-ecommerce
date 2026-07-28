@@ -24,6 +24,9 @@ import { useUserAddresses } from "@/hooks/queries/use-user-addresses";
 
 import { formatAddress } from "../../helpers/address";
 import { FormAddress } from "./new-address";
+import { Separator } from "@/components/ui/separator";
+import DeliverySummary from "./delivery-summary";
+import { calculateUberQuote } from "@/actions/calculate-uber-quote";
 
 const formSchema = z.object({
   email: z.email("E-mail inválido"),
@@ -54,6 +57,7 @@ const Addresses = ({
   const [selectedAddress, setSelectedAddress] = useState<string | null>(
     defaultShippingAddressId || null,
   );
+  const [shippingFeeInCents, setShippingFeeInCents] = useState<number>(0);
   const updateCartShippingAddressMutation = useUpdateCartShippingAddress();
   const { data: addresses, isLoading } = useUserAddresses({
     initialData: shippingAddresses,
@@ -66,6 +70,10 @@ const Addresses = ({
       await updateCartShippingAddressMutation.mutateAsync({
         shippingAddressId: selectedAddress,
       });
+
+      const uberQuote = await calculateUberQuote();
+      const shippingFeeInCents = uberQuote && !("error" in uberQuote) ? uberQuote.feeInCents : 0;
+      setShippingFeeInCents(shippingFeeInCents);
       toast.success("Endereço selecionado para entrega!");
       router.refresh();
     } catch (error) {
@@ -75,7 +83,7 @@ const Addresses = ({
   };
 
   return (
-    <Card>
+    <div className="space-y-5">
       <CardHeader className="flex items-center justify-between">
         <CardTitle>Endereço de entrega</CardTitle>
         <FormAddress />
@@ -125,7 +133,13 @@ const Addresses = ({
           </div>
         )}
       </CardContent>
-    </Card>
+
+      <Separator />
+
+      <DeliverySummary
+        shippingFeeInCents={shippingFeeInCents}
+      />
+    </div>
   );
 };
 

@@ -4,6 +4,10 @@ import Link from "next/link";
 import { productTable, productVariantTable } from "@/db/schema";
 import { formatCentsToBRL } from "@/helpers/money";
 import { cn } from "@/lib/utils";
+import { Card } from "../ui/card";
+import AddToCartButton from "@/app/product-variant/[slug]/components/add-to-cart-button";
+import { Button } from "../ui/button";
+import { ShoppingCart } from "lucide-react";
 
 interface ProductItemProps {
   product: typeof productTable.$inferSelect & {
@@ -14,28 +18,30 @@ interface ProductItemProps {
 
 const ProductItem = ({ product, textContainerClassName }: ProductItemProps) => {
   const firstVariant = product.variants[0];
-  
+
   // Evitar renderizar produto sem variantes
   if (!firstVariant) {
     return null;
   }
 
   return (
-    <Link
-      href={`/product-variant/${firstVariant.slug}`}
-      className="flex flex-col gap-4"
-    >
-      <Image
-        src={firstVariant.imageUrl}
-        alt={firstVariant.name}
-        sizes="100vw"
-        height={0}
-        width={0}
-        className="h-auto w-full rounded-3xl"
-      />
+
+    <Card className="min-w-50 p-0">
+      <Link
+        href={`/product-variant/${firstVariant.slug}`}
+      >
+        <Image
+          src={firstVariant.imageUrl}
+          alt={firstVariant.name}
+          sizes="100vw"
+          height={0}
+          width={0}
+          className="h-auto w-full rounded-3xl"
+        />
+      </Link>
       <div
         className={cn(
-          "flex max-w-[200px] flex-col gap-1",
+          "flex max-w-[200px] flex-col gap-1 px-3 pb-3",
           textContainerClassName,
         )}
       >
@@ -43,11 +49,21 @@ const ProductItem = ({ product, textContainerClassName }: ProductItemProps) => {
         <p className="text-muted-foreground truncate text-xs font-medium">
           {product.description}
         </p>
-        <p className="truncate text-sm font-semibold text-primary">
-          {formatCentsToBRL(firstVariant.priceInCents)}
-        </p>
+        <div className="flex justify-between items-center mt-2">
+          <p className="truncate font-semibold text-primary">
+            {formatCentsToBRL(firstVariant.priceInCents)}
+          </p>
+          <AddToCartButton
+            productVariantId={firstVariant.id}
+            quantity={1}
+            tigger={
+              <Button size="icon" className="size-9">
+                <ShoppingCart />
+              </Button>}
+          />
+        </div>
       </div>
-    </Link>
+    </Card>
   );
 };
 

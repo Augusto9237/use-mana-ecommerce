@@ -59,7 +59,7 @@ const ConfirmationPage = async () => {
       <div className="space-y-4 px-5 pt-20 pb-8 w-full max-w-7xl mx-auto flex-1 h-full">
         <Card>
           <CardHeader>
-            <CardTitle>Identificação</CardTitle>
+            <CardTitle>Endereço de Entrega</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <Card>
@@ -74,16 +74,7 @@ const ConfirmationPage = async () => {
               </p>
             )}
 
-            {/* <FinishOrderButton
-              uberQuoteId={uberQuoteId}
-              shippingFeeInCents={shippingFeeInCents}
-              disabled={uberUnavailable}
-            /> */}
-            <ButtonMercadoPago
-              uberQuoteId={uberQuoteId}
-              shippingFeeInCents={shippingFeeInCents}
-              disabled={uberUnavailable}
-            />
+
           </CardContent>
         </Card>
         <CartSummary
@@ -98,6 +89,11 @@ const ConfirmationPage = async () => {
             priceInCents: item.productVariant.priceInCents,
             imageUrl: item.productVariant.imageUrl,
           }))}
+        />
+        <FinishOrderButton
+          uberQuoteId={uberQuoteId}
+          shippingFeeInCents={shippingFeeInCents}
+          disabled={uberUnavailable}
         />
       </div>
 

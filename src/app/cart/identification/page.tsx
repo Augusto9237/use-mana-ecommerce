@@ -62,12 +62,12 @@ const IdentificationPage = async () => {
           />
         </Card>
       </div>
-      <div className="flex w-full justify-end px-5 py-5 gap-5">
+      <div className="flex w-full justify-end px-5 py-5 gap-5  max-w-screen-xl mx-auto">
         <Link href="/">
-          <Button variant="outline">Voltar</Button>
+          <Button variant="outline">Continuar Comprando</Button>
         </Link>
         <Link href="/cart/confirmation">
-          <Button>Continuar</Button>
+          <Button>Finalizar compra</Button>
         </Link>
       </div>
       <Footer />

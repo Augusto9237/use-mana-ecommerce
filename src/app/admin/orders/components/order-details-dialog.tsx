@@ -270,45 +270,6 @@ export function OrderDetailsDialog({ order }: OrderDetailsDialogProps) {
               </div>
             </div>
 
-            <Separator />
-
-            {order.uberDeliveryId && (
-              <div className="rounded-xl border border-muted/50 bg-muted/20 p-4 space-y-3">
-                <div className="flex items-center justify-between gap-2">
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">Entrega Uber</p>
-                    <p className="text-xs text-muted-foreground">
-                      ID: {order.uberDeliveryId}
-                    </p>
-                  </div>
-                  <Badge variant="outline" className="text-xs">
-                    {order.uberDeliveryStatus || "Sem status"}
-                  </Badge>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleUberAction("sync")}
-                    disabled={isUberUpdating}
-                  >
-                    {isUberUpdating ? "Sincronizando..." : "Sincronizar status"}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleUberAction("cancel")}
-                    disabled={isUberUpdating}
-                  >
-                    Cancelar entrega
-                  </Button>
-                </div>
-              </div>
-            )}
-
             <div className="bg-card p-4 rounded-xl space-y-2.5 border border-muted/50 w-full">
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Subtotal</span>

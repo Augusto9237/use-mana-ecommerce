@@ -38,6 +38,7 @@ import { AdminLayout } from "@/components/admin/admin-layout";
 import { OrderFilters } from "./components/order-filters";
 import { OrderDetailsDialog } from "./components/order-details-dialog";
 import { formatCentsToBRL } from "@/helpers/money";
+import { DeliveryDialog } from "./components/delivery-dialog";
 
 type UserWithRole = { role?: string };
 
@@ -241,6 +242,7 @@ export default async function AdminOrdersPage(props: {
                     </TableCell>
                     <TableCell className="text-center">
                       <OrderDetailsDialog order={order} />
+                      <DeliveryDialog order={order} />
                     </TableCell>
                   </TableRow>
                 ))}

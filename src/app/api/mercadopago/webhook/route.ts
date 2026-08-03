@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { orderTable } from "@/db/schema";
-import { triggerUberDelivery } from "@/lib/delivery-trigger";
 
 export async function POST(req: Request) {
   try {
@@ -45,10 +44,6 @@ export async function POST(req: Request) {
         try {
           await db.update(orderTable).set({ status: "paid" }).where(eq(orderTable.id, orderId));
           console.log(`Order ${orderId} marked as paid (webhook via direct external_reference).`);
-          // Disparar entrega Uber Direct de forma assíncrona
-          triggerUberDelivery(orderId).catch((err) =>
-            console.error("[MP Webhook] Erro ao acionar entrega Uber:", err)
-          );
         } catch (e) {
           console.error("Failed to update order status from webhook (direct):", e);
         }
@@ -82,10 +77,6 @@ export async function POST(req: Request) {
                     .set({ status: "paid" })
                     .where(eq(orderTable.id, orderId));
                   console.log(`Order ${orderId} marked as paid (webhook via payment fetch).`);
-                  // Disparar entrega Uber Direct de forma assíncrona
-                  triggerUberDelivery(orderId).catch((err) =>
-                    console.error("[MP Webhook] Erro ao acionar entrega Uber:", err)
-                  );
                 } catch (e) {
                   console.error("Failed to update order status from webhook:", e);
                 }

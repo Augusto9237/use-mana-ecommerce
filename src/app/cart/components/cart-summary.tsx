@@ -28,34 +28,9 @@ const CartSummary = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Resumo</CardTitle>
+        <CardTitle>Resumo do Pedido</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        <div className="flex justify-between">
-          <p className="text-sm">Subtotal</p>
-          <p className="text-muted-foreground text-sm font-medium">
-            {formatCentsToBRL(subtotalInCents)}
-          </p>
-        </div>
-        <div className="flex justify-between">
-          <p className="text-sm">Frete</p>
-          <p className="text-muted-foreground text-sm font-medium">
-            {shippingFeeInCents > 0
-              ? formatCentsToBRL(shippingFeeInCents)
-              : "GRÁTIS"}
-          </p>
-        </div>
-        <div className="flex justify-between">
-          <p className="text-sm">Total</p>
-          <p className="text-muted-foreground text-sm font-medium">
-            {formatCentsToBRL(totalInCents)}
-          </p>
-        </div>
-
-        <div className="py-3">
-          <Separator />
-        </div>
-
         {products.map((product) => (
           <div className="flex items-center justify-between" key={product.id}>
             <div className="flex items-center gap-4">
@@ -80,6 +55,27 @@ const CartSummary = ({
             </div>
           </div>
         ))}
+        <Separator />
+        <div className="flex justify-between">
+          <p className="text-sm">Subtotal</p>
+          <p className="text-muted-foreground text-sm font-medium">
+            {formatCentsToBRL(subtotalInCents)}
+          </p>
+        </div>
+        <div className="flex justify-between">
+          <p className="text-sm">Frete</p>
+          <p className="text-muted-foreground text-sm font-medium">
+            {shippingFeeInCents > 0
+              ? formatCentsToBRL(shippingFeeInCents)
+              : "GRÁTIS"}
+          </p>
+        </div>
+        <div className="flex justify-between">
+          <p className="text-sm">Total</p>
+          <p className="text-muted-foreground text-sm font-medium">
+            {formatCentsToBRL(totalInCents)}
+          </p>
+        </div>
       </CardContent>
     </Card>
   );

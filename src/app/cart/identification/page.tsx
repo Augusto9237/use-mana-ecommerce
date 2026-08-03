@@ -45,10 +45,6 @@ const IdentificationPage = async () => {
   const shippingAddresses = await db.query.shippingAddressTable.findMany({
     where: eq(shippingAddressTable.userId, session.user.id),
   });
-  const cartTotalInCents = cart.items.reduce(
-    (acc, item) => acc + item.productVariant.priceInCents * item.quantity,
-    0,
-  );
 
 
   return (
@@ -66,7 +62,7 @@ const IdentificationPage = async () => {
         <Link href="/">
           <Button variant="outline">Continuar Comprando</Button>
         </Link>
-        <Link href="/cart/confirmation">
+        <Link href="/cart/confirmation" aria-disabled={!cart.shippingAddress?.id}>
           <Button>Finalizar compra</Button>
         </Link>
       </div>

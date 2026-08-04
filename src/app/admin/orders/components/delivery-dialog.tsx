@@ -12,6 +12,7 @@ import { updateUberDeliveryStatus } from "@/actions/update-uber-delivery-status"
 import { requestUberDelivery } from "@/actions/request-uber-delivery";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
+import { formatCentsToBRL } from "@/helpers/money";
 
 interface DeliveryDialogProps {
     order: {
@@ -172,8 +173,8 @@ export function DeliveryDialog({
                             <MapPin className="size-4" />
                             Endereço de Entrega
                         </h3>
-                        <Card className="p-0 py-4 relative rounded-xl">
-                            <CardContent className="space-y-2">
+                        <Card className="p-4 relative rounded-xl">
+                            <CardContent className="space-y-2 p-0">
                                 <div>
                                     <span className="font-medium text-sm">Rua:</span>
                                     <span className="ml-1 text-muted-foreground">
@@ -221,20 +222,26 @@ export function DeliveryDialog({
                             <Truck className="size-4" />
                             Transportadora
                         </h3>
-                        <Card className="p-0 py-4 relative rounded-xl">
-                            <CardContent className="space-y-4">
-                                <div className="flex items-start gap-4">
-                                    <div className="size-14 bg-black p-2 rounded-sm">
+                        <Card className="p-4 relative rounded-xl">
+                            <CardContent className="space-y-4 p-0">
+                                <div className="flex items-start gap-3">
+                                    <div className="size-16 min-w-16 bg-black p-2 rounded-sm">
                                         <Image src="https://cdn.iconscout.com/icon/free/png-256/free-uber-icon-svg-download-png-14603753.png?f=webp&w=128" alt="Uber Flash" width={0} height={0} sizes="100vw" className="size-full object-contain" unoptimized />
                                     </div>
-                                    <div className="space-y-1">
+                                    <div className="space-y-1 w-full">
                                         <p className="text-sm font-semibold text-foreground">Uber Flash</p>
                                         {deliveryId ? (
                                             <div className="space-y-1">
                                                 <p className="text-xs text-muted-foreground">ID: {deliveryId}</p>
-                                                <Badge variant={statusTone === "default" ? "default" : statusTone === "destructive" ? "destructive" : "outline"} className="text-xs">
-                                                    {statusLabel}
-                                                </Badge>
+
+                                                <div className="flex items-center w-full justify-between">
+                                                    <Badge variant={statusTone === "default" ? "default" : statusTone === "destructive" ? "destructive" : "outline"} className="text-xs">
+                                                        {statusLabel}
+                                                    </Badge>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {formatCentsToBRL(order.shippingFeeInCents)}
+                                                    </p>
+                                                </div>
                                             </div>
                                         ) : null}
                                     </div>

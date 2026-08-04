@@ -1,16 +1,17 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { Clock3, PackageCheck, Truck, AlertCircle, RefreshCw, Car } from "lucide-react";
+import { Clock3, PackageCheck, Truck, AlertCircle, RefreshCw, Car, MapPin } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { updateUberDeliveryStatus } from "@/actions/update-uber-delivery-status";
 import { requestUberDelivery } from "@/actions/request-uber-delivery";
 import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image";
 
 interface DeliveryDialogProps {
     order: {
@@ -156,73 +157,100 @@ export function DeliveryDialog({
                     <span className="sr-only">Entrega</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent>
-                <DialogHeader>
+            <DialogContent className="p-0 pb-6">
+                <DialogHeader className="p-6 pb-4 border-b">
                     <DialogTitle>
                         Entrega
                     </DialogTitle>
+                    <DialogDescription>
+                        Acompanhe e gerencie a entrega do pedido.
+                    </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4">
-                    <div className="space-y-0.5">
-                        <div>
-                            <span>Rua:</span>
-                            <span className="ml-1 text-muted-foreground">
-                                {order.street}
-                            </span>
-                        </div>
-                        <div>
-                            <span>Numero:</span>
-                            <span className="ml-1 text-muted-foreground">
-                                {order.complement ? `${order.complement}` : ""}
-                            </span>
-                        </div>
-                        <div>
-                            <span>Bairro:</span>
-                            <span className="ml-1 text-muted-foreground">
-                                {order.neighborhood}, {order.city} - {order.state}
-                            </span>
-                        </div>
-                        <div>
-                            <span>CEP:</span>
-                            <span className="ml-1 text-muted-foreground">
-                                {order.zipCode}
-                            </span>
-                        </div>
-                        <div>
-                            <span>Telefone:</span>
-                            <span className="ml-1 text-muted-foreground">
-                                {order.phone}
-                            </span>
-                        </div>
-
-                    </div>
-                    <Card className="p-0 py-4">
-                        <CardContent className="relative space-y-4">
-                            <div className="flex items-start justify-between gap-3">
-                                <div className="space-y-1">
-                                    <p className="text-sm font-semibold text-foreground">Uber</p>
-                                    {deliveryId ? (
-                                        <div className="space-y-1">
-                                            <p className="text-xs text-muted-foreground">ID: {deliveryId}</p>
-                                            <Badge variant={statusTone === "default" ? "default" : statusTone === "destructive" ? "destructive" : "outline"} className="text-xs">
-                                                {statusLabel}
-                                            </Badge>
-                                        </div>
-                                    ) : null}
+                <div className="flex flex-col gap-6 px-6">
+                    <div className="flex flex-col">
+                        <h3 className="font-semibold tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
+                            <MapPin className="size-4" />
+                            Endereço de Entrega
+                        </h3>
+                        <Card className="p-0 py-4 relative rounded-xl">
+                            <CardContent className="space-y-2">
+                                <div>
+                                    <span className="font-medium text-sm">Rua:</span>
+                                    <span className="ml-1 text-muted-foreground">
+                                        {order.street}
+                                    </span>
                                 </div>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="icon"
-                                    onClick={handleSync}
-                                    disabled={isPending || !deliveryId}
-                                    className="absolute top-0 right-4"
-                                >
-                                    <RefreshCw />
-                                </Button>
-                            </div>
+                                <div>
+                                    <span className="font-medium text-sm">Numero:</span>
+                                    <span className="ml-1 text-muted-foreground">
+                                        {order.complement ? `${order.complement}` : ""}
+                                    </span>
+                                </div>
+                                <div>
+                                    <span className="font-medium text-sm">Bairro:</span>
+                                    <span className="ml-1 text-muted-foreground">
+                                        {order.neighborhood}, {order.city} - {order.state}
+                                    </span>
+                                </div>
+                                <div>
+                                    <span className="font-medium text-sm">CEP:</span>
+                                    <span className="ml-1 text-muted-foreground">
+                                        {order.zipCode}
+                                    </span>
+                                </div>
+                                <div >
+                                    <span className="font-medium text-sm">Telefone:</span>
+                                    <span className="ml-1 text-muted-foreground">
+                                        {order.phone}
+                                    </span>
+                                </div>
+                                <div >
+                                    <span className="font-medium text-sm">Complemento:</span>
+                                    <span className="ml-1 text-muted-foreground">
+                                        {order.complement ? `${order.complement}` : "Não informado"}
+                                    </span>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
 
-                            {/* {!canRequest && !deliveryId ? (
+                    <Separator />
+
+                    <div className="flex flex-col gap-4">
+                        <h3 className="font-semibold tracking-wider text-muted-foreground flex items-center gap-2">
+                            <Truck className="size-4" />
+                            Transportadora
+                        </h3>
+                        <Card className="p-0 py-4 relative rounded-xl">
+                            <CardContent className="space-y-4">
+                                <div className="flex items-start gap-4">
+                                    <div className="size-14 bg-black p-2 rounded-sm">
+                                        <Image src="https://cdn.iconscout.com/icon/free/png-256/free-uber-icon-svg-download-png-14603753.png?f=webp&w=128" alt="Uber Flash" width={0} height={0} sizes="100vw" className="size-full object-contain" unoptimized />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-semibold text-foreground">Uber Flash</p>
+                                        {deliveryId ? (
+                                            <div className="space-y-1">
+                                                <p className="text-xs text-muted-foreground">ID: {deliveryId}</p>
+                                                <Badge variant={statusTone === "default" ? "default" : statusTone === "destructive" ? "destructive" : "outline"} className="text-xs">
+                                                    {statusLabel}
+                                                </Badge>
+                                            </div>
+                                        ) : null}
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={handleSync}
+                                        disabled={isPending || !deliveryId}
+                                        className="absolute top-4 right-4"
+                                    >
+                                        <RefreshCw />
+                                    </Button>
+                                </div>
+
+                                {/* {!canRequest && !deliveryId ? (
                             <div className="flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">
                                 <AlertCircle className="size-4" />
                                 <span>Esta opção fica disponível quando o pedido estiver pago e houver uma cotação Uber válida.</span>
@@ -235,29 +263,30 @@ export function DeliveryDialog({
                                 <span>Entrega vinculada ao pedido e acompanhada pela Uber.</span>
                             </div>
                         ) : null} */}
-                        </CardContent>
-                    </Card>
-                    <div className="flex flex-wrap gap-2">
-                        <Button
-                            type="button"
-                            variant="default"
-                            size="sm"
-                            onClick={handleRequest}
-                            disabled={isPending || !canRequest}
-                        >
-                            {isPending ? "Solicitando..." : "Solicitar entrega"}
-                        </Button>
+                            </CardContent>
+                        </Card>
+                        <div className="grid grid-cols-2 gap-4 mt-4">
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                className="w-full"
+                                onClick={handleCancel}
+                                disabled={isPending || !deliveryId}
+                            >
+                                Cancelar entrega
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="default"
+                                onClick={handleRequest}
+                                className="w-full"
+                                disabled={isPending || !canRequest}
+                            >
+                                {isPending ? "Solicitando..." : "Solicitar entrega"}
+                            </Button>
 
-                        <Button
-                            type="button"
-                            variant="destructive"
-                            size="sm"
-                            onClick={handleCancel}
-                            disabled={isPending || !deliveryId}
-                        >
-                            <Truck className="mr-2 size-3.5" />
-                            Cancelar entrega
-                        </Button>
+
+                        </div>
                     </div>
                 </div>
             </DialogContent>

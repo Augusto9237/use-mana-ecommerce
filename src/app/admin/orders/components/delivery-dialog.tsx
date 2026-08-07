@@ -13,6 +13,8 @@ import { requestUberDelivery } from "@/actions/request-uber-delivery";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { formatCentsToBRL } from "@/helpers/money";
+import { de } from "zod/v4/locales";
+import { recalculateUberQuote } from "@/actions/recalculate-uber-quote";
 
 interface DeliveryDialogProps {
     order: {
@@ -30,6 +32,8 @@ interface DeliveryDialogProps {
         uberDeliveryId?: string | null;
         uberDeliveryStatus?: string | null;
     };
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }
 
 function getUberStatusLabel(status?: string | null) {
@@ -80,16 +84,24 @@ function getUberStatusTone(status?: string | null) {
     return "secondary";
 }
 
+function isUberDeliveryCanceled(status?: string | null) {
+    return !!status && status.toLowerCase().includes("cancel");
+}
+
 export function DeliveryDialog({
     order,
+    open,
+    onOpenChange,
 }: DeliveryDialogProps) {
-    const [isOpen, setIsOpen] = useState(false);
+    const [internalOpen, setInternalOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
     const [deliveryStatus, setDeliveryStatus] = useState(order.uberDeliveryStatus ?? null);
     const [deliveryId, setDeliveryId] = useState(order.uberDeliveryId ?? null);
     const [isUberUpdating, startUberTransition] = useTransition();
 
-    const canRequest = order.status === "paid" && !deliveryId;
+    const canRequest =
+        order.status === "paid" &&
+        (!deliveryId || isUberDeliveryCanceled(deliveryStatus) || deliveryStatus === "already_requested");
 
     const statusLabel = useMemo(() => getUberStatusLabel(deliveryStatus), [deliveryStatus]);
     const statusTone = useMemo(() => getUberStatusTone(deliveryStatus), [deliveryStatus]);
@@ -113,10 +125,24 @@ export function DeliveryDialog({
     const handleRequest = () => {
         startTransition(async () => {
             try {
+                // Se a entrega anterior foi cancelada, recalcula a cotação antes
+                if (isUberDeliveryCanceled(deliveryStatus)) {
+                    const quoteResult = await recalculateUberQuote(order.id);
+
+                    if (!quoteResult || ("success" in quoteResult && !quoteResult.success)) {
+                        const message = (quoteResult as any)?.message ?? "Falha ao recalcular cotação da Uber";
+                        toast.error(message);
+                        return;
+                    }
+                }
+
                 const result = await requestUberDelivery(order.id);
                 setDeliveryId(result.deliveryId);
                 setDeliveryStatus(result.status);
-                toast.success("Solicitação de entrega enviada para a Uber");
+                const msg = isUberDeliveryCanceled(deliveryStatus)
+                    ? "Solicitação de reentrega enviada para a Uber"
+                    : "Solicitação de entrega enviada para a Uber";
+                toast.success(msg);
             } catch (error) {
                 const message = error instanceof Error ? error.message : "Erro ao solicitar entrega";
                 toast.error(message);
@@ -126,6 +152,7 @@ export function DeliveryDialog({
 
     const handleSync = () => {
         startTransition(async () => {
+
             try {
                 const result = await updateUberDeliveryStatus(order.id, "sync");
                 setDeliveryStatus(result.status);
@@ -151,11 +178,11 @@ export function DeliveryDialog({
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog open={internalOpen} onOpenChange={setInternalOpen}>
             <DialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="size-8">
+                <Button variant="ghost" className="justify-start gap-2">
                     <Car className="size-4 text-muted-foreground hover:text-foreground" />
-                    <span className="sr-only">Entrega</span>
+                    <span>Entrega</span>
                 </Button>
             </DialogTrigger>
             <DialogContent className="p-0 pb-6">
@@ -256,20 +283,6 @@ export function DeliveryDialog({
                                         <RefreshCw />
                                     </Button>
                                 </div>
-
-                                {/* {!canRequest && !deliveryId ? (
-                            <div className="flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">
-                                <AlertCircle className="size-4" />
-                                <span>Esta opção fica disponível quando o pedido estiver pago e houver uma cotação Uber válida.</span>
-                            </div>
-                        ) : null}
-
-                        {deliveryId ? (
-                            <div className="flex items-center gap-2 text-sm text-emerald-700">
-                                <PackageCheck className="size-4" />
-                                <span>Entrega vinculada ao pedido e acompanhada pela Uber.</span>
-                            </div>
-                        ) : null} */}
                             </CardContent>
                         </Card>
                         <div className="grid grid-cols-2 gap-4 mt-4">

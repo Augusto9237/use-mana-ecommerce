@@ -36,9 +36,8 @@ import {
 } from "@/components/ui/pagination";
 import { AdminLayout } from "@/components/admin/admin-layout";
 import { OrderFilters } from "./components/order-filters";
-import { OrderDetailsDialog } from "./components/order-details-dialog";
+import { OrderActionsDropdown } from "./components/order-actions-dropdown";
 import { formatCentsToBRL } from "@/helpers/money";
-import { DeliveryDialog } from "./components/delivery-dialog";
 
 type UserWithRole = { role?: string };
 
@@ -210,7 +209,7 @@ export default async function AdminOrdersPage(props: {
                   <TableHead>Data</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Total</TableHead>
-                  <TableHead className="w-[100px] text-center">Ações</TableHead>
+                  <TableHead className="w-20 text-center">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -240,9 +239,8 @@ export default async function AdminOrdersPage(props: {
                     <TableCell className="text-right font-semibold">
                       {formatCentsToBRL(order.totalPriceInCents)}
                     </TableCell>
-                    <TableCell className="text-center">
-                      <OrderDetailsDialog order={order} />
-                      <DeliveryDialog order={order} />
+                    <TableCell className="text-center w-20">
+                      <OrderActionsDropdown order={order} />
                     </TableCell>
                   </TableRow>
                 ))}

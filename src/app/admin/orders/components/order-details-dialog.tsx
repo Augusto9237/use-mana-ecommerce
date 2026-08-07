@@ -71,10 +71,14 @@ interface OrderDetailsDialogProps {
       };
     }>;
   };
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function OrderDetailsDialog({ order }: OrderDetailsDialogProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export function OrderDetailsDialog({
+  order,
+}: OrderDetailsDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [isUberUpdating, startUberTransition] = useTransition();
 
@@ -109,25 +113,13 @@ export function OrderDetailsDialog({ order }: OrderDetailsDialogProps) {
     });
   };
 
-  const getStatusBadge = (status: typeof order.status) => {
-    switch (status) {
-      case "paid":
-        return <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white">Pago</Badge>;
-      case "pending":
-        return <Badge variant="outline" className="border-amber-500 text-amber-600 bg-amber-50">Aguardando pagamento</Badge>;
-      case "canceled":
-        return <Badge variant="destructive">Cancelado</Badge>;
-      default:
-        return <Badge>{status}</Badge>;
-    }
-  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={internalOpen} onOpenChange={setInternalOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="size-8">
+        <Button variant="ghost" className="justify-start gap-2">
           <Eye className="size-4 text-muted-foreground hover:text-foreground" />
-          <span className="sr-only">Ver Detalhes</span>
+          <span >Ver Detalhes</span>
         </Button>
       </DialogTrigger>
       <DialogContent style={{ maxWidth: '600px' }} className="h-[90vh] max-h-[90vh] flex flex-col p-0 pb-6 overflow-hidden">

@@ -20,6 +20,9 @@ export async function requestUberDelivery(orderId: string) {
 
   const order = await db.query.orderTable.findFirst({
     where: eq(orderTable.id, orderId),
+    with: {
+      shippingAddress: true,
+    }
   });
 
   if (!order) throw new Error("Pedido não encontrado");
@@ -29,7 +32,10 @@ export async function requestUberDelivery(orderId: string) {
     throw new Error("Sem permissão");
   }
 
-  if (order.uberDeliveryId) {
+  const isUberDeliveryCanceled = (status: string | null | undefined) =>
+    !!status && status.toLowerCase().includes("cancel");
+
+  if (order.uberDeliveryId && !isUberDeliveryCanceled(order.uberDeliveryStatus)) {
     return {
       status: order.uberDeliveryStatus ?? "already_requested",
       deliveryId: order.uberDeliveryId,

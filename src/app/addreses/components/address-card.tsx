@@ -41,6 +41,8 @@ export function AddressCard({ address }: { address: ShippingAddress }) {
           phone,
           email,
           cpfOrCnpj,
+          createdAt,
+          userId: address.userId,
         }} />
       </CardContent>
     </Card>

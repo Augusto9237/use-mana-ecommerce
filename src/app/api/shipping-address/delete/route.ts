@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { db } from "@/db";
 import { shippingAddressTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export async function POST(req: Request) {
@@ -20,8 +20,12 @@ export async function POST(req: Request) {
     // verify ownership
     const deleted = await db
       .delete(shippingAddressTable)
-      .where(eq(shippingAddressTable.id, id))
-      .where(eq(shippingAddressTable.userId, session.user.id))
+      .where(
+        and(
+          eq(shippingAddressTable.id, id),
+          eq(shippingAddressTable.userId, session.user.id)
+        )
+      )
       .returning();
 
     revalidatePath("/addreses");

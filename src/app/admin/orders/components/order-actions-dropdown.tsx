@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Car, EllipsisVertical, Eye } from "lucide-react";
+import { Car, EllipsisVertical, Eye, TrashIcon } from "lucide-react";
 import type { InferModel } from "drizzle-orm";
 
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import {
 import { orderItemTable, orderTable, productTable, productVariantTable, userTable } from "@/db/schema";
 import { DeliveryDialog } from "./delivery-dialog";
 import { OrderDetailsDialog } from "./order-details-dialog";
+import { deleteOrder } from "@/actions/delete-order";
+import { toast } from "sonner";
 
 type OrderWithRelations = InferModel<typeof orderTable> & {
     user: InferModel<typeof userTable>;
@@ -31,8 +33,15 @@ interface OrderActionsDropdownProps {
 }
 
 export function OrderActionsDropdown({ order }: OrderActionsDropdownProps) {
-    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-    const [isDeliveryOpen, setIsDeliveryOpen] = useState(false);
+
+    async function handleDeleteOrder() {
+        try {
+            await deleteOrder(order.id);
+            toast.success("Pedido excluído com sucesso");
+        } catch (error) {
+            console.error("Erro ao excluir pedido:", error);
+        }
+    }
 
     return (
         <>
@@ -57,6 +66,16 @@ export function OrderActionsDropdown({ order }: OrderActionsDropdownProps) {
                         <DeliveryDialog
                             order={order}
                         />
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        <Button
+                            variant="destructive"
+                            className="w-full gap-2 justify-start"
+                            onClick={handleDeleteOrder}
+                        >
+                            <TrashIcon />
+                            Excluir
+                        </Button>
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

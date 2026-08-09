@@ -6,6 +6,8 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { orderTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
+import { cancelCheckoutPayment } from "../cancel-mercadopago";
+import { revalidatePath } from "next/cache";
 
 type UserWithRole = { role?: string };
 
@@ -32,4 +34,6 @@ export const deleteOrder = async (orderId: string) => {
   }
 
   await db.delete(orderTable).where(eq(orderTable.id, orderId));
+
+  revalidatePath("/admin/orders");
 };

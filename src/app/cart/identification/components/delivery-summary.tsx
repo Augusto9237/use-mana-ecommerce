@@ -22,7 +22,7 @@ const DeliverySummary = ({
           <p className="text-muted-foreground text-sm font-medium">
             {shippingFeeInCents > 0
               ? formatCentsToBRL(shippingFeeInCents)
-              : "GRÁTIS"}
+              : formatCentsToBRL(0)}
           </p>
         </div>
       </CardContent>

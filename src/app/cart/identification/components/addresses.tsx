@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
 
-import { getCart } from "@/actions/get-cart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -27,6 +26,7 @@ import { FormAddress } from "./new-address";
 import { Separator } from "@/components/ui/separator";
 import DeliverySummary from "./delivery-summary";
 import { calculateUberQuote } from "@/actions/calculate-uber-quote";
+import Link from "next/link";
 
 const formSchema = z.object({
   email: z.email("E-mail inválido"),
@@ -83,62 +83,76 @@ const Addresses = ({
   };
 
   return (
-    <div className="space-y-5">
-      <CardHeader className="flex items-center justify-between">
-        <CardTitle>Endereço de entrega</CardTitle>
-        <FormAddress />
-      </CardHeader>
-      <CardContent>
-        {isLoading ? (
-          <div className="py-4 text-center">
-            <p>Carregando endereços...</p>
-          </div>
-        ) : (
-          <RadioGroup
-            value={selectedAddress}
-            onValueChange={setSelectedAddress}
-          >
-            {addresses?.length === 0 && (
+    <div className="space-y-4 h-full flex-1 min-h-0">
+      <Card>
+        <div className="space-y-5">
+          <CardHeader className="flex items-center justify-between">
+            <CardTitle>Endereço de entrega</CardTitle>
+            <FormAddress />
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
               <div className="py-4 text-center">
-                <p className="text-muted-foreground">
-                  Você ainda não possui endereços cadastrados.
-                </p>
+                <p>Carregando endereços...</p>
               </div>
+            ) : (
+              <RadioGroup
+                value={selectedAddress}
+                onValueChange={setSelectedAddress}
+              >
+                {addresses?.length === 0 && (
+                  <div className="py-4 text-center">
+                    <p className="text-muted-foreground">
+                      Você ainda não possui endereços cadastrados.
+                    </p>
+                  </div>
+                )}
+
+                {addresses?.map((address) => (
+                  <FieldLabel key={address.id} htmlFor={address.id}>
+                    <Field orientation="horizontal">
+                      <FieldContent>
+                        <FieldTitle>{formatAddress(address)}</FieldTitle>
+                      </FieldContent>
+                      <RadioGroupItem value={address.id} id={address.id} />
+                    </Field>
+                  </FieldLabel>
+                ))}
+              </RadioGroup>
             )}
 
-            {addresses?.map((address) => (
-              <FieldLabel key={address.id} htmlFor={address.id}>
-                <Field orientation="horizontal">
-                  <FieldContent>
-                    <FieldTitle>{formatAddress(address)}</FieldTitle>
-                  </FieldContent>
-                  <RadioGroupItem value={address.id} id={address.id} />
-                </Field>
-              </FieldLabel>
-            ))}
-          </RadioGroup>
-        )}
+            {selectedAddress && selectedAddress !== "add_new" && (
+              <div className="mt-4">
+                <Button
+                  onClick={handleGoToPayment}
+                  className="w-full"
+                  disabled={updateCartShippingAddressMutation.isPending}
+                >
+                  {updateCartShippingAddressMutation.isPending
+                    ? "Calculando..."
+                    : "Calcular frete"}
+                </Button>
+              </div>
+            )}
+          </CardContent>
 
-        {selectedAddress && selectedAddress !== "add_new" && (
-          <div className="mt-4">
-            <Button
-              onClick={handleGoToPayment}
-              className="w-full"
-              disabled={updateCartShippingAddressMutation.isPending}
-            >
-              {updateCartShippingAddressMutation.isPending
-                ? "Calculando..."
-                : "Calcular frete"}
-            </Button>
-          </div>
-        )}
-      </CardContent>
+          <Separator />
 
-      <Separator />
-
-      <DeliverySummary
-        shippingFeeInCents={shippingFeeInCents}
-      />
+          <DeliverySummary
+            shippingFeeInCents={shippingFeeInCents}
+          />
+        </div>
+      </Card>
+      <div className="flex w-full justify-end px-5 py-5 gap-5  max-w-screen-xl mx-auto">
+        <Link href="/">
+          <Button variant="outline">Continuar Comprando</Button>
+        </Link>
+        <Link href="/cart/confirmation" aria-disabled={shippingFeeInCents === 0}>
+          <Button disabled={shippingFeeInCents === 0}>
+            Finalizar compra
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 };

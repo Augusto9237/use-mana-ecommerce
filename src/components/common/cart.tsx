@@ -25,7 +25,7 @@ export const Cart = () => {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" size="icon" className="hover:bg-foreground relative">
-          <ShoppingBasketIcon/>
+          <ShoppingBasketIcon />
           {cart?.items.length ? (
             <Badge className="absolute -top-1 -right-1 rounded-full size-4.5 text-xs p-0">
               {cart.items.length}
@@ -64,19 +64,12 @@ export const Cart = () => {
             <div className="flex flex-col gap-4">
               <Separator />
 
-              <div className="flex items-center justify-between text-xs font-medium">
-                <p>Subtotal</p>
-                <p>{formatCentsToBRL(cart?.totalPriceInCents ?? 0)}</p>
-              </div>
-
-              <Separator />
-
-              <div className="flex items-center justify-between text-xs font-medium">
+              <div className="flex items-center justify-between font-medium">
                 <p>Total</p>
                 <p>{formatCentsToBRL(cart?.totalPriceInCents ?? 0)}</p>
               </div>
 
-              <Button className="mt-5 rounded-full" asChild>
+              <Button className="mt-5" asChild>
                 <Link href="/cart/identification">Finalizar compra</Link>
               </Button>
             </div>

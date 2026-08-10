@@ -22,7 +22,7 @@ import { InputSearch } from "./input-search";
 export const Header = () => {
   const { data: session } = authClient.useSession();
   return (
-    <header className="p-5 backdrop-blur-md fixed top-0 w-full bg-card/50 z-50">
+    <header className="p-5 backdrop-blur-md fixed top-0 w-full bg-card/70 z-50">
       <div className="flex items-center gap-3 justify-between mx-auto w-full max-w-screen-xl xl:px-5">
         <Link href="/">
           <Image

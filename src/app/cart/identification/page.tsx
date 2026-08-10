@@ -10,12 +10,9 @@ import { auth } from "@/lib/auth";
 
 import CartSummary from "../components/cart-summary";
 import Addresses from "./components/addresses";
-import { calculateUberQuote } from "@/actions/calculate-uber-quote";
-import DeliverySummary from "./components/delivery-summary";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 
 const IdentificationPage = async () => {
   const session = await auth.api.getSession({
@@ -46,26 +43,16 @@ const IdentificationPage = async () => {
     where: eq(shippingAddressTable.userId, session.user.id),
   });
 
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <div className="space-y-4 px-5 pt-20 pb-8 flex-1 w-full h-full max-w-screen-xl mx-auto">
-        <Card>
-          <Addresses
-            shippingAddresses={shippingAddresses}
-            defaultShippingAddressId={cart.shippingAddress?.id || null}
-          />
-        </Card>
+      <div className="px-5 pt-20 pb-8 flex-1 w-full h-full min-h-0 max-w-screen-xl mx-auto">
+        <Addresses
+          shippingAddresses={shippingAddresses}
+          defaultShippingAddressId={cart.shippingAddress?.id || null}
+        />
       </div>
-      <div className="flex w-full justify-end px-5 py-5 gap-5  max-w-screen-xl mx-auto">
-        <Link href="/">
-          <Button variant="outline">Continuar Comprando</Button>
-        </Link>
-        <Link href="/cart/confirmation" aria-disabled={!cart.shippingAddress?.id}>
-          <Button>Finalizar compra</Button>
-        </Link>
-      </div>
+
       <Footer />
     </div>
   );

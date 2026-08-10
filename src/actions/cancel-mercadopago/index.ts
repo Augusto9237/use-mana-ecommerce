@@ -13,13 +13,6 @@ import {
   CancelCheckoutPaymentSchema,
 } from "./schema";
 
-const mpClient = new MercadoPagoConfig({
-  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN as string,
-  options: { timeout: 5000 },
-});
-
-const paymentClient = new Payment(mpClient);
-
 type UserWithRole = { role?: string };
 
 export const cancelCheckoutPayment = async (
@@ -48,9 +41,17 @@ export const cancelCheckoutPayment = async (
     throw new Error("Unauthorized");
   }
 
-  if (!process.env.MERCADOPAGO_ACCESS_TOKEN) {
+  const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+  if (!accessToken) {
     throw new Error("MERCADOPAGO_ACCESS_TOKEN não está configurado no ambiente do servidor");
   }
+
+  const mpClient = new MercadoPagoConfig({
+    accessToken,
+    options: { timeout: 5000 },
+  });
+
+  const paymentClient = new Payment(mpClient);
 
   try {
     const searchResult = await paymentClient.search({
@@ -86,8 +87,25 @@ export const cancelCheckoutPayment = async (
       paymentId,
       cancelResponse,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erro ao cancelar pagamento Mercado Pago:", error);
+
+    const errorMessage = error?.message || "";
+    const isLiveCredentialsError =
+      error?.status === 401 ||
+      errorMessage.includes("Unauthorized use of live credentials") ||
+      (Array.isArray(error?.cause) &&
+        error.cause.some((c: any) => c?.code === 7 || c?.description?.includes("Unauthorized use of live credentials")));
+
+    if (isLiveCredentialsError) {
+      throw new Error(
+        "Erro de autorização no Mercado Pago (401 - Unauthorized use of live credentials): " +
+          "Suas credenciais de produção (APP_USR-...) não estão homologadas/ativadas no painel do Mercado Pago " +
+          "ou você está tentando operar em modo de teste/sandbox usando credenciais de produção. " +
+          "Substitua seu MERCADOPAGO_ACCESS_TOKEN e PUBLIC_KEY no .env por credenciais de teste (TEST-...)."
+      );
+    }
+
     throw error;
   }
 };

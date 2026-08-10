@@ -8,6 +8,7 @@ import { orderTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { cancelCheckoutPayment } from "../cancel-mercadopago";
 import { revalidatePath } from "next/cache";
+import { refundPayment } from "../refund-mercadopago";
 
 type UserWithRole = { role?: string };
 
@@ -31,6 +32,15 @@ export const deleteOrder = async (orderId: string) => {
 
   if (!existingOrder) {
     throw new Error("Pedido não encontrado");
+  }
+
+  if (existingOrder.status === "paid") {
+    try {
+      const { refundResponse } = await refundPayment({ orderId });
+      console.log("Reembolso executado com sucesso:", refundResponse);
+    } catch (error) {
+      console.warn("Não foi possível processar o reembolso automático no Mercado Pago:", error);
+    }
   }
 
   await db.delete(orderTable).where(eq(orderTable.id, orderId));

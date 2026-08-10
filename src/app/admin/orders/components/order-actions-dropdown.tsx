@@ -37,7 +37,7 @@ export function OrderActionsDropdown({ order }: OrderActionsDropdownProps) {
     async function handleDeleteOrder() {
         try {
             await deleteOrder(order.id);
-            toast.success("Pedido excluído com sucesso");
+            toast.success
         } catch (error) {
             console.error("Erro ao excluir pedido:", error);
         }

@@ -2,35 +2,29 @@ import Link from "next/link";
 
 import { categoryTable } from "@/db/schema";
 
-import { Button } from "../ui/button";
-import { ChevronRight } from "lucide-react";
-
 interface CategorySelectorProps {
   categories: (typeof categoryTable.$inferSelect)[];
 }
 
 const CategorySelector = ({ categories }: CategorySelectorProps) => {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full">
+    <>
+    <h3 className="px-5 font-semibold mb-6">Categorias</h3>
+    <div className="flex gap-4 w-full overflow-auto px-5 [&::-webkit-scrollbar]:hidden">
       {categories.map((category) => (
-        <div key={category.id} className="relative rounded-lg overflow-hidden h-[200px] md:min-h-[400px] md:h-full">
-          <img
-            src={category.imageUrl || "/placeholder-category.png"}
-            alt={category.name}
-            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300 absolute inset-0"
-          />
-
-          <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex flex-col justify-end" >
-            <div className="p-3">
-              <h4 className="text-lg font-bold leading-tight">{category.name}</h4>
-              <Link href={`/category/${category.slug}`} className="text-primary font-semibold text-sm items-center flex gap-1">
-                Comprar <ChevronRight size={16} />
-              </Link>
-            </div>
+        <Link key={category.id} href={`/category/${category.slug}`} className="flex flex-col items-center">
+          <div className="relative rounded-full overflow-hidden size-20 border border-border">
+            <img
+              src={category.imageUrl || "/placeholder-category.png"}
+              alt={category.name}
+              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300 absolute inset-0"
+            />
           </div>
-        </div>
+          <h4 className="text-lg font-bold leading-tight mt-2">{category.name}</h4>
+        </Link>
       ))}
     </div>
+    </>
   );
 };
 

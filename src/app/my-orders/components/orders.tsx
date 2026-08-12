@@ -35,7 +35,7 @@ const Orders = ({ orders }: OrdersProps) => {
   return (
     <div className="space-y-5">
       {orders.map((order) => (
-        <Card key={order.id}>
+        <Card key={order.id} className="py-0">
           <CardContent>
             <Accordion type="single" collapsible key={order.id}>
               <AccordionItem value="item-1">
@@ -59,6 +59,7 @@ const Orders = ({ orders }: OrdersProps) => {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
+                  <div className="space-y-4">
                   {order.items.map((product) => (
                     <div
                       className="flex items-center justify-between"
@@ -90,10 +91,11 @@ const Orders = ({ orders }: OrdersProps) => {
                       </div>
                     </div>
                   ))}
+                  </div>
                   <div className="py-5">
                     <Separator />
                   </div>
-                  <div className="space-y-2">
+                  <div>
                     <div className="flex justify-between">
                       <p className="text-sm">Subtotal</p>
                       <p className="text-muted-foreground text-sm font-medium">

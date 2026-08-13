@@ -24,7 +24,7 @@ export default function VariantSelector({ selectedVariantSlug, variants }: Varia
           <Image
             width={68}
             height={68}
-            src={variant.imageUrl}
+            src={variant.imageUrl[0]}
             alt={variant.name}
             className="rounded-[0.60rem]"
           />

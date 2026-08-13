@@ -31,7 +31,7 @@ const ProductItem = ({ product, textContainerClassName }: ProductItemProps) => {
         href={`/product-variant/${firstVariant.slug}`}
       >
         <Image
-          src={firstVariant.imageUrl}
+          src={firstVariant.imageUrl[0]}
           alt={firstVariant.name}
           sizes="100vw"
           height={0}

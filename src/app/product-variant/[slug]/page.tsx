@@ -12,6 +12,7 @@ import { formatCentsToBRL } from "@/helpers/money";
 import ProductActions from "./components/product-actions";
 import VariantSelector from "./components/variant-selector";
 import { SizeSelector } from "./components/size-selector.";
+import CarouselProducts from "./components/carousel-products";
 
 interface ProductVariantPageProps {
   params: Promise<{ slug: string }>;
@@ -43,14 +44,15 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
       <Header />
       <div className="flex flex-col space-y-6 pt-20 mx-auto max-w-screen-xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Image
-            src={productVariant.imageUrl}
+          <CarouselProducts />
+          {/* <Image
+            src={productVariant.imageUrl[0]}
             alt={productVariant.name}
             sizes="100vw"
             height={0}
             width={0}
             className="h-auto w-full object-cover lg:pl-5"
-          />
+          /> */}
           <div className="flex flex-col gap-6">
             <div className="px-5 lg:pt-5">
               <VariantSelector

@@ -120,10 +120,10 @@ export const productVariantTable = pgTable("product_variant", {
   name: text().notNull(),
   slug: text().notNull().unique(),
   color: text().notNull(),
-  size: text().notNull(),
+  size: text().array(),
   priceInCents: integer("price_in_cents").notNull(),
   stock: integer("stock").notNull().default(0),
-  imageUrl: text("image_url").notNull(),
+  imageUrl: text("image_url").array().notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

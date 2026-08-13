@@ -20,7 +20,7 @@ const CategorySelector = ({ categories }: CategorySelectorProps) => {
               className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300 absolute inset-0"
             />
           </div>
-          <h4 className="text-lg font-bold leading-tight mt-2">{category.name}</h4>
+          <h4 className="text-sm font-medium leading-tight mt-2">{category.name}</h4>
         </Link>
       ))}
     </div>

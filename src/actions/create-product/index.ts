@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { productTable, productVariantTable } from "@/db/schema";
+import type { InferModel } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 
 import {
@@ -92,19 +93,20 @@ export const createProductVariant = async (
     throw new Error("Variante com este slug já existe");
   }
 
-  const [newVariant] = await db
-    .insert(productVariantTable)
-    .values({
-      productId: data.productId,
-      name: data.name,
-      slug: data.slug,
-      size: data.size,
-      color: data.color,
-      priceInCents: data.priceInCents,
-      stock: data.stock,
-      imageUrl: data.imageUrl,
-    })
-    .returning();
+  type NewProductVariant = InferModel<typeof productVariantTable, "insert">;
+
+  const newVariantData = {
+    productId: data.productId,
+    name: data.name,
+    slug: data.slug,
+    size: data.size,
+    color: data.color,
+    priceInCents: data.priceInCents,
+    stock: data.stock,
+    imageUrl: data.imageUrl,
+  } as NewProductVariant;
+
+  const [newVariant] = await db.insert(productVariantTable).values(newVariantData).returning();
 
   return newVariant;
 };

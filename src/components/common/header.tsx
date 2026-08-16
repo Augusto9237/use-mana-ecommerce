@@ -18,6 +18,7 @@ import {
 import { Cart } from "./cart";
 import { Input } from "../ui/input";
 import { InputSearch } from "./input-search";
+import { GoogleAuthDialog } from "./auth-google";
 
 export const Header = () => {
   const { data: session } = authClient.useSession();
@@ -98,11 +99,7 @@ export const Header = () => {
                 ) : (
                   <div className="flex items-center justify-between">
                     <h2 className="font-semibold">Olá. Faça seu login!</h2>
-                    <Button size="icon" asChild variant="outline">
-                      <Link href="/authentication">
-                        <LogInIcon />
-                      </Link>
-                    </Button>
+                    <GoogleAuthDialog />
                   </div>
                 )}
               </div>

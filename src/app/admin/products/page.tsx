@@ -221,7 +221,7 @@ export default async function AdminProductsPage(props: {
                 <TableRow key={product.id}>
                   <TableCell className="w-24">
                     <ProductImageDialog
-                      src={product.variants[0]?.imageUrl || ""}
+                      src={product.variants[0]?.imageUrl[0] || ""}
                       alt={product.name}
                     />
                   </TableCell>

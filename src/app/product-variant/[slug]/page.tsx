@@ -43,8 +43,8 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
     <>
       <Header />
       <div className="flex flex-col space-y-6 pt-20 mx-auto max-w-screen-xl">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <CarouselProducts />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 lg:pl-5">
+          <CarouselProducts images={productVariant.imageUrl} />
           {/* <Image
             src={productVariant.imageUrl[0]}
             alt={productVariant.name}
@@ -74,7 +74,7 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
               </h3>
             </div>
 
-            <ProductActions productVariantId={productVariant.id} />
+            <ProductActions productVariantId={productVariant.id} sizes={productVariant.size} />
 
             <div className="px-5">
               <p className="text-shadow-amber-600">

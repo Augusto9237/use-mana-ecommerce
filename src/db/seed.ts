@@ -283,8 +283,8 @@ const products = [
       "Mochila resistente e confortável, ideal para o dia a dia e viagens.",
     categoryName: "Acessórios",
     variants: [
-      { color: "Preta", price: 12999 },
-      { color: "Branca", price: 12999 },
+      { color: "Preta", cost: 8999, price: 12999 },
+      { color: "Branca", cost: 8999, price: 12999 },
     ],
   },
   {
@@ -292,8 +292,8 @@ const products = [
     description: "Meia alta de algodão, confortável e durável.",
     categoryName: "Acessórios",
     variants: [
-      { color: "Branca", price: 1999 },
-      { color: "Preta", price: 1999 },
+      { color: "Branca", cost: 1999, price: 1999 },
+      { color: "Preta", cost: 1999, price: 1999 },
     ],
   },
   {
@@ -301,9 +301,9 @@ const products = [
     description: "Boné Nocta com design moderno e ajuste confortável.",
     categoryName: "Acessórios",
     variants: [
-      { color: "Preto", price: 8999 },
-      { color: "Vinho", price: 8999 },
-      { color: "Azul", price: 8999 },
+      { color: "Preto", cost: 8999, price: 8999 },
+      { color: "Vinho", cost: 8999, price: 8999 },
+      { color: "Azul", cost: 8999, price: 8999 },
     ],
   },
   {
@@ -311,9 +311,9 @@ const products = [
     description: "Boné com aba curva, estilo clássico e versátil.",
     categoryName: "Acessórios",
     variants: [
-      { color: "Azul", price: 7999 },
-      { color: "Bege", price: 7999 },
-      { color: "Verde", price: 7999 },
+      { color: "Azul", cost: 7999, price: 7999 },
+      { color: "Bege", cost: 7999, price: 7999 },
+      { color: "Verde", cost: 7999, price: 7999 },
     ],
   },
 
@@ -324,9 +324,9 @@ const products = [
       "Shorts esportivo para atividades físicas, com tecido que absorve o suor.",
     categoryName: "Bermuda & Shorts",
     variants: [
-      { color: "Preto", price: 6999 },
-      { color: "Azul", price: 6999 },
-      { color: "Verde", price: 6999 },
+      { color: "Preto", cost: 6999, price: 6999 },
+      { color: "Azul", cost: 6999, price: 6999 },
+      { color: "Verde", cost: 6999, price: 6999 },
     ],
   },
   {
@@ -334,9 +334,9 @@ const products = [
     description: "Shorts casual confortável, perfeito para o dia a dia.",
     categoryName: "Bermuda & Shorts",
     variants: [
-      { color: "Verde", price: 5999 },
-      { color: "Preto", price: 5999 },
-      { color: "Azul", price: 5999 },
+      { color: "Verde", cost: 5999, price: 5999 },
+      { color: "Preto", cost: 5999, price: 5999 },
+      { color: "Azul", cost: 5999, price: 5999 },
     ],
   },
   {
@@ -345,9 +345,9 @@ const products = [
       "Shorts com design moderno e confortável, ideal para diversas ocasiões.",
     categoryName: "Bermuda & Shorts",
     variants: [
-      { color: "Marrom", price: 7499 },
-      { color: "Preto", price: 7499 },
-      { color: "Bege", price: 7499 },
+      { color: "Marrom", cost: 7499, price: 7499 },
+      { color: "Preto", cost: 7499, price: 7499 },
+      { color: "Bege", cost: 7499, price: 7499 },
     ],
   },
   {
@@ -356,9 +356,9 @@ const products = [
       "Bermuda premium com qualidade superior e design diferenciado.",
     categoryName: "Bermuda & Shorts",
     variants: [
-      { color: "Verde", price: 8999 },
-      { color: "Preta", price: 8999 },
-      { color: "Azul", price: 8999 },
+      { color: "Verde", cost: 8999, price: 8999 },
+      { color: "Preta", cost: 8999, price: 8999 },
+      { color: "Azul", cost: 8999, price: 8999 },
     ],
   },
 
@@ -369,9 +369,9 @@ const products = [
       "Calça esportiva Nike Club, confortável e versátil para treinos e uso casual.",
     categoryName: "Calças",
     variants: [
-      { color: "Bege", price: 15999 },
-      { color: "Preta", price: 15999 },
-      { color: "Vinho", price: 15999 },
+      { color: "Bege", cost: 15999, price: 15999 },
+      { color: "Preta", cost: 15999, price: 15999 },
+      { color: "Vinho", cost: 15999, price: 15999 },
     ],
   },
   {
@@ -380,9 +380,9 @@ const products = [
       "Calça de malha com tecido macio e confortável, ideal para relaxar.",
     categoryName: "Calças",
     variants: [
-      { color: "Preta", price: 12999 },
-      { color: "Branca", price: 12999 },
-      { color: "Azul", price: 12999 },
+      { color: "Preta", cost: 12999, price: 12999 },
+      { color: "Branca", cost: 12999, price: 12999 },
+      { color: "Azul", cost: 12999, price: 12999 },
     ],
   },
   {
@@ -391,9 +391,9 @@ const products = [
       "Calça com design urbano e moderno, perfeita para o street style.",
     categoryName: "Calças",
     variants: [
-      { color: "Bege", price: 13999 },
-      { color: "Branca", price: 13999 },
-      { color: "Preta", price: 13999 },
+      { color: "Bege", cost: 13999, price: 13999 },
+      { color: "Branca", cost: 13999, price: 13999 },
+      { color: "Preta", cost: 13999, price: 13999 },
     ],
   },
   {
@@ -402,9 +402,9 @@ const products = [
       "Calça Jordan com qualidade premium e design icônico da marca.",
     categoryName: "Calças",
     variants: [
-      { color: "Verde", price: 18999 },
-      { color: "Preta", price: 18999 },
-      { color: "Azul", price: 18999 },
+      { color: "Verde", cost: 18999, price: 18999 },
+      { color: "Preta", cost: 18999, price: 18999 },
+      { color: "Azul", cost: 18999, price: 18999 },
     ],
   },
 
@@ -415,9 +415,9 @@ const products = [
       "Camiseta ACG com design técnico e material de alta qualidade.",
     categoryName: "Camisetas",
     variants: [
-      { color: "Bege", price: 6999 },
-      { color: "Preta", price: 6999 },
-      { color: "Branca", price: 6999 },
+      { color: "Bege", cost: 6999, price: 6999 },
+      { color: "Preta", cost: 6999, price: 6999 },
+      { color: "Branca", cost: 6999, price: 6999 },
     ],
   },
   {
@@ -426,8 +426,8 @@ const products = [
       "Camiseta para corrida com tecido respirável e conforto superior.",
     categoryName: "Camisetas",
     variants: [
-      { color: "Preta", price: 5999 },
-      { color: "Azul", price: 5999 },
+      { color: "Preta", cost: 5999, price: 5999 },
+      { color: "Azul", cost: 5999, price: 5999 },
     ],
   },
   {
@@ -436,8 +436,8 @@ const products = [
       "Camiseta esportiva para atividades físicas com tecnologia Dri-FIT.",
     categoryName: "Camisetas",
     variants: [
-      { color: "Branca", price: 5499 },
-      { color: "Preta", price: 5499 },
+      { color: "Branca", cost: 5499, price: 5499 },
+      { color: "Preta", cost: 5499, price: 5499 },
     ],
   },
   {
@@ -446,8 +446,8 @@ const products = [
       "Camiseta com estampa inspirada na natureza, confortável e estilosa.",
     categoryName: "Camisetas",
     variants: [
-      { color: "Preta", price: 6499 },
-      { color: "Azul", price: 6499 },
+      { color: "Preta", cost: 6499, price: 6499 },
+      { color: "Azul", cost: 6499, price: 6499 },
     ],
   },
 
@@ -458,8 +458,8 @@ const products = [
       "Jaqueta corta-vento leve e resistente, ideal para atividades ao ar livre.",
     categoryName: "Jaquetas & Moletons",
     variants: [
-      { color: "Preto", price: 19999 },
-      { color: "Branco", price: 19999 },
+      { color: "Preto", cost: 19999, price: 19999 },
+      { color: "Branco", cost: 19999, price: 19999 },
     ],
   },
   {
@@ -468,8 +468,8 @@ const products = [
       "Jaqueta Windrunner com design clássico e proteção contra o vento.",
     categoryName: "Jaquetas & Moletons",
     variants: [
-      { color: "Azul", price: 22999 },
-      { color: "Bege", price: 22999 },
+      { color: "Azul", cost: 22999, price: 22999 },
+      { color: "Bege", cost: 22999, price: 22999 },
     ],
   },
   {
@@ -478,8 +478,8 @@ const products = [
       "Jaqueta com estilo urbano e moderno, perfeita para compor looks casuais.",
     categoryName: "Jaquetas & Moletons",
     variants: [
-      { color: "Marrom", price: 17999 },
-      { color: "Cinza", price: 17999 },
+      { color: "Marrom", cost: 17999, price: 17999 },
+      { color: "Cinza", cost: 17999, price: 17999 },
     ],
   },
   {
@@ -487,8 +487,8 @@ const products = [
     description: "Jaqueta Nike Club com qualidade premium e design atemporal.",
     categoryName: "Jaquetas & Moletons",
     variants: [
-      { color: "Azul", price: 25999 },
-      { color: "Amarela", price: 25999 },
+      { color: "Azul", cost: 25999, price: 25999 },
+      { color: "Amarela", cost: 25999, price: 25999 },
     ],
   },
 
@@ -499,9 +499,9 @@ const products = [
       "Tênis Nike Vomero com tecnologia de amortecimento superior para corridas.",
     categoryName: "Tênis",
     variants: [
-      { color: "Preto", price: 79999 },
-      { color: "Branco", price: 79999 },
-      { color: "Azul", price: 79999 },
+      { color: "Preto", cost: 79999, price: 79999 },
+      { color: "Branco", cost: 79999, price: 79999 },
+      { color: "Azul", cost: 79999, price: 79999 },
     ],
   },
   {
@@ -509,9 +509,9 @@ const products = [
     description: "Tênis Nike com design Panda icônico, confortável e estiloso.",
     categoryName: "Tênis",
     variants: [
-      { color: "Verde", price: 69999 },
-      { color: "Azul", price: 69999 },
-      { color: "Preto", price: 69999 },
+      { color: "Verde", cost: 69999, price: 69999 },
+      { color: "Azul", cost: 69999, price: 69999 },
+      { color: "Preto", cost: 69999, price: 69999 },
     ],
   },
   {
@@ -520,8 +520,8 @@ const products = [
       "Tênis Nike Air Force 1, um clássico atemporal com design icônico.",
     categoryName: "Tênis",
     variants: [
-      { color: "Preto", price: 89999 },
-      { color: "Branco", price: 89999 },
+      { color: "Preto", cost: 89999, price: 89999 },
+      { color: "Branco", cost: 89999, price: 89999 },
     ],
   },
   {
@@ -529,9 +529,9 @@ const products = [
     description: "Tênis Nike Dunk Low com design retrô e conforto moderno.",
     categoryName: "Tênis",
     variants: [
-      { color: "Branco", price: 75999 },
-      { color: "Preto", price: 75999 },
-      { color: "Azul", price: 75999 },
+      { color: "Branco", cost: 75999, price: 75999 },
+      { color: "Preto", cost: 75999, price: 75999 },
+      { color: "Azul", cost: 75999, price: 75999 },
     ],
   },
 ];
@@ -606,6 +606,7 @@ async function main() {
           color: variantData.color,
           size: ["Único"],
           imageUrl: variantImages,
+          costInCents: variantData.cost,
           priceInCents: variantData.price,
           stock: 10,
           slug: generateSlug(`${productData.name}-${variantData.color}`),

@@ -77,7 +77,7 @@ export const createCheckoutPreference = async (
       id: "shipping-uber",
       title: "Frete (Uber Direct)",
       description: "Entrega expressa via Uber Direct",
-      picture_url: "",
+      picture_url: ["https://www.fffuel.co/images/dddepth-preview/dddepth-248.jpg"],
       category_id: "shipping",
       quantity: 1,
       unit_price: order.shippingFeeInCents / 100,
@@ -107,8 +107,6 @@ export const createCheckoutPreference = async (
       resolveBaseFromNotification(notificationUrl) ||
       process.env.NEXTAUTH_URL ||
       "http://localhost:3000";
-
-    console.log("Using baseUrl for MercadoPago back_urls:", baseUrl);
 
     const back_urls = {
       success: `${baseUrl.replace(/\/$/, "")}/checkout/success`,

@@ -6,32 +6,28 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
-const images = [
-  "https://www.fffuel.co/images/dddepth-preview/dddepth-248.jpg",
-  "https://www.fffuel.co/images/dddepth-preview/dddepth-051.jpg",
-  "https://www.fffuel.co/images/dddepth-preview/dddepth-029.jpg",
-  "https://www.fffuel.co/images/dddepth-preview/dddepth-038.jpg",
-  "https://www.fffuel.co/images/dddepth-preview/dddepth-012.jpg",
-];
+interface CarouselProductsProps{
+  images: string[];
+}
 
-export default function CarouselProducts() {
+export default function CarouselProducts({ images }: CarouselProductsProps) {
   return (
     <Carousel className="w-full">
       <CarouselContent>
         {images.map((image) => (
           <CarouselItem key={image}>
-            <div className=" p-1">
+            <div>
               <img
                 alt="dddepth-248"
-                className="size-full rounded-xl object-cover"
+                className="size-full object-cover"
                 src={image}
               />
             </div>
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
+      <CarouselPrevious variant="ghost" />
+      <CarouselNext  variant="ghost"/>
     </Carousel>
   );
 }

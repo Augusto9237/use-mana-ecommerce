@@ -13,11 +13,12 @@ const updateProductVariantSchema = z.object({
   productId: z.string().uuid(),
   name: z.string().min(2),
   slug: z.string().min(2),
-  size: z.string().min(1),
+  size: z.array(z.string().url()).min(1),
   color: z.string().min(1),
+  costInCents: z.number().int().positive(),
   priceInCents: z.number().int().positive(),
   stock: z.number().int().nonnegative(),
-  imageUrl: z.string().url(),
+  imageUrl: z.array(z.string().url()).min(1),
 });
 
 type UpdateProductVariantSchema = z.infer<typeof updateProductVariantSchema>;
@@ -64,6 +65,7 @@ export const updateProductVariant = async (data: UpdateProductVariantSchema) => 
       slug: data.slug,
       size: data.size,
       color: data.color,
+      costInCents: data.costInCents,
       priceInCents: data.priceInCents,
       stock: data.stock,
       imageUrl: data.imageUrl,

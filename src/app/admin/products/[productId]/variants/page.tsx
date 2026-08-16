@@ -238,6 +238,7 @@ export default async function AdminVariantsPage({
                 <TableHead>Nome</TableHead>
                 <TableHead>Cor</TableHead>
                 <TableHead>Tamanho</TableHead>
+                <TableHead>Custo</TableHead>
                 <TableHead>Preço</TableHead>
                 <TableHead>Estoque</TableHead>
                 <TableHead>Slug</TableHead>
@@ -246,44 +247,59 @@ export default async function AdminVariantsPage({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {variants.map((variant) => (
-                <TableRow key={variant.id}>
-                  <TableCell className="w-24">
-                    <ProductImageDialog
-                      src={variant.imageUrl}
-                      alt={variant.name}
-                    />
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    {variant.name}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-4 h-4 rounded border"
-                        style={{
-                          backgroundColor: variant.color,
-                        }}
+              {variants.map((variant) => {
+                const normalizedVariant = {
+                  ...variant,
+                  imageUrl: variant.imageUrl?.[0] ?? "",
+                  size: Array.isArray(variant.size)
+                    ? variant.size[0] ?? null
+                    : variant.size,
+                };
+
+                return (
+                  <TableRow key={variant.id}>
+                    <TableCell className="w-24">
+                      <ProductImageDialog
+                        src={variant.imageUrl[0]}
+                        alt={variant.name}
                       />
-                      {variant.color}
-                    </div>
-                  </TableCell>
-                  <TableCell>{variant.size}</TableCell>
-                  <TableCell>
-                    {priceInReais(variant.priceInCents)}
-                  </TableCell>
-                  <TableCell>{variant.stock}</TableCell>
-                  <TableCell>{variant.slug}</TableCell>
-                  <TableCell>
-                    {new Date(variant.createdAt).toLocaleDateString(
-                      "pt-BR"
-                    )}
-                  </TableCell>
-                  <TableCell className="w-20">
-                    <VariantActionsDropdown variant={variant} />
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {variant.name}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-4 h-4 rounded border"
+                          style={{
+                            backgroundColor: variant.color,
+                          }}
+                        />
+                        {variant.color}
+                      </div>
+                    </TableCell>
+                    <TableCell>{variant.size}</TableCell>
+                    <TableCell>
+                      {priceInReais(variant.costInCents)}
+                    </TableCell>
+                    <TableCell>
+                      {priceInReais(variant.priceInCents)}
+                    </TableCell>
+                    <TableCell>{variant.stock}</TableCell>
+                    <TableCell>{variant.slug}</TableCell>
+                    <TableCell>
+                      {new Date(variant.createdAt).toLocaleDateString(
+                        "pt-BR"
+                      )}
+                    </TableCell>
+                    <TableCell className="w-20">
+                      <VariantActionsDropdown
+                        variant={normalizedVariant as any}
+                      />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         )}

@@ -30,11 +30,12 @@ interface Variant {
   productId: string;
   name: string;
   slug: string;
-  size: string;
+  size: string[];
   color: string;
+  costInCents: number;
   priceInCents: number;
   stock: number;
-  imageUrl: string;
+  imageUrl: string[];
 }
 
 interface CreateProductVariantFormProps {
@@ -60,11 +61,12 @@ export function CreateProductVariantForm({
       productId,
       name: variant?.name ?? "",
       slug: variant?.slug ?? "",
-      size: variant?.size ?? "",
+      size: variant?.size ?? [],
       color: variant?.color ?? "",
+      costInCents: variant?.costInCents ?? 0,
       priceInCents: variant?.priceInCents ?? 0,
       stock: variant?.stock ?? 0,
-      imageUrl: variant?.imageUrl ?? "",
+      imageUrl: variant?.imageUrl ?? [],
     },
   });
 
@@ -77,7 +79,7 @@ export function CreateProductVariantForm({
       } else {
         await createProductVariant(data);
         toast.success("Variante criada com sucesso!");
-        form.reset({ productId, name: "", slug: "", size: "", color: "", priceInCents: 0, stock: 0, imageUrl: "" });
+        form.reset({ productId, name: "", slug: "", size: [], color: "", priceInCents: 0, stock: 0, imageUrl: [] });
       }
       setOpen(false);
       onSuccess?.();
@@ -182,6 +184,29 @@ export function CreateProductVariantForm({
 
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="costInCents"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Custo (em centavos)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="9999"
+                      disabled={isLoading}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      value={field.value}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Ex: 9999 = R$ 99,99
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

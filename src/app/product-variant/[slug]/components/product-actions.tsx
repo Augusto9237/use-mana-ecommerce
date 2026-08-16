@@ -10,9 +10,10 @@ import { SizeSelector } from "./size-selector.";
 
 interface ProductActionsProps {
   productVariantId: string;
+  sizes: string[] | null;
 }
 
-const ProductActions = ({ productVariantId }: ProductActionsProps) => {
+const ProductActions = ({ productVariantId, sizes }: ProductActionsProps) => {
   const [quantity, setQuantity] = useState(1);
 
   const handleDecrement = () => {
@@ -29,7 +30,7 @@ const ProductActions = ({ productVariantId }: ProductActionsProps) => {
         <div className="flex items-center justify-between w-full">
           <div className="space-y-4">
             <h3 className="font-medium">Tamanho</h3>
-            <SizeSelector />
+            <SizeSelector sizes={sizes} />
           </div>
           <div className="space-y-4">
             <h3 className="font-medium">Quantidade</h3>

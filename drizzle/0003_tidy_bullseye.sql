@@ -8,4 +8,9 @@ CREATE TABLE "promotion" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-ALTER TABLE "product_variant" ADD COLUMN "stock" integer DEFAULT 0 NOT NULL;
+DO $$
+BEGIN
+	IF EXISTS (SELECT 1 FROM pg_class WHERE relname = 'product_variant' AND relkind = 'r') THEN
+		ALTER TABLE "product_variant" ADD COLUMN IF NOT EXISTS "stock" integer DEFAULT 0 NOT NULL;
+	END IF;
+END$$;--> statement-breakpoint

@@ -604,11 +604,10 @@ async function main() {
           name: variantData.color,
           productId: productId,
           color: variantData.color,
-          size: ["Único"],
+          sizeInStock: [{ size: "Único", stock: 10 }],
           imageUrl: variantImages,
           costInCents: variantData.cost,
           priceInCents: variantData.price,
-          stock: 10,
           slug: generateSlug(`${productData.name}-${variantData.color}`),
         });
       }

@@ -7,6 +7,7 @@ import {
   text,
   timestamp,
   uuid,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
 export const roleEnum = pgEnum("role", ["user", "admin"]);
@@ -120,10 +121,12 @@ export const productVariantTable = pgTable("product_variant", {
   name: text().notNull(),
   slug: text().notNull().unique(),
   color: text().notNull(),
-  size: text().array(),
+  sizeInStock: jsonb("size_in_stock")
+    .$type<Array<{ size: string; stock: number }>>()
+    .notNull()
+    .default([]),
   costInCents: integer("cost_in_cents").notNull(),
   priceInCents: integer("price_in_cents").notNull(),
-  stock: integer("stock").notNull().default(0),
   imageUrl: text("image_url").array().notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

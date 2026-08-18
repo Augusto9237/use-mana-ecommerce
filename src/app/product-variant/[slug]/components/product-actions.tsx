@@ -10,7 +10,7 @@ import { SizeSelector } from "./size-selector.";
 
 interface ProductActionsProps {
   productVariantId: string;
-  sizes: string[] | null;
+  sizes: Array<{ size: string; stock: number }> | null;
 }
 
 const ProductActions = ({ productVariantId, sizes }: ProductActionsProps) => {

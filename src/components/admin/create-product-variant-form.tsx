@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
@@ -22,7 +22,7 @@ import {
   createProductVariantSchema,
 } from "@/actions/create-product/schema";
 import { SheetContent, SheetHeader, SheetTitle, SheetTrigger, Sheet, SheetFooter } from "../ui/sheet";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { updateProductVariant } from "@/actions/update-product-variant";
 
 interface Variant {
@@ -30,11 +30,10 @@ interface Variant {
   productId: string;
   name: string;
   slug: string;
-  size: string[];
+  sizeInStock: Array<{ size: string; stock: number }>;
   color: string;
   costInCents: number;
   priceInCents: number;
-  stock: number;
   imageUrl: string[];
 }
 
@@ -61,13 +60,17 @@ export function CreateProductVariantForm({
       productId,
       name: variant?.name ?? "",
       slug: variant?.slug ?? "",
-      size: variant?.size ?? [],
+      sizeInStock: variant?.sizeInStock ?? [{ size: "", stock: 0 }],
       color: variant?.color ?? "",
       costInCents: variant?.costInCents ?? 0,
       priceInCents: variant?.priceInCents ?? 0,
-      stock: variant?.stock ?? 0,
       imageUrl: variant?.imageUrl ?? [],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "sizeInStock",
   });
 
   async function onSubmit(data: CreateProductVariantSchema) {
@@ -85,7 +88,7 @@ export function CreateProductVariantForm({
       } else {
         await createProductVariant(filteredData);
         toast.success("Variante criada com sucesso!");
-        form.reset({ productId, name: "", slug: "", size: [], color: "", priceInCents: 0, stock: 0, imageUrl: [] });
+        form.reset({ productId, name: "", slug: "", sizeInStock: [{ size: "", stock: 0 }], color: "", priceInCents: 0, imageUrl: [] });
       }
       setOpen(false);
       onSuccess?.();
@@ -117,7 +120,7 @@ export function CreateProductVariantForm({
           <SheetTitle>{isEditing ? "Editar Variante" : "Criar Variante"}</SheetTitle>
         </SheetHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 px-5">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-5">
             <FormField
               control={form.control}
               name="name"
@@ -157,25 +160,71 @@ export function CreateProductVariantForm({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name='size'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tamanho</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Ex: M"
+            <div>
+              <div className="flex items-center justify-between">
+                <FormLabel>Tamanhos e Estoque</FormLabel>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon-sm"
+                  onClick={() => append({ size: "", stock: 0 })}
+                  disabled={isLoading}
+                  className="mb-1"
+                >
+                  <Plus />
+                </Button>
+              </div>
+              {fields.map((field, index) => (
+                <div key={field.id} className="flex items-center gap-4 mb-2">
+                  <FormField
+                    control={form.control}
+                    name={`sizeInStock.${index}.size`}
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormControl>
+                          <Input
+                            placeholder="Ex: M"
+                            disabled={isLoading}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`sizeInStock.${index}.stock`}
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="Estoque"
+                            disabled={isLoading}
+                            onChange={(e) => field.onChange(Number(e.target.value))}
+                            value={field.value}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {fields.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon-sm"
+                      onClick={() => remove(index)}
                       disabled={isLoading}
-                      type="text"
-                      {...field}
-
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <FormMessage>{form.formState.errors.sizeInStock?.message}</FormMessage>
+            </div>
 
             <div className="grid grid-cols-2 gap-5">
               <FormField
@@ -225,44 +274,23 @@ export function CreateProductVariantForm({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-5">
-              <FormField
-                control={form.control}
-                name="stock"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Estoque</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="0"
-                        disabled={isLoading}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        value={field.value}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="color"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Cor</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Ex: Preto"
-                        disabled={isLoading}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="color"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cor</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Ex: Preto"
+                      disabled={isLoading}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="space-y-3">
               <FormLabel>URLs das Imagens</FormLabel>

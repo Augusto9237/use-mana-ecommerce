@@ -120,17 +120,13 @@ export default async function AdminVariantsPage({
       or(
         ilike(productVariantTable.name, `%${search}%`),
         ilike(productVariantTable.color, `%${search}%`),
-        ilike(productVariantTable.size, `%${search}%`),
         ilike(productVariantTable.slug, `%${search}%`)
       )
     );
   }
 
-  if (stockFilter === "in-stock") {
-    filters.push(gt(productVariantTable.stock, 0));
-  } else if (stockFilter === "out-of-stock") {
-    filters.push(eq(productVariantTable.stock, 0));
-  }
+  // Nota: filtro de stock baseado em sizeInStock (JSONB) seria complexo,
+  // considerando implementar se necessário com SQL raw
 
   const whereClause = filters.length > 0 ? and(...filters) : undefined;
 
@@ -251,9 +247,6 @@ export default async function AdminVariantsPage({
                 const normalizedVariant = {
                   ...variant,
                   imageUrl: variant.imageUrl?.[0] ?? "",
-                  size: Array.isArray(variant.size)
-                    ? variant.size[0] ?? null
-                    : variant.size,
                 };
 
                 return (
@@ -278,14 +271,22 @@ export default async function AdminVariantsPage({
                         {variant.color}
                       </div>
                     </TableCell>
-                    <TableCell>{variant.size}</TableCell>
+                    <TableCell>
+                      {Array.isArray(variant.sizeInStock)
+                        ? variant.sizeInStock.map((s) => s.size).join(", ")
+                        : "N/A"}
+                    </TableCell>
                     <TableCell>
                       {priceInReais(variant.costInCents)}
                     </TableCell>
                     <TableCell>
                       {priceInReais(variant.priceInCents)}
                     </TableCell>
-                    <TableCell>{variant.stock}</TableCell>
+                    <TableCell>
+                      {Array.isArray(variant.sizeInStock)
+                        ? variant.sizeInStock.reduce((total, s) => total + s.stock, 0)
+                        : 0}
+                    </TableCell>
                     <TableCell>{variant.slug}</TableCell>
                     <TableCell>
                       {new Date(variant.createdAt).toLocaleDateString(

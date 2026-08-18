@@ -34,9 +34,8 @@ interface Variant {
   imageUrl: string;
   productId: string;
   color: string;
-  size: string;
+  sizeInStock: Array<{ size: string; stock: number }>;
   priceInCents: number;
-  stock: number;
 }
 
 interface VariantActionsDropdownProps {

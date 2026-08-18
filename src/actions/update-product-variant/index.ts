@@ -13,11 +13,20 @@ const updateProductVariantSchema = z.object({
   productId: z.string().uuid(),
   name: z.string().min(2),
   slug: z.string().min(2),
-  size: z.array(z.string().url()).min(1),
+  sizeInStock: z
+    .array(
+      z.object({
+        size: z.string().min(1, "Tamanho deve ser preenchido"),
+        stock: z
+          .number()
+          .int()
+          .nonnegative("Estoque deve ser zero ou maior"),
+      })
+    )
+    .min(1, "Deve ter pelo menos um tamanho"),
   color: z.string().min(1),
   costInCents: z.number().int().positive(),
   priceInCents: z.number().int().positive(),
-  stock: z.number().int().nonnegative(),
   imageUrl: z.array(z.string().url()).min(1),
 });
 
@@ -63,11 +72,10 @@ export const updateProductVariant = async (data: UpdateProductVariantSchema) => 
     .set({
       name: data.name,
       slug: data.slug,
-      size: data.size,
+      sizeInStock: data.sizeInStock,
       color: data.color,
       costInCents: data.costInCents,
       priceInCents: data.priceInCents,
-      stock: data.stock,
       imageUrl: data.imageUrl,
     })
     .where(eq(productVariantTable.id, data.id))

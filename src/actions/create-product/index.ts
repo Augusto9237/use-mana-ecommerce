@@ -99,10 +99,10 @@ export const createProductVariant = async (
     productId: data.productId,
     name: data.name,
     slug: data.slug,
-    size: data.size,
+    sizeInStock: data.sizeInStock,
     color: data.color,
+    costInCents: data.costInCents,
     priceInCents: data.priceInCents,
-    stock: data.stock,
     imageUrl: data.imageUrl,
   } as NewProductVariant;
 

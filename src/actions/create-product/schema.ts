@@ -11,7 +11,17 @@ export const createProductVariantSchema = z.object({
   productId: z.string().uuid("ID de produto inválido"),
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   slug: z.string().min(2, "Slug deve ter pelo menos 2 caracteres"),
-  size: z.array(z.string()).min(1, "Tamanho deve ser preenchido"),
+  sizeInStock: z
+    .array(
+      z.object({
+        size: z.string().min(1, "Tamanho deve ser preenchido"),
+        stock: z
+          .number()
+          .int()
+          .nonnegative("Estoque deve ser zero ou maior"),
+      })
+    )
+    .min(1, "Deve ter pelo menos um tamanho"),
   color: z.string().min(2, "Cor deve ser preenchida"),
   costInCents: z
     .number()
@@ -21,10 +31,6 @@ export const createProductVariantSchema = z.object({
     .number()
     .int()
     .positive("Preço deve ser maior que zero"),
-  stock: z
-    .number()
-    .int()
-    .nonnegative("Estoque deve ser zero ou maior"),
   imageUrl: z.array(z.string().url("URL de imagem inválida")),
 });
 

@@ -14,8 +14,8 @@ export default function CarouselProducts({ images }: CarouselProductsProps) {
   return (
     <Carousel className="w-full">
       <CarouselContent>
-        {images.map((image) => (
-          <CarouselItem key={image}>
+        {images.map((image, i) => (
+          <CarouselItem key={i}>
             <div>
               <img
                 alt="dddepth-248"
@@ -26,8 +26,8 @@ export default function CarouselProducts({ images }: CarouselProductsProps) {
           </CarouselItem>
         ))}
       </CarouselContent>
-      <CarouselPrevious variant="ghost" />
-      <CarouselNext  variant="ghost"/>
+      <CarouselPrevious variant="ghost" className="max-sm:-left-0" />
+      <CarouselNext  variant="ghost" className="max-sm:-right-0"/>
     </Carousel>
   );
 }

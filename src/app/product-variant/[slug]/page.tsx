@@ -74,7 +74,7 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
               </h3>
             </div>
 
-            <ProductActions productVariantId={productVariant.id} sizes={productVariant.size} />
+            <ProductActions productVariantId={productVariant.id} sizes={productVariant.sizeInStock} />
 
             <div className="px-5">
               <p className="text-shadow-amber-600">

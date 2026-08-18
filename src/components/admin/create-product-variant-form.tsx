@@ -73,11 +73,17 @@ export function CreateProductVariantForm({
   async function onSubmit(data: CreateProductVariantSchema) {
     setIsLoading(true);
     try {
+      // Filtrar URLs vazias
+      const filteredData = {
+        ...data,
+        imageUrl: data.imageUrl.filter((url) => url && url.trim() !== ""),
+      };
+
       if (isEditing) {
-        await updateProductVariant({ id: variant.id, ...data });
+        await updateProductVariant({ id: variant.id, ...filteredData });
         toast.success("Variante atualizada com sucesso!");
       } else {
-        await createProductVariant(data);
+        await createProductVariant(filteredData);
         toast.success("Variante criada com sucesso!");
         form.reset({ productId, name: "", slug: "", size: [], color: "", priceInCents: 0, stock: 0, imageUrl: [] });
       }
@@ -111,7 +117,7 @@ export function CreateProductVariantForm({
           <SheetTitle>{isEditing ? "Editar Variante" : "Criar Variante"}</SheetTitle>
         </SheetHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-5">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 px-5">
             <FormField
               control={form.control}
               name="name"
@@ -153,24 +159,6 @@ export function CreateProductVariantForm({
 
             <FormField
               control={form.control}
-              name="color"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cor</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Ex: Preto"
-                      disabled={isLoading}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name='size'
               render={({ field }) => (
                 <FormItem>
@@ -189,93 +177,120 @@ export function CreateProductVariantForm({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="costInCents"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Custo (em centavos)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="9999"
-                      disabled={isLoading}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                      value={field.value}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Ex: 9999 = R$ 99,99
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-5">
+              <FormField
+                control={form.control}
+                name="costInCents"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Custo (em centavos)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="9999"
+                        disabled={isLoading}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Ex: 9999 = R$ 99,99
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="priceInCents"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Preço (em centavos)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="9999"
-                      disabled={isLoading}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                      value={field.value}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Ex: 9999 = R$ 99,99
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="priceInCents"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Preço (em centavos)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="9999"
+                        disabled={isLoading}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Ex: 9999 = R$ 99,99
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            <FormField
-              control={form.control}
-              name="stock"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Estoque</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="0"
-                      disabled={isLoading}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                      value={field.value}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Quantidade disponível em estoque
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-5">
+              <FormField
+                control={form.control}
+                name="stock"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Estoque</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        disabled={isLoading}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        value={field.value}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="color"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cor</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Ex: Preto"
+                        disabled={isLoading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            <FormField
-              control={form.control}
-              name="imageUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>URL da Imagem</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="url"
-                      placeholder="https://example.com/image.jpg"
-                      disabled={isLoading}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="space-y-3">
+              <FormLabel>URLs das Imagens</FormLabel>
+              <FormDescription>
+                Adicione até 4 URLs de imagens (deixe em branco se não usar)
+              </FormDescription>
+              {[0, 1, 2, 3].map((index) => (
+                <FormField
+                  key={index}
+                  control={form.control}
+                  name={`imageUrl.${index}`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="url"
+                          placeholder={`https://example.com/image-${index + 1}.jpg`}
+                          disabled={isLoading}
+                          {...field}
+                          value={field.value ?? ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
+            </div>
 
             <SheetFooter className="p-0">
               <Button type="submit" disabled={isLoading}>

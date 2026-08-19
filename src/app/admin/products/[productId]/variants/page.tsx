@@ -38,6 +38,7 @@ import { AdminLayout } from "@/components/admin/admin-layout";
 import { VariantActionsDropdown } from "../../components/variant-actions-dropdown";
 import { ProductImageDialog } from "../../components/product-image-dialog";
 import { VariantFilters } from "./components/variant-filters";
+import { formatCentsToBRL } from "@/helpers/money";
 
 interface AdminVariantsPageProps {
   params: Promise<{
@@ -177,12 +178,6 @@ export default async function AdminVariantsPage({
     return pages;
   };
 
-  const priceInReais = (priceInCents: number) => {
-    return (priceInCents / 100).toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-  };
 
   return (
     <AdminLayout>
@@ -231,76 +226,63 @@ export default async function AdminVariantsPage({
             <TableHeader>
               <TableRow>
                 <TableHead className="w-24">Imagem</TableHead>
-                <TableHead>Nome</TableHead>
+                <TableHead>Slug</TableHead>
                 <TableHead>Cor</TableHead>
                 <TableHead>Tamanho</TableHead>
                 <TableHead>Custo</TableHead>
                 <TableHead>Preço</TableHead>
+                <TableHead>Preço Promocional</TableHead>
                 <TableHead>Estoque</TableHead>
-                <TableHead>Slug</TableHead>
                 <TableHead>Criada em</TableHead>
                 <TableHead className="w-20">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {variants.map((variant) => {
-                const normalizedVariant = {
-                  ...variant,
-                  imageUrl: variant.imageUrl?.[0] ?? "",
-                };
-
-                return (
-                  <TableRow key={variant.id}>
-                    <TableCell className="w-24">
-                      <ProductImageDialog
-                        src={variant.imageUrl[0]}
-                        alt={variant.name}
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {variant.name}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="w-4 h-4 rounded border"
-                          style={{
-                            backgroundColor: variant.color,
-                          }}
-                        />
-                        {variant.color}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {Array.isArray(variant.sizeInStock)
-                        ? variant.sizeInStock.map((s) => s.size).join(", ")
-                        : "N/A"}
-                    </TableCell>
-                    <TableCell>
-                      {priceInReais(variant.costInCents)}
-                    </TableCell>
-                    <TableCell>
-                      {priceInReais(variant.priceInCents)}
-                    </TableCell>
-                    <TableCell>
-                      {Array.isArray(variant.sizeInStock)
-                        ? variant.sizeInStock.reduce((total, s) => total + s.stock, 0)
-                        : 0}
-                    </TableCell>
-                    <TableCell>{variant.slug}</TableCell>
-                    <TableCell>
-                      {new Date(variant.createdAt).toLocaleDateString(
-                        "pt-BR"
-                      )}
-                    </TableCell>
-                    <TableCell className="w-20">
-                      <VariantActionsDropdown
-                        variant={normalizedVariant as any}
-                      />
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              {variants.map((variant) => (
+                <TableRow key={variant.id}>
+                  <TableCell className="w-24">
+                    <ProductImageDialog
+                      src={variant.imageUrl?.[0] ?? ""}
+                      alt={variant.name}
+                    />
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    {variant.slug}
+                  </TableCell>
+                  <TableCell>
+                    {variant.color}
+                  </TableCell>
+                  <TableCell>
+                    {Array.isArray(variant.sizeInStock)
+                      ? variant.sizeInStock.map((s) => s.size).join(", ")
+                      : "N/A"}
+                  </TableCell>
+                  <TableCell>
+                    {formatCentsToBRL(variant.costInCents)}
+                  </TableCell>
+                  <TableCell>
+                    {formatCentsToBRL(variant.priceInCents)}
+                  </TableCell>
+                  <TableCell>
+                    {variant.discountPriceInCents ? formatCentsToBRL(variant.discountPriceInCents) : ""}
+                  </TableCell>
+                  <TableCell>
+                    {Array.isArray(variant.sizeInStock)
+                      ? variant.sizeInStock.reduce((total, s) => total + s.stock, 0)
+                      : 0}
+                  </TableCell>
+                  <TableCell>
+                    {new Date(variant.createdAt).toLocaleDateString(
+                      "pt-BR"
+                    )}
+                  </TableCell>
+                  <TableCell className="w-20">
+                    <VariantActionsDropdown
+                      variant={variant}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         )}

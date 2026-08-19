@@ -28,14 +28,16 @@ import { deleteProductVariant } from "@/actions/delete-product-variant";
 
 interface Variant {
   id: string;
-  name: string;
-  createdAt: Date;
-  slug: string;
-  imageUrl: string;
   productId: string;
+  name: string;
+  slug: string;
   color: string;
   sizeInStock: Array<{ size: string; stock: number }>;
+  costInCents: number;
   priceInCents: number;
+  discountPriceInCents?: number | null;
+  imageUrl: string[];
+  createdAt?: Date;
 }
 
 interface VariantActionsDropdownProps {

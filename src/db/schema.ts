@@ -127,6 +127,7 @@ export const productVariantTable = pgTable("product_variant", {
     .default([]),
   costInCents: integer("cost_in_cents").notNull(),
   priceInCents: integer("price_in_cents").notNull(),
+  discountPriceInCents: integer("discount_price_in_cents"),
   imageUrl: text("image_url").array().notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

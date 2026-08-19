@@ -54,7 +54,7 @@ export const createCheckoutSession = async (
         product_data: {
           name: `${orderItem.productVariant.product.name} - ${orderItem.productVariant.name}`,
           description: orderItem.productVariant.product.description,
-          images: [orderItem.productVariant.imageUrl],
+          images: orderItem.productVariant.imageUrl,
         },
         // Em centavos
         unit_amount: orderItem.priceInCents,

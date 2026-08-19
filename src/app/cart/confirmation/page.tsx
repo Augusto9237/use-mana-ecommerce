@@ -87,7 +87,9 @@ const ConfirmationPage = async () => {
             variantName: item.productVariant.name,
             quantity: item.quantity,
             priceInCents: item.productVariant.priceInCents,
-            imageUrl: item.productVariant.imageUrl,
+            imageUrl: Array.isArray(item.productVariant.imageUrl)
+              ? item.productVariant.imageUrl[0] ?? ""
+              : item.productVariant.imageUrl,
           }))}
         />
         <FinishOrderButton

@@ -1,0 +1,1 @@
+ALTER TABLE "product_variant" ADD COLUMN IF NOT EXISTS "discount_price_in_cents" integer;

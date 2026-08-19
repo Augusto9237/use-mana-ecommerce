@@ -63,7 +63,7 @@ interface OrderDetailsDialogProps {
       productVariant: {
         id: string;
         name: string;
-        imageUrl: string;
+        imageUrl: string[] | string;
         priceInCents: number;
         product: {
           name: string;
@@ -236,7 +236,11 @@ export function OrderDetailsDialog({
                     <div className="flex items-center gap-3 min-w-0">
                       <div className="relative size-14 rounded-md overflow-hidden bg-white border flex-shrink-0">
                         <Image
-                          src={item.productVariant.imageUrl}
+                          src={
+                            Array.isArray(item.productVariant.imageUrl)
+                              ? item.productVariant.imageUrl[0] ?? "/placeholder.png"
+                              : item.productVariant.imageUrl || "/placeholder.png"
+                          }
                           alt={item.productVariant.product.name}
                           fill
                           className="object-cover"

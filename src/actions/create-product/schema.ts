@@ -31,6 +31,11 @@ export const createProductVariantSchema = z.object({
     .number()
     .int()
     .positive("Preço deve ser maior que zero"),
+  discountPriceInCents: z
+    .number()
+    .int()
+    .positive("Preço deve ser maior que zero")
+    .optional(),
   imageUrl: z.array(z.string().url("URL de imagem inválida")),
 });
 

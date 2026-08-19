@@ -101,7 +101,7 @@ export default async function AdminPage() {
       const stat = variantStats.get(v.id) ?? {
         productName: v.product?.name ?? "",
         variantName: v.name,
-        imageUrl: v.imageUrl,
+        imageUrl: Array.isArray(v.imageUrl) ? v.imageUrl[0] ?? "" : v.imageUrl ?? "",
         count: 0,
         orderCount: 0,
         priceInCents: v.priceInCents,

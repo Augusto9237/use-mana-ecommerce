@@ -25,7 +25,7 @@ export const cancelCheckoutPayment = async (
   });
 
   if (!session?.user) {
-    throw new Error("Unauthorized");
+    throw new Error("Não autorizado");
   }
 
   const existingOrder = await db.query.orderTable.findFirst({
@@ -33,17 +33,18 @@ export const cancelCheckoutPayment = async (
   });
 
   if (!existingOrder) {
-    throw new Error("Order not found");
+    throw new Error("Pedido não encontrado");
   }
 
   const user = session.user as UserWithRole;
   if (existingOrder.userId !== session.user.id && user.role !== "admin") {
-    throw new Error("Unauthorized");
+    throw new Error("Não autorizado");
   }
 
   const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
   if (!accessToken) {
-    throw new Error("MERCADOPAGO_ACCESS_TOKEN não está configurado no ambiente do servidor");
+    console.error("MERCADOPAGO_ACCESS_TOKEN não está configurado no ambiente do servidor");
+    throw new Error("Serviço de pagamento temporariamente indisponível. Tente novamente mais tarde.");
   }
 
   const mpClient = new MercadoPagoConfig({
@@ -64,12 +65,12 @@ export const cancelCheckoutPayment = async (
 
     const payments = searchResult.results ?? [];
     if (payments.length === 0) {
-      throw new Error("Mercado Pago payment not found for this order");
+      throw new Error("Nenhum pagamento foi encontrado para este pedido.");
     }
 
     const paymentData = payments[0];
     if (!paymentData.id) {
-      throw new Error("Mercado Pago search result did not return a payment id");
+      throw new Error("Nenhum identificador de pagamento foi encontrado para este pedido.");
     }
 
     const paymentId = String(paymentData.id);
@@ -88,24 +89,28 @@ export const cancelCheckoutPayment = async (
       cancelResponse,
     };
   } catch (error: any) {
-    console.error("Erro ao cancelar pagamento Mercado Pago:", error);
+    // Log completo seguro no console do servidor para fins de diagnóstico
+    console.error("Erro interno ao cancelar pagamento Mercado Pago:", {
+      orderId,
+      error: error?.message || error,
+      status: error?.status,
+      cause: error?.cause,
+    });
 
-    const errorMessage = error?.message || "";
-    const isLiveCredentialsError =
-      error?.status === 401 ||
-      errorMessage.includes("Unauthorized use of live credentials") ||
-      (Array.isArray(error?.cause) &&
-        error.cause.some((c: any) => c?.code === 7 || c?.description?.includes("Unauthorized use of live credentials")));
+    const safeCustomErrors = [
+      "Não autorizado",
+      "Pedido não encontrado",
+      "Serviço de pagamento temporariamente indisponível. Tente novamente mais tarde.",
+      "Nenhum pagamento foi encontrado para este pedido.",
+      "Nenhum identificador de pagamento foi encontrado para este pedido.",
+    ];
 
-    if (isLiveCredentialsError) {
-      throw new Error(
-        "Erro de autorização no Mercado Pago (401 - Unauthorized use of live credentials): " +
-          "Suas credenciais de produção (APP_USR-...) não estão homologadas/ativadas no painel do Mercado Pago " +
-          "ou você está tentando operar em modo de teste/sandbox usando credenciais de produção. " +
-          "Substitua seu MERCADOPAGO_ACCESS_TOKEN e PUBLIC_KEY no .env por credenciais de teste (TEST-...)."
-      );
+    if (error instanceof Error && safeCustomErrors.includes(error.message)) {
+      throw error;
     }
 
-    throw error;
+    throw new Error(
+      "Não foi possível cancelar o pagamento junto à operadora. Por favor, tente novamente ou contate o suporte."
+    );
   }
 };

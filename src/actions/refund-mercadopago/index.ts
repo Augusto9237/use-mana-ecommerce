@@ -21,24 +21,25 @@ export const refundPayment = async (data: CancelCheckoutPaymentSchema) => {
 
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) {
-    throw new Error("Unauthorized");
+    throw new Error("Não autorizado");
   }
 
   const existingOrder = await db.query.orderTable.findFirst({
     where: (order, { eq }) => eq(order.id, orderId),
   });
   if (!existingOrder) {
-    throw new Error("Order not found");
+    throw new Error("Pedido não encontrado");
   }
 
   const user = session.user as UserWithRole;
   if (existingOrder.userId !== session.user.id && user.role !== "admin") {
-    throw new Error("Unauthorized");
+    throw new Error("Não autorizado");
   }
 
   const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
   if (!accessToken) {
-    throw new Error("MERCADOPAGO_ACCESS_TOKEN não está configurado no ambiente do servidor");
+    console.error("MERCADOPAGO_ACCESS_TOKEN não está configurado no ambiente do servidor");
+    throw new Error("Serviço de pagamento temporariamente indisponível. Tente novamente mais tarde.");
   }
 
   const mpClient = new MercadoPagoConfig({
@@ -50,28 +51,32 @@ export const refundPayment = async (data: CancelCheckoutPaymentSchema) => {
   const paymentClient = new Payment(mpClient);
 
   try {
-    let paymentData;
-    try {
-      const searchResult = await paymentClient.search({
-        options: {
-          external_reference: `order-${orderId}`,
-          sort: "date_created",
-          criteria: "desc",
-        },
-      });
-      const payments = searchResult.results ?? [];
-      if (payments.length === 0) {
-        throw new Error("Mercado Pago payment not found for this order");
-      }
-      paymentData = payments[0];
-    } catch (error) {
-      console.error("Erro na BUSCA do pagamento:", error);
-      throw error;
+    // Busca os pagamentos daquele pedido
+    const searchResult = await paymentClient.search({
+      options: {
+        external_reference: `order-${orderId}`,
+        sort: "date_created",
+        criteria: "desc",
+      },
+    });
+
+    const payments = searchResult.results ?? [];
+    // Garante que busca um pagamento que esteja de fato APROVADO
+    const approvedPayment = payments.find((p) => p.status === "approved") || payments[0];
+
+    if (!approvedPayment || !approvedPayment.id) {
+      throw new Error("Nenhum pagamento aprovado foi encontrado para este pedido.");
     }
-    const paymentId = String(paymentData.id);
-    const refundResponse = await paymentRefund.create({
+
+    if (approvedPayment.status !== "approved") {
+      throw new Error("Apenas pedidos com pagamento aprovado podem ser reembolsados.");
+    }
+
+    const paymentId = String(approvedPayment.id);
+
+    // Executa o reembolso total usando o método total()
+    const refundResponse = await paymentRefund.total({
       payment_id: paymentId,
-      body: {},
       requestOptions: {
         idempotencyKey: randomUUID(),
       },
@@ -84,24 +89,30 @@ export const refundPayment = async (data: CancelCheckoutPaymentSchema) => {
 
     return { orderId, paymentId, refundResponse };
   } catch (error: any) {
-    console.error("Erro ao reembolsar pagamento Mercado Pago:", error);
+    // Log completo no console interno do servidor para diagnóstico seguro
+    console.error("Erro interno ao processar reembolso Mercado Pago:", {
+      orderId,
+      error: error?.message || error,
+      status: error?.status,
+      cause: error?.cause,
+    });
 
-    const errorMessage = error?.message || "";
-    const isLiveCredentialsError =
-      error?.status === 401 ||
-      errorMessage.includes("Unauthorized use of live credentials") ||
-      (Array.isArray(error?.cause) &&
-        error.cause.some((c: any) => c?.code === 7 || c?.description?.includes("Unauthorized use of live credentials")));
+    // Se for uma regra de negócio controlada (ex: pedido/pagamento não encontrado ou não elegível), repassa a mensagem
+    const safeCustomErrors = [
+      "Não autorizado",
+      "Pedido não encontrado",
+      "Serviço de pagamento temporariamente indisponível. Tente novamente mais tarde.",
+      "Nenhum pagamento aprovado foi encontrado para este pedido.",
+      "Apenas pedidos com pagamento aprovado podem ser reembolsados.",
+    ];
 
-    if (isLiveCredentialsError) {
-      throw new Error(
-        "Erro de autorização no Mercado Pago (401 - Unauthorized use of live credentials): " +
-          "Suas credenciais de produção (APP_USR-...) não estão homologadas/ativadas no painel do Mercado Pago " +
-          "ou você está tentando operar em modo de teste/sandbox usando credenciais de produção. " +
-          "Substitua seu MERCADOPAGO_ACCESS_TOKEN e PUBLIC_KEY no .env por credenciais de teste (TEST-...)."
-      );
+    if (error instanceof Error && safeCustomErrors.includes(error.message)) {
+      throw error;
     }
 
-    throw error;
+    // Para erros de API, credenciais ou falhas técnicas inesperadas, oculta detalhes internos e lança mensagem amigável
+    throw new Error(
+      "Não foi possível processar o reembolso junto à operadora de pagamento. Por favor, tente novamente ou entre em contato com o suporte."
+    );
   }
 };

@@ -268,6 +268,7 @@ export const orderTable = pgTable("order", {
   uberQuoteId: text("uber_quote_id"),
   uberDeliveryId: text("uber_delivery_id"),
   uberDeliveryStatus: text("uber_delivery_status"),
+  paymentId: text("payment_id").unique(),
   status: orderStatus().notNull().default("pending"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

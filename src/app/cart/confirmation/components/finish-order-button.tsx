@@ -27,16 +27,20 @@ const FinishOrderButton = ({
       shippingFeeInCents,
     });
 
-    const { initPoint } = await createCheckoutPreference({
-      orderId,
+    const initPoint = await fetch("/api/mercadopago/checkout", {
+      method: "POST",
+      body: JSON.stringify({
+        orderId,
+      }),
     });
 
-    if (!initPoint) {
+    const initPointResponse = await initPoint.json();
+    if (!initPointResponse.initPoint) {
       throw new Error("Failed to create Mercado Pago preference");
     }
 
     // Redireciona o usuário para o Checkout Pro do Mercado Pago
-    route.push(initPoint);
+    window.location.href = initPointResponse.initPoint;
   };
   return (
     <>

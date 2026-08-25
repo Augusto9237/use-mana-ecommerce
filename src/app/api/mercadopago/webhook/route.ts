@@ -25,8 +25,6 @@ export async function POST(req: Request) {
       };
     }
 
-    console.log("Mercado Pago webhook parsed body:", body);
-
     // Extract event type and payment ID
     const eventType = body?.type || body?.action; // "payment", "plan", "subscription", etc.
     const paymentId = body?.data?.id;
@@ -74,7 +72,7 @@ export async function POST(req: Request) {
                 try {
                   await db
                     .update(orderTable)
-                    .set({ status: "paid" })
+                    .set({ status: "paid", paymentId: payment?.id })
                     .where(eq(orderTable.id, orderId));
                   console.log(`Order ${orderId} marked as paid (webhook via payment fetch).`);
                 } catch (e) {

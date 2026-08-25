@@ -114,14 +114,8 @@ export const createCheckoutPreference = async (
       pending: `${baseUrl.replace(/\/$/, "")}/cart`,
     };
 
-    const preferenceBody: any = {
-      items: items.map((item) => (
-        {
-          title: item.title,
-          quantity: item.quantity,
-          unit_price: item.unit_price
-        }
-      )),
+    const preferenceBody = {
+      items,
       payer: {
         email: session.user.email || undefined,
         name: session.user.name || undefined,

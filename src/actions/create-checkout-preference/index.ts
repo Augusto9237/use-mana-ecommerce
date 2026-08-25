@@ -115,7 +115,13 @@ export const createCheckoutPreference = async (
     };
 
     const preferenceBody: any = {
-      items,
+      items: items.map((item) => (
+        {
+          title: item.title,
+          quantity: item.quantity,
+          unit_price: item.unit_price
+        }
+      )),
       payer: {
         email: session.user.email || undefined,
         name: session.user.name || undefined,

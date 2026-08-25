@@ -36,6 +36,9 @@ export const finishOrder = async (data?: FinishOrderSchema) => {
       },
     },
   });
+
+  console.log("Cart:", cart);
+
   if (!cart) {
     throw new Error("Cart not found");
   }

@@ -52,10 +52,6 @@ export default async function AdminOrdersPage(props: {
   const limit = 10;
   const offset = (currentPage - 1) * limit;
 
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
   // Build filters
   const filters = [];
 
@@ -106,8 +102,6 @@ export default async function AdminOrdersPage(props: {
     },
     orderBy: (orders, { desc }) => [desc(orders.createdAt)],
   });
-
-  console.log("orders", orders);
 
   // Generate page numbers to show
   const getPageNumbers = () => {

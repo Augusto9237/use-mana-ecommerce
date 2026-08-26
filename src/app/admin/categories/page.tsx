@@ -5,7 +5,6 @@ import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { count, ilike } from "drizzle-orm";
 import { categoryTable } from "@/db/schema";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -142,7 +141,7 @@ export default async function AdminCategoriesPage(props: {
         {categories.length === 0 ? (
           <Card>
             <CardContent className="py-8 text-center">
-              <p className="text-gray-600 mb-4">Nenhuma categoria encontrada</p>
+              <p className="text-muted-foreground mb-4">Nenhuma categoria encontrada</p>
               <CreateCategoryForm />
             </CardContent>
           </Card>

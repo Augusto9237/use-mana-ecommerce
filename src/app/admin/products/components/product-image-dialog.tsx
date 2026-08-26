@@ -1,19 +1,20 @@
 "use client";
 
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ImageOff } from "lucide-react";
 import Image from "next/image";
 
 interface ProductImageDialogProps {
-  src: string;
+  src: string | null;
   alt: string;
   className?: string;
 }
 
 export function ProductImageDialog({ src, alt, className }: ProductImageDialogProps) {
-  if (!src) {
+  if (!src || src.length < 1) {
     return (
       <div className="size-10 bg-muted rounded-md flex items-center justify-center text-xs text-muted-foreground">
-        Sem foto
+        <ImageOff />
       </div>
     );
   }

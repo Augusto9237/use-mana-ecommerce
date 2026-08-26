@@ -2,7 +2,6 @@
 
 import { Loader2 } from "lucide-react";
 
-import { createCheckoutPreference } from "@/actions/create-checkout-preference";
 import { Button } from "@/components/ui/button";
 import { useFinishOrder } from "@/hooks/mutations/use-finish-order";
 import { useRouter } from "next/navigation";

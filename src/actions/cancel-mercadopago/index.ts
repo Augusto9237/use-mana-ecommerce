@@ -12,6 +12,7 @@ import {
   cancelCheckoutPaymentSchema,
   CancelCheckoutPaymentSchema,
 } from "./schema";
+import { client } from "@/lib/mercadopago";
 
 type UserWithRole = { role?: string };
 
@@ -47,12 +48,8 @@ export const cancelCheckoutPayment = async (
     throw new Error("Serviço de pagamento temporariamente indisponível. Tente novamente mais tarde.");
   }
 
-  const mpClient = new MercadoPagoConfig({
-    accessToken,
-    options: { timeout: 5000 },
-  });
 
-  const paymentClient = new Payment(mpClient);
+  const paymentClient = new Payment(client);
 
   try {
     const searchResult = await paymentClient.search({
@@ -75,7 +72,7 @@ export const cancelCheckoutPayment = async (
 
     const paymentId = String(paymentData.id);
     const cancelResponse = await paymentClient.cancel({
-      id: paymentId,
+      id: existingOrder.paymentId!,
     });
 
     await db.update(orderTable).set({ status: "canceled" }).where(eq(orderTable.id, orderId));

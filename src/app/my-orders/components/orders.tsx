@@ -13,11 +13,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { orderTable } from "@/db/schema";
 import { formatCentsToBRL } from "@/helpers/money";
+import { AlertCancelOrder } from "./cancel-order-alert";
 
 interface OrdersProps {
   orders: Array<{
     id: string;
     totalPriceInCents: number;
+    shippingFeeInCents: number;
     status: (typeof orderTable.$inferSelect)["status"];
     createdAt: Date;
     items: Array<{
@@ -60,37 +62,37 @@ const Orders = ({ orders }: OrdersProps) => {
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4">
-                  {order.items.map((product) => (
-                    <div
-                      className="flex items-center justify-between"
-                      key={product.id}
-                    >
-                      <div className="flex items-center gap-4">
-                        <Image
-                          src={product.imageUrl}
-                          alt={product.productName}
-                          width={78}
-                          height={78}
-                          className="rounded-lg"
-                        />
-                        <div className="flex flex-col gap-1">
-                          <p className="text-sm font-semibold">
-                            {product.productName}
-                          </p>
-                          <p className="text-muted-foreground text-xs font-medium">
-                            {product.productVariantName} x {product.quantity}
+                    {order.items.map((product) => (
+                      <div
+                        className="flex items-center justify-between"
+                        key={product.id}
+                      >
+                        <div className="flex items-center gap-4">
+                          <Image
+                            src={product.imageUrl}
+                            alt={product.productName}
+                            width={78}
+                            height={78}
+                            className="rounded-lg"
+                          />
+                          <div className="flex flex-col gap-1">
+                            <p className="text-sm font-semibold">
+                              {product.productName}
+                            </p>
+                            <p className="text-muted-foreground text-xs font-medium">
+                              {product.productVariantName} x {product.quantity}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end justify-center gap-2">
+                          <p className="text-sm font-bold">
+                            {formatCentsToBRL(
+                              product.priceInCents * product.quantity,
+                            )}
                           </p>
                         </div>
                       </div>
-                      <div className="flex flex-col items-end justify-center gap-2">
-                        <p className="text-sm font-bold">
-                          {formatCentsToBRL(
-                            product.priceInCents * product.quantity,
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                   </div>
                   <div className="py-5">
                     <Separator />
@@ -105,7 +107,7 @@ const Orders = ({ orders }: OrdersProps) => {
                     <div className="flex justify-between">
                       <p className="text-sm">Frete</p>
                       <p className="text-muted-foreground text-sm font-medium">
-                        GRÁTIS
+                        {formatCentsToBRL(order.shippingFeeInCents)}
                       </p>
                     </div>
                     <div className="flex justify-between">
@@ -115,6 +117,9 @@ const Orders = ({ orders }: OrdersProps) => {
                       </p>
                     </div>
                   </div>
+                  {order.status !== "paid" && (
+                    <AlertCancelOrder order={order} />
+                  )}
                 </AccordionContent>
               </AccordionItem>
             </Accordion>

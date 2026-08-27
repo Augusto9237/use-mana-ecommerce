@@ -13,6 +13,7 @@ import {
   cancelCheckoutPaymentSchema,
   CancelCheckoutPaymentSchema,
 } from "./schema";
+import { client } from "@/lib/mercadopago";
 
 type UserWithRole = { role?: string };
 
@@ -36,51 +37,31 @@ export const refundPayment = async (data: CancelCheckoutPaymentSchema) => {
     throw new Error("Não autorizado");
   }
 
-  const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
-  if (!accessToken) {
-    console.error("MERCADOPAGO_ACCESS_TOKEN não está configurado no ambiente do servidor");
-    throw new Error("Serviço de pagamento temporariamente indisponível. Tente novamente mais tarde.");
-  }
-
-  const mpClient = new MercadoPagoConfig({
-    accessToken,
-    options: { timeout: 5000 },
-  });
-
-  const paymentRefund = new PaymentRefund(mpClient);
-  const paymentClient = new Payment(mpClient);
+  const paymentRefund = new PaymentRefund(client);
+  const paymentClient = new Payment(client);
 
   try {
     // Busca os pagamentos daquele pedido
-    const searchResult = await paymentClient.search({
-      options: {
-        external_reference: `order-${orderId}`,
-        sort: "date_created",
-        criteria: "desc",
-      },
-    });
+    const payment = await paymentClient.get({ id: existingOrder.paymentId! });
 
-    const payments = searchResult.results ?? [];
-    // Garante que busca um pagamento que esteja de fato APROVADO
-    const approvedPayment = payments.find((p) => p.status === "approved") || payments[0];
-
-    if (!approvedPayment || !approvedPayment.id) {
+    if (!payment.id) {
       throw new Error("Nenhum pagamento aprovado foi encontrado para este pedido.");
     }
 
-    if (approvedPayment.status !== "approved") {
+    if (payment.status !== "approved") {
       throw new Error("Apenas pedidos com pagamento aprovado podem ser reembolsados.");
     }
 
-    const paymentId = String(approvedPayment.id);
+    const paymentId = String(payment.id);
 
-    // Executa o reembolso total usando o método total()
-    const refundResponse = await paymentRefund.total({
-      payment_id: paymentId,
-      requestOptions: {
-        idempotencyKey: randomUUID(),
-      },
-    });
+// ✅ Correto para o SDK v2 do Mercado Pago
+  const refundResponse = await paymentRefund.total({
+    payment_id: paymentId,
+    requestOptions: {
+      idempotencyKey: randomUUID(),
+    },
+  });
+
 
     await db.update(orderTable).set({ status: "canceled" }).where(eq(orderTable.id, orderId));
 

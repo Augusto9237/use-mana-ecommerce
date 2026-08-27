@@ -21,11 +21,6 @@ export const deleteOrder = async (orderId: string) => {
     throw new Error("Usuário não autenticado");
   }
 
-  const user = session.user as UserWithRole;
-  if (user.role !== "admin") {
-    throw new Error("Acesso negado: apenas administradores podem excluir pedidos");
-  }
-
   const existingOrder = await db.query.orderTable.findFirst({
     where: (order, { eq }) => eq(order.id, orderId),
   });
@@ -34,13 +29,18 @@ export const deleteOrder = async (orderId: string) => {
     throw new Error("Pedido não encontrado");
   }
 
+  if (existingOrder.userId !== session.user.id || (session.user as UserWithRole).role !== "admin") {
+    throw new Error("Não autorizado: você não pode excluir este pedido");
+  }
+
   if (existingOrder.status === "paid") {
-    try {
-      const { refundResponse } = await refundPayment({ orderId });
-      console.log("Reembolso executado com sucesso:", refundResponse);
-    } catch (error) {
-      console.warn("Não foi possível processar o reembolso automático no Mercado Pago:", error);
-    }
+     throw new Error("Pedido ja foi pago, não é possível excluir um pedido pago");
+    // try {
+    //   const { refundResponse } = await refundPayment({ orderId });
+    //   console.log("Reembolso executado com sucesso:", refundResponse);
+    // } catch (error) {
+    //   console.warn("Não foi possível processar o reembolso automático no Mercado Pago:", error);
+    // }
   }
 
   await db.delete(orderTable).where(eq(orderTable.id, orderId));

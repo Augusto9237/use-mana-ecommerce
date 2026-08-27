@@ -43,7 +43,7 @@ export function AlertCancelOrder({
   function handleDeleteOrder() {
     startTransition(async () => {
       try {
-        // await deleteOrder(order.id);
+        await deleteOrder(order.id);
         console.log("Pedido cancelado com sucesso!");
         toast.success("Pedido excluído com sucesso!");
         setOpen(false);

@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { orderTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { MercadoPagoConfig, Payment, PaymentRefund } from "mercadopago";
+import { Payment, PaymentRefund } from "mercadopago";
 import {
   cancelCheckoutPaymentSchema,
   CancelCheckoutPaymentSchema,
@@ -23,6 +23,10 @@ export const refundPayment = async (data: CancelCheckoutPaymentSchema) => {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user) {
     throw new Error("Não autorizado");
+  }
+
+    if (session.user.role !== "admin") {
+    throw new Error("Acesso negado: apenas administradores podem excluir pedidos");
   }
 
   const existingOrder = await db.query.orderTable.findFirst({

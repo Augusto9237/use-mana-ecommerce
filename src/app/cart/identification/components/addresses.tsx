@@ -143,12 +143,12 @@ const Addresses = ({
           />
         </div>
       </Card>
-      <div className="flex w-full justify-end px-5 py-5 gap-5  max-w-screen-xl mx-auto">
-        <Link href="/">
-          <Button variant="outline">Continuar Comprando</Button>
+      <div className="flex max-sm:grid grid-cols-2 w-full sm:justify-end px-5 max-sm:p-0 py-5 gap-5  max-w-screen-xl mx-auto">
+        <Link href="/" >
+          <Button variant="outline" className="max-sm:w-full">Continuar Comprando</Button>
         </Link>
-        <Link href="/cart/confirmation" aria-disabled={shippingFeeInCents === 0}>
-          <Button disabled={shippingFeeInCents === 0}>
+        <Link href="/cart/confirmation" aria-disabled={shippingFeeInCents === 0} >
+          <Button disabled={shippingFeeInCents === 0} className="max-sm:w-full">
             Finalizar compra
           </Button>
         </Link>

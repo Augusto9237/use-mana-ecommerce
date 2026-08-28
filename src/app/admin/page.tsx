@@ -44,21 +44,21 @@ export default async function AdminPage() {
   }
 
   const user = session.user as UserWithRole;
-  //   if (user.role !== "admin") {
-  //     return (
-  //       <div className="flex items-center justify-center min-h-screen">
-  //         <div className="text-center">
-  //           <h1 className="text-2xl font-bold mb-4">Acesso Negado</h1>
-  //           <p className="text-gray-600 mb-6">
-  //             Apenas administradores podem acessar esta página
-  //           </p>
-  //           <Link href="/">
-  //             <Button>Voltar para Home</Button>
-  //           </Link>
-  //         </div>
-  //       </div>
-  //     );
-  //   }
+  if (user.role !== "admin") {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Acesso Negado</h1>
+          <p className="text-gray-600 mb-6">
+            Apenas administradores podem acessar esta página
+          </p>
+          <Link href="/">
+            <Button>Voltar para Home</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const [usersCountResult] = await db.select({ count: count() }).from(userTable);
 

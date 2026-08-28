@@ -26,7 +26,7 @@ const ProductItem = ({ product, textContainerClassName }: ProductItemProps) => {
 
   return (
 
-    <Card className="min-w-50 p-0 gap-3">
+    <Card className="min-w-50 max-sm:min-w-44 p-0 gap-3">
       <Link
         href={`/product-variant/${firstVariant.slug}`}
       >

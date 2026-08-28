@@ -1,19 +1,26 @@
-import { Header } from "@/components/common/header";
-import { getUserAddresses } from "@/actions/get-user-addresses";
-import AddressCard from "@/app/addreses/components/address-card";
-import type { InferModel } from "drizzle-orm";
-import { shippingAddressTable } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-type ShippingAddress = InferModel<typeof shippingAddressTable>;
+import { Header } from "@/components/common/header";
+import { db } from "@/db";
+import { shippingAddressTable } from "@/db/schema";
+import { auth } from "@/lib/auth";
+import AddressCard from "@/app/addreses/components/address-card";
 
 export default async function MyAddressPage() {
-    let addresses: ShippingAddress[] = [];
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
 
-    try {
-        addresses = await getUserAddresses();
-    } catch (err) {
-        console.error("Erro carregando endereços:", err);
+    if (!session?.user?.id) {
+        redirect("/authentication");
     }
+
+    const addresses = await db.query.shippingAddressTable.findMany({
+        where: eq(shippingAddressTable.userId, session.user.id),
+        orderBy: (shippingAddress, { asc }) => [asc(shippingAddress.createdAt)],
+    });
 
     return (
         <>
@@ -23,9 +30,9 @@ export default async function MyAddressPage() {
                     <h2 className="text-2xl font-bold">Meus Endereços</h2>
                 </div>
 
-                {Array.isArray(addresses) && addresses.length > 0 ? (
+                {addresses.length > 0 ? (
                     <div className="flex flex-col gap-4 w-full">
-                        {addresses.map((addr: ShippingAddress) => (
+                        {addresses.map((addr) => (
                             <AddressCard key={addr.id} address={addr} />
                         ))}
                     </div>

@@ -13,10 +13,15 @@ interface ProductItemProps {
   product: typeof productTable.$inferSelect & {
     variants: (typeof productVariantTable.$inferSelect)[];
   };
+  className?: string;
   textContainerClassName?: string;
 }
 
-const ProductItem = ({ product, textContainerClassName }: ProductItemProps) => {
+const ProductItem = ({
+  product,
+  className,
+  textContainerClassName,
+}: ProductItemProps) => {
   const firstVariant = product.variants[0];
 
   // Evitar renderizar produto sem variantes
@@ -25,8 +30,7 @@ const ProductItem = ({ product, textContainerClassName }: ProductItemProps) => {
   }
 
   return (
-
-    <Card className="min-w-50 max-sm:min-w-44 p-0 gap-3">
+    <Card className={cn("w-50 max-sm:w-44 p-0 gap-3", className)}>
       <Link
         href={`/product-variant/${firstVariant.slug}`}
       >
@@ -41,7 +45,7 @@ const ProductItem = ({ product, textContainerClassName }: ProductItemProps) => {
       </Link>
       <div
         className={cn(
-          "flex min-w-50 max-w-50 max-sm:min-w-44 max-sm:max-w-44 flex-col gap-1 px-3 pb-3",
+          "flex w-50 max-sm:w-44 flex-col gap-1 px-3 pb-3",
           textContainerClassName,
         )}
       >

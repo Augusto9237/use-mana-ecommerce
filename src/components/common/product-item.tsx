@@ -41,7 +41,7 @@ const ProductItem = ({ product, textContainerClassName }: ProductItemProps) => {
       </Link>
       <div
         className={cn(
-          "flex w-full min-w-50 max-w-50 max-sm:min-w-44 max-sm:max-w-44 flex-col gap-1 px-3 pb-3",
+          "flex min-w-50 max-w-50 max-sm:min-w-44 max-sm:max-w-44 flex-col gap-1 px-3 pb-3",
           textContainerClassName,
         )}
       >

@@ -26,6 +26,7 @@ import { SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger, 
 import { Plus, Trash2 } from "lucide-react";
 import { updateProductVariant } from "@/actions/update-product-variant";
 import { formatCentsToInteger, formatIntegerToCents } from "@/helpers/money";
+import { UploadFiles } from "./upload-files";
 
 interface Variant {
   id: string;
@@ -45,6 +46,8 @@ interface CreateProductVariantFormProps {
   variant?: Variant;
   trigger?: React.ReactNode;
   onSuccess?: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function CreateProductVariantForm({
@@ -52,11 +55,22 @@ export function CreateProductVariantForm({
   variant,
   trigger,
   onSuccess,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
 }: CreateProductVariantFormProps) {
   const router = useRouter();
   const isEditing = !!variant;
   const [isLoading, setIsLoading] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = (val: boolean) => {
+    if (!isControlled) {
+      setInternalOpen(val);
+    }
+    controlledOnOpenChange?.(val);
+  };
 
   const getInitialValues = (v?: Variant) => {
     const rawImages = v?.imageUrl;
@@ -66,19 +80,34 @@ export function CreateProductVariantForm({
         ? [rawImages]
         : [];
 
+    const cost = v?.costInCents != null ? formatCentsToInteger(Number(v.costInCents)) : 0;
+    const price = v?.priceInCents != null ? formatCentsToInteger(Number(v.priceInCents)) : 0;
+    const discount =
+      v?.discountPriceInCents != null && Number(v.discountPriceInCents) > 0
+        ? formatCentsToInteger(Number(v.discountPriceInCents))
+        : undefined;
+
     return {
       productId,
       name: v?.name ?? "",
       slug: v?.slug ?? "",
       sizeInStock:
         v?.sizeInStock && v.sizeInStock.length > 0
-          ? v.sizeInStock
+          ? v.sizeInStock.map((s) => ({
+              size: s.size ?? "",
+              stock: Number(s.stock) || 0,
+            }))
           : [{ size: "", stock: 0 }],
       color: v?.color ?? "",
-      costInCents: formatCentsToInteger(Number(v?.costInCents)) ?? 0,
-      priceInCents: formatCentsToInteger(Number(v?.priceInCents)) ?? 0,
-      discountPriceInCents: formatCentsToInteger(Number(v?.discountPriceInCents)) ?? undefined,
-      imageUrl: initialImages,
+      costInCents: cost,
+      priceInCents: price,
+      discountPriceInCents: discount,
+      imageUrl: [
+        initialImages[0] ?? "",
+        initialImages[1] ?? "",
+        initialImages[2] ?? "",
+        initialImages[3] ?? "",
+      ],
     };
   };
 
@@ -139,15 +168,25 @@ export function CreateProductVariantForm({
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        {trigger ?? (
-          <Button>
-            <Plus />
-            Nova Variante
-          </Button>
-        )}
-      </SheetTrigger>
-      <SheetContent className="min-w-lg">
+      {(!isControlled || trigger) && (
+        <SheetTrigger asChild>
+          {trigger ?? (
+            <Button>
+              <Plus />
+              Nova Variante
+            </Button>
+          )}
+        </SheetTrigger>
+      )}
+      <SheetContent
+        className="min-w-lg"
+        onPointerDownOutside={(e) => {
+          e.preventDefault();
+        }}
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <SheetHeader>
           <SheetTitle>{isEditing ? "Editar Variante" : "Criar Variante"}</SheetTitle>
           <SheetDescription>
@@ -244,7 +283,7 @@ export function CreateProductVariantForm({
                                 e.target.value === "" ? 0 : Number(e.target.value)
                               )
                             }
-                            value={field.value ?? ""}
+                            value={field.value != null && !Number.isNaN(field.value) ? field.value : ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -284,7 +323,7 @@ export function CreateProductVariantForm({
                             e.target.value === "" ? 0 : Number(e.target.value)
                           )
                         }
-                        value={field.value ?? ""}
+                        value={field.value != null && !Number.isNaN(field.value) ? field.value : ""}
                       />
                     </FormControl>
                     <FormDescription>
@@ -311,7 +350,7 @@ export function CreateProductVariantForm({
                             e.target.value === "" ? 0 : Number(e.target.value)
                           )
                         }
-                        value={field.value ?? ""}
+                        value={field.value != null && !Number.isNaN(field.value) ? field.value : ""}
                       />
                     </FormControl>
                     <FormDescription>
@@ -337,7 +376,7 @@ export function CreateProductVariantForm({
                           const val = e.target.value;
                           field.onChange(val === "" ? undefined : Number(val));
                         }}
-                        value={field.value ?? ""}
+                        value={field.value != null && !Number.isNaN(field.value) ? field.value : ""}
                       />
                     </FormControl>
                     <FormDescription>
@@ -380,13 +419,24 @@ export function CreateProductVariantForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <Input
-                          type="url"
-                          placeholder={`https://example.com/image-${index + 1}.jpg`}
-                          disabled={isLoading}
-                          {...field}
-                          value={field.value ?? ""}
-                        />
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="url"
+                            placeholder={`https://example.com/image-${index + 1}.jpg`}
+                            disabled={isLoading}
+                            {...field}
+                            value={field.value != null && !Number.isNaN(field.value) ? String(field.value) : ""}
+                          />
+                          <UploadFiles
+                            maxFiles={1}
+                            initialPreview={field.value || undefined}
+                            onSuccess={(urls) => {
+                              if (urls && urls[0]) {
+                                field.onChange(urls[0]);
+                              }
+                            }}
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -49,6 +49,7 @@ export function VariantActionsDropdown({
 }: VariantActionsDropdownProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
 
   async function handleDelete() {
     setIsDeleting(true);
@@ -78,23 +79,32 @@ export function VariantActionsDropdown({
             <span className="sr-only">Abrir menu</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuItem asChild>
-            <CreateProductVariantForm productId={variant.productId} variant={variant} trigger={<Button variant="ghost" className="w-full justify-start gap-2"><Pencil />Editar</Button>} />
+        <DropdownMenuContent
+          align="end"
+          className="w-32"
+          onCloseAutoFocus={(e) => e.preventDefault()}
+        >
+          <DropdownMenuItem onSelect={() => setEditOpen(true)}>
+            <Pencil className="mr-2 size-4" />
+            Editar
           </DropdownMenuItem>
 
-          <DropdownMenuItem asChild>
-            <Button
-              variant="destructive"
-              className="w-full gap-2 justify-start"
-              onClick={() => setConfirmOpen(true)}
-            >
-              <TrashIcon />
-              Excluir
-            </Button>
+          <DropdownMenuItem
+            variant="destructive"
+            onSelect={() => setConfirmOpen(true)}
+          >
+            <TrashIcon className="mr-2 size-4" />
+            Excluir
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <CreateProductVariantForm
+        productId={variant.productId}
+        variant={variant}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+      />
 
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>

@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["better-auth"],
+  transpilePackages: [
+    "better-auth",
+    "@tanstack/react-query",
+    "@tanstack/query-core",
+  ],
   images: {
     remotePatterns: [
       {

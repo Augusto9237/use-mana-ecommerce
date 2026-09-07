@@ -32,6 +32,7 @@ import {
 } from "@/actions/create-category/schema";
 import { updateCategory } from "@/actions/update-category";
 import { Plus } from "lucide-react";
+import { UploadFiles } from "./upload-files";
 
 interface Category {
   id: string;
@@ -149,11 +150,24 @@ export function CreateCategoryForm({
                 <FormItem>
                   <FormLabel>URL da Imagem</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="https://exemplo.com/imagem.png"
-                      disabled={isLoading}
-                      {...field}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="url"
+                        placeholder="https://example.com/image-1.jpg"
+                        disabled={isLoading}
+                        {...field}
+                        value={field.value != null && !Number.isNaN(field.value) ? String(field.value) : ""}
+                      />
+                      <UploadFiles
+                        maxFiles={1}
+                        initialPreview={field.value || undefined}
+                        onSuccess={(urls) => {
+                          if (urls && urls[0]) {
+                            field.onChange(urls[0]);
+                          }
+                        }}
+                      />
+                    </div>
                   </FormControl>
                   <FormDescription>
                     URL da imagem de capa para a categoria

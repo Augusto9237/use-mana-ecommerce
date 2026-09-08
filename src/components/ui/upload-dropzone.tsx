@@ -153,7 +153,7 @@ export function UploadDropzone({
           onDrop={handleDrop}
           onClick={openFilePicker}
           className={cn(
-            'group relative flex min-h-52 w-full min-w-0 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-input bg-muted/20 p-6 text-center transition-all',
+            'group relative flex min-h-52 w-full min-w-0 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-input bg-muted/20 p-4 text-center transition-all',
             'hover:border-primary/80 hover:bg-muted/40',
             {
               'border-primary bg-primary/10 ring-2 ring-primary/20': isDragging,

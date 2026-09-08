@@ -33,6 +33,7 @@ import {
 } from "@/actions/create-promotion/schema";
 import { updatePromotion } from "@/actions/update-promotion";
 import { Plus } from "lucide-react";
+import { UploadFiles } from "@/components/admin/upload-files";
 
 interface Promotion {
   id: string;
@@ -155,11 +156,24 @@ export function CreatePromotionForm({
                 <FormItem>
                   <FormLabel>URL da Imagem</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="https://exemplo.com/imagem.jpg"
-                      disabled={isLoading}
-                      {...field}
-                    />
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="url"
+                        placeholder="https://example.com/image-1.jpg"
+                        disabled={isLoading}
+                        {...field}
+                        value={field.value != null && !Number.isNaN(field.value) ? String(field.value) : ""}
+                      />
+                      <UploadFiles
+                        maxFiles={1}
+                        initialPreview={field.value || undefined}
+                        onSuccess={(urls) => {
+                          if (urls && urls[0]) {
+                            field.onChange(urls[0]);
+                          }
+                        }}
+                      />
+                    </div>
                   </FormControl>
                   <FormDescription>
                     URL pública da imagem da promoção

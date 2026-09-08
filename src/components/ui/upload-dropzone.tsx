@@ -163,7 +163,7 @@ export function UploadDropzone({
         >
           {initialPreviewUrl ? (
             <div className="flex flex-col items-center gap-3">
-              <div className="relative size-24 overflow-hidden rounded-lg border border-border shadow-xs">
+              <div className="relative flex-1 overflow-hidden rounded-lg border border-border shadow-xs">
                 <img
                   src={initialPreviewUrl}
                   alt="Imagem atual"

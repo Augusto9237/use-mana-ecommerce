@@ -227,7 +227,7 @@ export default async function AdminProductsPage(props: {
                   </TableCell>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>{product.slug}</TableCell>
-                  <TableCell>{product.description}</TableCell>
+                  <TableCell className="max-w-60 overflow-hidden text-ellipsis truncate">{product.description}</TableCell>
                   <TableCell>{product.category?.name || "-"}</TableCell>
                   <TableCell>
                     <Badge variant="secondary">{product.variants.length}</Badge>

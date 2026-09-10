@@ -54,7 +54,7 @@ export const cancelCheckoutPayment = async (
   try {
     const searchResult = await paymentClient.search({
       options: {
-        external_reference: `order-${orderId}`,
+        external_reference: orderId,
         sort: "date_created",
         criteria: "desc",
       },

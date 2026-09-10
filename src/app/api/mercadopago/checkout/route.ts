@@ -112,7 +112,7 @@ function buildPreferencePayload(
     back_urls: buildBackUrls(baseUrl),
     currency_id: process.env.MERCADOPAGO_CURRENCY || DEFAULT_CURRENCY,
     ...(notificationUrl ? { notification_url: notificationUrl } : {}),
-    external_reference: `order-${orderId}`,
+    external_reference: orderId,
     auto_return: AUTO_RETURN,
   };
 }

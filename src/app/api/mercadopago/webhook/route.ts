@@ -66,19 +66,19 @@ export async function POST(req: Request) {
             console.log("Fetched payment details:", payment);
             const externalReference = payment?.external_reference || null;
             if (externalReference && typeof externalReference === "string") {
-              const m = externalReference.match(/^order-(.+)$/);
-              if (m) {
-                const orderId = m[1];
+              
+              const orderId = externalReference
+
                 try {
                   await db
                     .update(orderTable)
                     .set({ status: "paid", paymentId: payment?.id })
                     .where(eq(orderTable.id, orderId));
-                  console.log(`Order ${orderId} marked as paid (webhook via payment fetch).`);
+                  console.log(`O pedido ${orderId} foi marcado como pago (webhook via fetch).`);
                 } catch (e) {
                   console.error("Failed to update order status from webhook:", e);
                 }
-              }
+              
             } else {
               console.warn("Payment has no external_reference:", paymentId);
             }

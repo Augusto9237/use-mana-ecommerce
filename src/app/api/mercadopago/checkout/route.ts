@@ -63,9 +63,9 @@ function getBaseUrl(): string {
 
 function buildBackUrls(baseUrl: string) {
   return {
-    success: `${baseUrl}/checkout/success`,
-    failure: `${baseUrl}/cart`,
-    pending: `${baseUrl}/cart`,
+    success: `${baseUrl}/api/mercadopago/return/success`,
+    failure: `${baseUrl}/api/mercadopago/return/failure`,
+    pending: `${baseUrl}/api/mercadopago/return/pending`,
   } as const;
 }
 

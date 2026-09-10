@@ -45,14 +45,6 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
       <div className="flex flex-col space-y-6 pt-20 mx-auto max-w-screen-xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 lg:pl-5">
           <CarouselProducts images={productVariant.imageUrl} />
-          {/* <Image
-            src={productVariant.imageUrl[0]}
-            alt={productVariant.name}
-            sizes="100vw"
-            height={0}
-            width={0}
-            className="h-auto w-full object-cover lg:pl-5"
-          /> */}
           <div className="flex flex-col gap-6">
             <div className="px-5 lg:pt-5">
               <VariantSelector
@@ -77,7 +69,7 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
             <ProductActions productVariantId={productVariant.id} sizes={productVariant.sizeInStock} />
 
             <div className="px-5">
-              <p className="text-shadow-amber-600">
+              <p className="max-sm:text-sm">
                 {productVariant.product.description}
               </p>
             </div>

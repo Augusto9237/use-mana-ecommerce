@@ -1,4 +1,4 @@
-import { MercadoPagoConfig, Preference } from "mercadopago";
+import { MercadoPagoConfig, Payment, Preference } from "mercadopago";
 
 if (!process.env.MERCADOPAGO_ACCESS_TOKEN) {
   throw new Error("MERCADOPAGO_ACCESS_TOKEN is not set");
@@ -10,3 +10,4 @@ export const client = new MercadoPagoConfig({
 });
 
 export const preference = new Preference(client);
+export const payment = new Payment(client);

@@ -89,7 +89,7 @@ export const Header = () => {
                       </Link>
 
                       {session?.user?.role === "admin" && (
-                        <Link href="/admin" className="flex items-center gap-3 font-semibold text-blue-600">
+                        <Link href="/admin" className="flex items-center gap-3 font-semibold text-primary">
                           <Settings />
                           Painel Admin
                         </Link>

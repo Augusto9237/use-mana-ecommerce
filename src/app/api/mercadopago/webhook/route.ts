@@ -1,7 +1,36 @@
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { orderTable } from "@/db/schema";
+import { cartItemTable, cartTable, orderTable } from "@/db/schema";
+
+async function clearCartForOrder(orderId: string) {
+  const order = await db.query.orderTable.findFirst({
+    where: eq(orderTable.id, orderId),
+    columns: { userId: true },
+  });
+
+  if (!order) {
+    console.warn(`Order ${orderId} not found when clearing cart after payment.`);
+    return;
+  }
+
+  const cart = await db.query.cartTable.findFirst({
+    where: eq(cartTable.userId, order.userId),
+    columns: { id: true },
+  });
+
+  if (!cart) {
+    console.log(`No cart found for user ${order.userId} after payment confirmation.`);
+    return;
+  }
+
+  await db.transaction(async (tx) => {
+    await tx.delete(cartItemTable).where(eq(cartItemTable.cartId, cart.id));
+    await tx.delete(cartTable).where(eq(cartTable.id, cart.id));
+  });
+
+  console.log(`Cart cleared for user ${order.userId} after payment confirmation of order ${orderId}.`);
+}
 
 export async function POST(req: Request) {
   try {
@@ -40,7 +69,11 @@ export async function POST(req: Request) {
       if (m) {
         const orderId = m[1];
         try {
-          await db.update(orderTable).set({ status: "paid" }).where(eq(orderTable.id, orderId));
+          await db
+            .update(orderTable)
+            .set({ status: "paid" })
+            .where(eq(orderTable.id, orderId));
+          await clearCartForOrder(orderId);
           console.log(`Order ${orderId} marked as paid (webhook via direct external_reference).`);
         } catch (e) {
           console.error("Failed to update order status from webhook (direct):", e);
@@ -66,19 +99,18 @@ export async function POST(req: Request) {
             console.log("Fetched payment details:", payment);
             const externalReference = payment?.external_reference || null;
             if (externalReference && typeof externalReference === "string") {
-              
-              const orderId = externalReference
+              const orderId = externalReference;
 
-                try {
-                  await db
-                    .update(orderTable)
-                    .set({ status: "paid", paymentId: payment?.id })
-                    .where(eq(orderTable.id, orderId));
-                  console.log(`O pedido ${orderId} foi marcado como pago (webhook via fetch).`);
-                } catch (e) {
-                  console.error("Failed to update order status from webhook:", e);
-                }
-              
+              try {
+                await db
+                  .update(orderTable)
+                  .set({ status: "paid", paymentId: payment?.id })
+                  .where(eq(orderTable.id, orderId));
+                await clearCartForOrder(orderId);
+                console.log(`O pedido ${orderId} foi marcado como pago (webhook via fetch).`);
+              } catch (e) {
+                console.error("Failed to update order status from webhook:", e);
+              }
             } else {
               console.warn("Payment has no external_reference:", paymentId);
             }

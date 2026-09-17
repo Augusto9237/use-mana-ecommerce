@@ -21,7 +21,7 @@ export default function CheckoutSuccessPage() {
             Seu pedido foi confirmado e já está em processamento.
           </p>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <div className="flex flex-col gap-3">
             <Button asChild >
               <Link href="/my-orders">Ver meus pedidos</Link>
             </Button>

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { cartItemTable, cartTable, orderTable } from "@/db/schema";
+import { cartItemTable, cartTable, orderItemTable, orderTable, productTable, productVariantTable } from "@/db/schema";
 
 async function clearCartForOrder(orderId: string) {
   const order = await db.query.orderTable.findFirst({
@@ -30,6 +30,40 @@ async function clearCartForOrder(orderId: string) {
   });
 
   console.log(`Cart cleared for user ${order.userId} after payment confirmation of order ${orderId}.`);
+}
+
+async function decreaseStockForOrder(orderId: string) {
+  const items = await db.query.orderItemTable.findMany({
+    where: eq(orderItemTable.orderId, orderId),
+    columns: { productVariantId: true, quantity: true },
+    with: {
+      productVariant: {
+        columns: { sizeInStock: true },
+      },
+    },
+  });
+
+  await db.transaction(async (tx) => {
+    for (const item of items) {
+      let quantityToSubtract = item.quantity;
+      const sizeInStock = item.productVariant.sizeInStock.map((stockItem) => {
+        if (quantityToSubtract <= 0) return stockItem;
+
+        const quantitySubtracted = Math.min(stockItem.stock, quantityToSubtract);
+        quantityToSubtract -= quantitySubtracted;
+
+        return {
+          ...stockItem,
+          stock: stockItem.stock - quantitySubtracted,
+        };
+      });
+
+      await tx
+        .update(productVariantTable)
+        .set({ sizeInStock })
+        .where(eq(productVariantTable.id, item.productVariantId));
+    }
+  });
 }
 
 export async function POST(req: Request) {
@@ -96,7 +130,6 @@ export async function POST(req: Request) {
             console.error(`Failed to fetch payment ${paymentId} from Mercado Pago:`, res.status);
           } else {
             const payment = await res.json();
-            console.log("Fetched payment details:", payment);
             const externalReference = payment?.external_reference || null;
             if (externalReference && typeof externalReference === "string") {
               const orderId = externalReference;
@@ -106,6 +139,8 @@ export async function POST(req: Request) {
                   .update(orderTable)
                   .set({ status: "paid", paymentId: payment?.id })
                   .where(eq(orderTable.id, orderId));
+
+                await decreaseStockForOrder(orderId);
                 await clearCartForOrder(orderId);
                 console.log(`O pedido ${orderId} foi marcado como pago (webhook via fetch).`);
               } catch (e) {

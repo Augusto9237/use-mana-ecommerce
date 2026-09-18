@@ -77,9 +77,8 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
         </div>
 
         <ProductList title="Talvez você goste" products={likelyProducts} />
-
-        <Footer />
       </div>
+      <Footer />
     </>
   );
 };

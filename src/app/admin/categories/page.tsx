@@ -126,7 +126,7 @@ export default async function AdminCategoriesPage(props: {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <h1 className="text-2xl font-bold">Categorias</h1>
+            <h1 className="text-2xl max-sm:text-xl font-bold">Categorias</h1>
             <p className="text-sm text-muted-foreground">
               Gerenciar categorias do catálogo de produtos
             </p>

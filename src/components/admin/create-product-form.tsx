@@ -103,13 +103,15 @@ export function CreateProductForm({
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         {trigger ?? (
-          <Button>
+          <Button className="max-sm:size-8">
             <Plus />
-            Novo produto
+            <span className="max-sm:hidden">
+              Novo produto
+            </span>
           </Button>
         )}
       </SheetTrigger>
-      <SheetContent className="min-w-lg">
+      <SheetContent className="min-w-lg max-sm:min-w-sm">
         <SheetHeader>
           <SheetTitle>
             {isEditing ? "Editar Produto" : "Criar Produto"}

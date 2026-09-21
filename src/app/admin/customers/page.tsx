@@ -140,7 +140,7 @@ export default async function AdminCustomersPage(props: {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <h1 className="text-2xl font-bold">Clientes</h1>
+            <h1 className="text-2xl max-sm:text-xl font-bold">Clientes</h1>
             <p className="text-sm text-muted-foreground">
               Gerenciar clientes cadastrados no sistema
             </p>

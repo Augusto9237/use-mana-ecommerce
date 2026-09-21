@@ -67,37 +67,6 @@ export default async function AdminVariantsPage({
     headers: await headers(),
   });
 
-  // if (!session?.user) {
-  //   return (
-  //     <div className="flex items-center justify-center min-h-screen">
-  //       <div className="text-center">
-  //         <h1 className="text-2xl font-bold mb-4">Acesso Negado</h1>
-  //         <p className="text-gray-600 mb-6">Você precisa estar autenticado</p>
-  //         <Link href="/authentication">
-  //           <Button>Fazer Login</Button>
-  //         </Link>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
-  // const user = session.user as UserWithRole;
-  // if (user.role !== "admin") {
-  //   return (
-  //     <div className="flex items-center justify-center min-h-screen">
-  //       <div className="text-center">
-  //         <h1 className="text-2xl font-bold mb-4">Acesso Negado</h1>
-  //         <p className="text-gray-600 mb-6">
-  //           Apenas administradores podem acessar esta página
-  //         </p>
-  //         <Link href="/">
-  //           <Button>Voltar para Home</Button>
-  //         </Link>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   const product = await db.query.productTable.findFirst({
     where: (product, { eq }) => eq(product.id, resolvedParams.productId),
     with: {
@@ -182,7 +151,7 @@ export default async function AdminVariantsPage({
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex justify-between items-center gap-4">
           <div>
             <Breadcrumb className="mb-2">
               <BreadcrumbList>
@@ -204,7 +173,7 @@ export default async function AdminVariantsPage({
               </BreadcrumbList>
             </Breadcrumb>
 
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-2xl max-sm:text-xl font-bold">
               Variantes: {product.name}
             </h1>
             <p className="text-sm text-muted-foreground">Gerencie as variantes deste produto</p>

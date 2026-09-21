@@ -97,13 +97,15 @@ export function CreatePromotionForm({
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         {trigger ?? (
-          <Button>
+          <Button className="max-sm:size-8">
             <Plus />
+            <span className="max-sm:hidden">
             Nova promoção
+            </span>
           </Button>
         )}
       </SheetTrigger>
-      <SheetContent className="min-w-lg">
+      <SheetContent className="min-w-lg max-sm:min-w-sm">
         <SheetHeader>
           <SheetTitle>
             {isEditing ? "Editar Promoção" : "Criar Promoção"}

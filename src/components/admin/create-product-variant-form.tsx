@@ -170,16 +170,16 @@ export function CreateProductVariantForm({
     <Sheet open={open} onOpenChange={setOpen}>
       {(!isControlled || trigger) && (
         <SheetTrigger asChild>
-          {trigger ?? (
-            <Button>
+            <Button className="max-sm:size-8">
               <Plus />
-              Nova Variante
+              <span className="max-sm:hidden">
+                Nova Variante
+              </span>
             </Button>
-          )}
         </SheetTrigger>
       )}
       <SheetContent
-        className="min-w-lg"
+        className="min-w-lg max-sm:min-w-sm"
         onPointerDownOutside={(e) => {
           e.preventDefault();
         }}

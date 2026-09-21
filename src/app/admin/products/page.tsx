@@ -56,37 +56,6 @@ export default async function AdminProductsPage(props: {
     headers: await headers(),
   });
 
-  // if (!session?.user) {
-  //   return (
-  //     <div className="flex items-center justify-center min-h-screen">
-  //       <div className="text-center">
-  //         <h1 className="text-2xl font-bold mb-4">Acesso Negado</h1>
-  //         <p className="text-gray-600 mb-6">Você precisa estar autenticado</p>
-  //         <Link href="/authentication">
-  //           <Button>Fazer Login</Button>
-  //         </Link>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
-  // const user = session.user as UserWithRole;
-  // if (user.role !== "admin") {
-  //   return (
-  //     <div className="flex items-center justify-center min-h-screen">
-  //       <div className="text-center">
-  //         <h1 className="text-2xl font-bold mb-4">Acesso Negado</h1>
-  //         <p className="text-gray-600 mb-6">
-  //           Apenas administradores podem acessar esta página
-  //         </p>
-  //         <Link href="/">
-  //           <Button>Voltar para Home</Button>
-  //         </Link>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   const categories = await db.query.categoryTable.findMany();
 
   const [{ count: totalProducts }] = await db
@@ -167,7 +136,7 @@ export default async function AdminProductsPage(props: {
     <AdminLayout>
       <div className="space-y-6">
         {/* Breadcrumb e Header */}
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="flex gap-4 items-center justify-between">
           <div>
             <Breadcrumb className="mb-2">
               <BreadcrumbList>
@@ -182,7 +151,7 @@ export default async function AdminProductsPage(props: {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <h1 className="text-2xl font-bold">Produtos</h1>
+            <h1 className="text-2xl max-sm:text-xl font-bold">Produtos</h1>
             <p className="text-sm text-muted-foreground">
               Gerenciar todos os produtos do catálogo
             </p>

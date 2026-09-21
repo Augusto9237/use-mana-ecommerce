@@ -34,7 +34,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { AppSidebar } from "./app-sidebar";
-import { SidebarProvider } from "../ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "../ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const menuItems = [
@@ -91,16 +91,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           <AppSidebar />
 
           {/* Main Content */}
-          <div className="flex-1 relative pt-6">
+          <div className="flex-1 relative pt-6 max-sm:pt-10 max-w-screen overflow-x-hidden">
             {/* Top Header */}
-            <header className="backdrop-blur-md bg-background/30 fixed right-0 w-[calc(100%-var(--sidebar-width))] top-0 z-10">
-              <div className="flex items-center justify-end py-3 px-8">
-
+            <header className="backdrop-blur-md bg-background/30 fixed right-0 max-sm:w-full sm:w-[calc(100%-var(--sidebar-width))] top-0 z-10">
+              <div className="flex items-center justify-end py-3 px-8 max-sm:px-4 gap-4 relative">
+                <SidebarTrigger className="sm:hidden absolute left-4"/>
                 {/* Right section */}
                 <div className="flex items-center gap-6">
                   <Button variant="ghost" size="icon" className="relative">
                     <Bell size={20} />
-                    <span className="absolute top-2 right-2 w-2 h-2 bg-blue-600 rounded-full" />
+                    <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full" />
                   </Button>
 
                   <DropdownMenu>
@@ -136,7 +136,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </header>
 
             {/* Page Content */}
-            <main className="p-8">
+            <main className="p-8 max-sm:p-4">
               {children}
             </main>
           </div>

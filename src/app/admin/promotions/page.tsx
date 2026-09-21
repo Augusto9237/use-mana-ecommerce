@@ -108,7 +108,7 @@ export default async function AdminPromotionsPage(props: {
     <AdminLayout>
       <div className="space-y-6">
         {/* Breadcrumb e Header */}
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="flex justify-between items-center gap-4">
           <div>
             <Breadcrumb className="mb-2">
               <BreadcrumbList>
@@ -123,7 +123,7 @@ export default async function AdminPromotionsPage(props: {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <h1 className="text-2xl font-bold">Promoções</h1>
+            <h1 className="text-2xl max-sm:text-xl font-bold">Promoções</h1>
             <p className="text-sm text-muted-foreground">
               Gerenciar todas as promoções
             </p>

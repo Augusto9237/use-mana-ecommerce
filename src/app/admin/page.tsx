@@ -216,7 +216,6 @@ export default async function AdminPage() {
                 {latestOrders.length === 0 ? (
                   <p className="text-sm text-muted-foreground px-6 pb-6">Nenhum pedido registrado ainda.</p>
                 ) : (
-                  <div className="px-6">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -263,7 +262,6 @@ export default async function AdminPage() {
                         ))}
                       </TableBody>
                     </Table>
-                  </div>
                 )}
               </CardContent>
             </Card>

@@ -191,69 +191,71 @@ export default async function AdminVariantsPage({
             Nenhuma variante cadastrada
           </p>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-24">Imagem</TableHead>
-                <TableHead>Slug</TableHead>
-                <TableHead>Cor</TableHead>
-                <TableHead>Tamanho</TableHead>
-                <TableHead>Custo</TableHead>
-                <TableHead>Preço</TableHead>
-                <TableHead>Preço Promocional</TableHead>
-                <TableHead>Estoque</TableHead>
-                <TableHead>Criada em</TableHead>
-                <TableHead className="w-20">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {variants.map((variant) => (
-                <TableRow key={variant.id}>
-                  <TableCell className="w-24">
-                    <ProductImageDialog
-                      src={variant.imageUrl?.[0] ?? ""}
-                      alt={variant.name}
-                    />
-                  </TableCell>
-                  <TableCell className="font-medium">
-                    {variant.slug}
-                  </TableCell>
-                  <TableCell>
-                    {variant.color}
-                  </TableCell>
-                  <TableCell>
-                    {Array.isArray(variant.sizeInStock)
-                      ? variant.sizeInStock.map((s) => s.size).join(", ")
-                      : "N/A"}
-                  </TableCell>
-                  <TableCell>
-                    {formatCentsToBRL(variant.costInCents)}
-                  </TableCell>
-                  <TableCell>
-                    {formatCentsToBRL(variant.priceInCents)}
-                  </TableCell>
-                  <TableCell>
-                    {variant.discountPriceInCents ? formatCentsToBRL(variant.discountPriceInCents) : ""}
-                  </TableCell>
-                  <TableCell>
-                    {Array.isArray(variant.sizeInStock)
-                      ? variant.sizeInStock.reduce((total, s) => total + s.stock, 0)
-                      : 0}
-                  </TableCell>
-                  <TableCell>
-                    {new Date(variant.createdAt).toLocaleDateString(
-                      "pt-BR"
-                    )}
-                  </TableCell>
-                  <TableCell className="w-20">
-                    <VariantActionsDropdown
-                      variant={variant}
-                    />
-                  </TableCell>
+          <div className="border rounded-lg overflow-hidden bg-card">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-24">Imagem</TableHead>
+                  <TableHead>Slug</TableHead>
+                  <TableHead>Cor</TableHead>
+                  <TableHead>Tamanho</TableHead>
+                  <TableHead>Custo</TableHead>
+                  <TableHead>Preço</TableHead>
+                  <TableHead>Preço Promocional</TableHead>
+                  <TableHead>Estoque</TableHead>
+                  <TableHead>Criada em</TableHead>
+                  <TableHead className="w-20">Ações</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {variants.map((variant) => (
+                  <TableRow key={variant.id}>
+                    <TableCell className="w-24">
+                      <ProductImageDialog
+                        src={variant.imageUrl?.[0] ?? ""}
+                        alt={variant.name}
+                      />
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {variant.slug}
+                    </TableCell>
+                    <TableCell>
+                      {variant.color}
+                    </TableCell>
+                    <TableCell>
+                      {Array.isArray(variant.sizeInStock)
+                        ? variant.sizeInStock.map((s) => s.size).join(", ")
+                        : "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      {formatCentsToBRL(variant.costInCents)}
+                    </TableCell>
+                    <TableCell>
+                      {formatCentsToBRL(variant.priceInCents)}
+                    </TableCell>
+                    <TableCell>
+                      {variant.discountPriceInCents ? formatCentsToBRL(variant.discountPriceInCents) : ""}
+                    </TableCell>
+                    <TableCell>
+                      {Array.isArray(variant.sizeInStock)
+                        ? variant.sizeInStock.reduce((total, s) => total + s.stock, 0)
+                        : 0}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(variant.createdAt).toLocaleDateString(
+                        "pt-BR"
+                      )}
+                    </TableCell>
+                    <TableCell className="w-20">
+                      <VariantActionsDropdown
+                        variant={variant}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         )}
 
         {/* Paginação */}

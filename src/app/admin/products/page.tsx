@@ -172,6 +172,7 @@ export default async function AdminProductsPage(props: {
             </CardContent>
           </Card>
         ) : (
+          <div className="border rounded-lg overflow-hidden bg-card">
           <Table>
             <TableHeader>
               <TableRow>
@@ -211,6 +212,7 @@ export default async function AdminProductsPage(props: {
               ))}
             </TableBody>
           </Table>
+          </div>
         )}
 
         {/* Paginação */}

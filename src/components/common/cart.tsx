@@ -47,6 +47,7 @@ export const Cart = () => {
                     key={item.id}
                     id={item.id}
                     productVariantId={item.productVariant.id}
+                    size={item.productVariant.sizeInStock[0]?.size ?? ""}
                     productName={item.productVariant.product.name}
                     productVariantName={item.productVariant.name}
                     productVariantImageUrl={item.productVariant.imageUrl[0]}

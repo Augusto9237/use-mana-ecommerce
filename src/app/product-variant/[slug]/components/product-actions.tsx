@@ -14,6 +14,7 @@ interface ProductActionsProps {
 }
 
 const ProductActions = ({ productVariantId, sizes }: ProductActionsProps) => {
+  const [selectedSize, setSelectedSize] = useState(sizes ? sizes[0].size : "");
   const [quantity, setQuantity] = useState(1);
 
   const handleDecrement = () => {
@@ -30,7 +31,7 @@ const ProductActions = ({ productVariantId, sizes }: ProductActionsProps) => {
         <div className="flex items-center justify-between w-full">
           <div className="space-y-4">
             <h3 className="font-medium">Tamanho</h3>
-            <SizeSelector sizes={sizes} />
+            <SizeSelector sizes={sizes} setSelectedSize={setSelectedSize} />
           </div>
           <div className="space-y-4">
             <h3 className="font-medium">Quantidade</h3>
@@ -50,10 +51,8 @@ const ProductActions = ({ productVariantId, sizes }: ProductActionsProps) => {
         <AddToCartButton
           productVariantId={productVariantId}
           quantity={quantity}
+          size={selectedSize}
         />
-        {/* <Button className="rounded-full text-background bg-gradient-to-r from-primary to-primary-foreground font-bold" size="lg">
-          Comprar agora
-        </Button> */}
       </div>
     </>
   );

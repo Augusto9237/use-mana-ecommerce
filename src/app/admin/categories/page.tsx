@@ -146,37 +146,39 @@ export default async function AdminCategoriesPage(props: {
             </CardContent>
           </Card>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-24">Imagem</TableHead>
-                <TableHead>Nome</TableHead>
-                <TableHead>Slug</TableHead>
-                <TableHead>Criada em</TableHead>
-                <TableHead className="w-20">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {categories.map((category) => (
-                <TableRow key={category.id}>
-                  <TableCell className="w-24">
-                    <ProductImageDialog
-                      src={category.imageUrl || ""}
-                      alt={category.name}
-                    />
-                  </TableCell>
-                  <TableCell className="font-medium">{category.name}</TableCell>
-                  <TableCell>{category.slug}</TableCell>
-                  <TableCell>
-                    {new Date(category.createdAt).toLocaleDateString("pt-BR")}
-                  </TableCell>
-                  <TableCell className="w-20">
-                    <CategoryActionsDropdown category={category} />
-                  </TableCell>
+          <div className="border rounded-lg overflow-hidden bg-card">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-24">Imagem</TableHead>
+                  <TableHead>Nome</TableHead>
+                  <TableHead>Slug</TableHead>
+                  <TableHead>Criada em</TableHead>
+                  <TableHead className="w-20">Ações</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {categories.map((category) => (
+                  <TableRow key={category.id}>
+                    <TableCell className="w-24">
+                      <ProductImageDialog
+                        src={category.imageUrl || ""}
+                        alt={category.name}
+                      />
+                    </TableCell>
+                    <TableCell className="font-medium">{category.name}</TableCell>
+                    <TableCell>{category.slug}</TableCell>
+                    <TableCell>
+                      {new Date(category.createdAt).toLocaleDateString("pt-BR")}
+                    </TableCell>
+                    <TableCell className="w-20">
+                      <CategoryActionsDropdown category={category} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         )}
 
         {/* Paginação */}

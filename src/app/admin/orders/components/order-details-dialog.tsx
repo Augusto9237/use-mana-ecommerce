@@ -273,10 +273,10 @@ export function OrderDetailsDialog({
               </div>
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Frete</span>
-                <span className="text-emerald-600 font-medium">{formatCentsToBRL(order.shippingFeeInCents)}</span>
+                <span>{formatCentsToBRL(order.shippingFeeInCents)}</span>
               </div>
               <Separator />
-              <div className="flex justify-between font-semibold text-foreground">
+              <div className="flex justify-between font-semibold text-lg text-primary">
                 <span>Total</span>
                 <span className="text-lg">
                   {formatCentsToBRL(order.totalPriceInCents)}

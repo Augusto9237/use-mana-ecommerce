@@ -59,6 +59,7 @@ const ProductItem = ({
           </p>
           <AddToCartButton
             productVariantId={firstVariant.id}
+            size={firstVariant.sizeInStock[0].size}
             quantity={1}
             tigger={
               <Button size="icon" className="size-9">

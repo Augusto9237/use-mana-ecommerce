@@ -139,57 +139,59 @@ export default async function AdminPromotionsPage(props: {
             </CardContent>
           </Card>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-24">Imagem</TableHead>
-                <TableHead>Título</TableHead>
-                <TableHead>Descrição</TableHead>
-                <TableHead>Link</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Criado em</TableHead>
-                <TableHead className="w-10">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {promotions.map((promotion) => (
-                <TableRow key={promotion.id}>
-                  <TableCell className="w-24">
-                    {promotion.imageUrl ? (
-                      <PromotionBannerDialog src={promotion.imageUrl} alt={promotion.title} />
-                    ) : (
-                      <div className="w-16 h-12 bg-muted rounded flex items-center justify-center text-xs text-muted-foreground">
-                        Sem imagem
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell className="font-medium">{promotion.title}</TableCell>
-                  <TableCell>{promotion.description}</TableCell>
-                  <TableCell>
-                    <a
-                      href={`${url}${promotion.linkUrl}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary underline truncate max-w-[150px] block"
-                    >
-                      {url}{promotion.linkUrl}
-                    </a>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={promotion.isActive ? "default" : "secondary"}>
-                      {promotion.isActive ? "Ativa" : "Inativa"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {new Date(promotion.createdAt).toLocaleDateString("pt-BR")}
-                  </TableCell>
-                  <TableCell>
-                    <PromotionsActionsDropdown promotion={promotion} />
-                  </TableCell>
+          <div className="border rounded-lg overflow-hidden bg-card">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-24">Imagem</TableHead>
+                  <TableHead>Título</TableHead>
+                  <TableHead>Descrição</TableHead>
+                  <TableHead>Link</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Criado em</TableHead>
+                  <TableHead className="w-10">Ações</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {promotions.map((promotion) => (
+                  <TableRow key={promotion.id}>
+                    <TableCell className="w-24">
+                      {promotion.imageUrl ? (
+                        <PromotionBannerDialog src={promotion.imageUrl} alt={promotion.title} />
+                      ) : (
+                        <div className="w-16 h-12 bg-muted rounded flex items-center justify-center text-xs text-muted-foreground">
+                          Sem imagem
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell className="font-medium">{promotion.title}</TableCell>
+                    <TableCell>{promotion.description}</TableCell>
+                    <TableCell>
+                      <a
+                        href={`${url}${promotion.linkUrl}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary underline truncate max-w-[150px] block"
+                      >
+                        {url}{promotion.linkUrl}
+                      </a>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={promotion.isActive ? "default" : "secondary"}>
+                        {promotion.isActive ? "Ativa" : "Inativa"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {new Date(promotion.createdAt).toLocaleDateString("pt-BR")}
+                    </TableCell>
+                    <TableCell>
+                      <PromotionsActionsDropdown promotion={promotion} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         )}
 
         {/* Paginação */}

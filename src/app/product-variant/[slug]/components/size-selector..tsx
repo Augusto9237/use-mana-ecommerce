@@ -6,9 +6,10 @@ import {
 
 interface SizeSelectorProps {
   sizes: Array<{ size: string; stock: number }> | null;
+  setSelectedSize: (size: string) => void;
 }
 
-export function SizeSelector({ sizes }: SizeSelectorProps) {
+export function SizeSelector({ sizes, setSelectedSize }: SizeSelectorProps) {
   return (
     <ToggleGroup variant="outline"  type="single" defaultValue="center" >
       {sizes?.map((item) => (
@@ -17,6 +18,7 @@ export function SizeSelector({ sizes }: SizeSelectorProps) {
           key={item.size} 
           aria-label={`Toggle ${item.size}`}
           disabled={item.stock === 0}
+          onClick={() => setSelectedSize(item.size)}
         >
           {item.size}
         </ToggleGroupItem>

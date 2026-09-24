@@ -13,6 +13,7 @@ interface CartItemProps {
   id: string;
   productName: string;
   productVariantId: string;
+  size: string;
   productVariantName: string;
   productVariantImageUrl: string;
   productVariantPriceInCents: number;
@@ -23,6 +24,7 @@ const CartItem = ({
   id,
   productName,
   productVariantId,
+  size,
   productVariantName,
   productVariantImageUrl,
   productVariantPriceInCents,
@@ -31,7 +33,7 @@ const CartItem = ({
   const removeProductFromCartMutation = useRemoveProductFromCart(id);
   const decreaseCartProductQuantityMutation = useDecreaseCartProduct(id);
   const increaseCartProductQuantityMutation =
-    useIncreaseCartProduct(productVariantId);
+    useIncreaseCartProduct(productVariantId, size);
   const handleDeleteClick = () => {
     removeProductFromCartMutation.mutate(undefined, {
       onSuccess: () => {
@@ -53,6 +55,9 @@ const CartItem = ({
     increaseCartProductQuantityMutation.mutate(undefined, {
       onSuccess: () => {
         toast.success("Quantidade do produto aumentada.");
+      },
+      onError: (error) => {
+        toast.error(error.message);
       },
     });
   };

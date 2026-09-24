@@ -7,11 +7,24 @@ import { getUseCartQueryKey } from "../queries/use-cart";
 export const getIncreaseCartProductMutationKey = (productVariantId: string) =>
   ["increase-cart-product-quantity", productVariantId] as const;
 
-export const useIncreaseCartProduct = (productVariantId: string) => {
+export const useIncreaseCartProduct = (
+  productVariantId: string,
+  size: string,
+) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationKey: getIncreaseCartProductMutationKey(productVariantId),
-    mutationFn: () => addProductToCart({ productVariantId, quantity: 1 }),
+    mutationFn: async () => {
+      const result = await addProductToCart({
+        productVariantId,
+        size,
+        quantity: 1,
+      });
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+      return result;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: getUseCartQueryKey() });
     },

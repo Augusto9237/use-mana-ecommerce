@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { Image as ImageIcon, Plus, Trash2, Upload } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { Button } from './button';
 
 export type UploadDropzoneProps = {
   files?: File[];
@@ -279,14 +280,16 @@ function SingleImagePreview({
         )}
 
         {!disabled && (
-          <button
+          <Button
             type="button"
+            variant="destructive"
+            size="icon"
             onClick={onRemove}
-            className="absolute top-2.5 right-2.5 z-10 flex size-8 items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-md transition-transform hover:scale-110 focus:outline-none"
+            className="absolute top-2.5 right-2.5 z-10"
             title="Remover imagem"
           >
             <Trash2 className="size-4" />
-          </button>
+          </Button>
         )}
       </div>
 

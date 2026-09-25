@@ -96,17 +96,17 @@ export function UploadFiles({
                         type="button"
                         title="Fazer upload de imagem"
                     >
-                        <ImagePlus className="size-4 text-muted-foreground" />
+                        <ImagePlus className="size-4" />
                     </Button>
                 )}
             </DialogTrigger>
 
             <DialogContent
-                className="overflow-hidden"
+                className="overflow-hidden p-0 gap-0"
                 onPointerDownOutside={(e) => e.preventDefault()}
                 onInteractOutside={(e) => e.preventDefault()}
             >
-                <DialogHeader>
+                <DialogHeader className='px-5 pt-5'>
                     <DialogTitle>
                         Upload de Imagem
                     </DialogTitle>
@@ -117,7 +117,7 @@ export function UploadFiles({
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="w-full min-w-0 py-2">
+                <div className="w-full min-w-0 p-5 aspect-square flex flex-1">
                     <UploadDropzone
                         files={files}
                         onFilesChange={setFiles}
@@ -127,21 +127,21 @@ export function UploadFiles({
                     />
                 </div>
 
-                <DialogFooter className="flex w-full flex-row justify-end gap-2 sm:gap-2">
-                    <Button
+                <DialogFooter className="flex w-full bg-card border-t border-border p-5">
+                    {/* <Button
                         type="button"
                         variant="ghost"
                         onClick={() => handleOpenChange(false)}
                         disabled={control.isPending}
                     >
                         Cancelar
-                    </Button>
+                    </Button> */}
 
                     <Button
                         type="button"
                         onClick={handleSave}
                         disabled={files.length === 0 || control.isPending}
-                        className="min-w-28"
+                        className="w-full"
                     >
                         {control.isPending ? (
                             <>

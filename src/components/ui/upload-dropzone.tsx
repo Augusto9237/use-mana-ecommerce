@@ -133,7 +133,7 @@ export function UploadDropzone({
   const remainingSlots = maxFiles - currentFiles.length;
 
   return (
-    <div className={cn('w-full min-w-0 max-w-full space-y-4', className)}>
+    <div className={cn('flex flex-col flex-1 w-full h-full min-w-0 max-w-full gap-4', className)}>
       <input
         ref={fileInputRef}
         type="file"
@@ -153,7 +153,7 @@ export function UploadDropzone({
           onDrop={handleDrop}
           onClick={openFilePicker}
           className={cn(
-            'group relative flex min-h-52 w-full min-w-0 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-input bg-muted/20 p-4 text-center transition-all',
+            'group relative flex flex-1 h-full w-full min-w-0 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-input bg-muted/20 p-4 text-center transition-all',
             'hover:border-primary/80 hover:bg-muted/40',
             {
               'border-primary bg-primary/10 ring-2 ring-primary/20': isDragging,
@@ -162,8 +162,8 @@ export function UploadDropzone({
           )}
         >
           {initialPreviewUrl ? (
-            <div className="flex flex-col items-center gap-3">
-              <div className="relative flex-1 overflow-hidden rounded-lg border border-border shadow-xs">
+            <div className="flex flex-col flex-1 h-full w-full min-w-0 items-center gap-3">
+              <div className="relative flex-1 h-full min-h-0 min-w-0 overflow-hidden rounded-lg border border-border shadow-xs">
                 <img
                   src={initialPreviewUrl}
                   alt="Imagem atual"
@@ -198,7 +198,7 @@ export function UploadDropzone({
         </div>
       ) : (
         /* ESTADO 2: Preview das imagens selecionadas */
-        <div className="w-full min-w-0 space-y-3">
+        <div className="flex flex-col w-full min-w-0 min-h-0 gap-3 h-full flex-1">
           {/* Se for apenas 1 arquivo: Exibe preview ampliado com destaque */}
           {maxFiles === 1 ? (
             <SingleImagePreview
@@ -266,13 +266,13 @@ function SingleImagePreview({
   }, [file]);
 
   return (
-    <div className="relative w-full min-w-0 max-w-full overflow-hidden rounded-xl border border-border bg-muted/30 shadow-xs">
-      <div className="relative flex h-64 w-full max-w-full items-center justify-center overflow-hidden bg-black/10 p-2 dark:bg-black/40">
+    <div className="relative flex flex-col flex-1 w-full min-w-0 min-h-0 max-w-full overflow-hidden rounded-xl border border-border bg-muted/30 shadow-xs">
+      <div className="relative flex flex-1 min-h-0 w-full max-w-full items-center justify-center overflow-hidden bg-background/10 p-2 dark:bg-background/40">
         {url ? (
           <img
             src={url}
             alt={file.name}
-            className="max-h-full max-w-full rounded-md object-contain"
+            className="max-h-full max-w-full rounded-md object-cover"
           />
         ) : (
           <ImageIcon className="size-10 text-muted-foreground" />
@@ -299,16 +299,6 @@ function SingleImagePreview({
             {formatBytes(file.size)}
           </p>
         </div>
-
-        {!disabled && (
-          <button
-            type="button"
-            onClick={onChangeImage}
-            className="shrink-0 text-xs font-medium text-primary hover:underline"
-          >
-            Trocar imagem
-          </button>
-        )}
       </div>
     </div>
   );

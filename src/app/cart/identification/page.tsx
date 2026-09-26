@@ -52,8 +52,7 @@ const IdentificationPage = async () => {
           defaultShippingAddressId={cart.shippingAddress?.id || null}
         />
       </div>
-
-      <Footer />
+     <Footer />
     </div>
   );
 };

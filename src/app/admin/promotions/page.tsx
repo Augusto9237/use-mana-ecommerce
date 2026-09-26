@@ -107,22 +107,8 @@ export default async function AdminPromotionsPage(props: {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Breadcrumb e Header */}
         <div className="flex justify-between items-center gap-4">
           <div>
-            <Breadcrumb className="mb-2">
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link href="/admin">Admin</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage className="text-primary">Promoções</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
             <h1 className="text-2xl max-sm:text-xl font-bold">Promoções</h1>
             <p className="text-sm text-muted-foreground">
               Gerenciar todas as promoções

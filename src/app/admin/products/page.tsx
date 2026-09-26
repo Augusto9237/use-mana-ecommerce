@@ -138,19 +138,6 @@ export default async function AdminProductsPage(props: {
         {/* Breadcrumb e Header */}
         <div className="flex gap-4 items-center justify-between">
           <div>
-            <Breadcrumb className="mb-2">
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link href="/admin">Admin</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage className="text-primary">Produtos</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
             <h1 className="text-2xl max-sm:text-xl font-bold">Produtos</h1>
             <p className="text-sm text-muted-foreground">
               Gerenciar todos os produtos do catálogo
@@ -165,7 +152,7 @@ export default async function AdminProductsPage(props: {
         {products.length === 0 ? (
           <Card>
             <CardContent className="py-4 text-center">
-              <p className="text-gray-600 mb-4">Nenhum produto cadastrado</p>
+              <p className="text-foreground mb-4">Nenhum produto cadastrado</p>
               <Link href="/admin/products/create">
                 <Button>Criar Primeiro Produto</Button>
               </Link>

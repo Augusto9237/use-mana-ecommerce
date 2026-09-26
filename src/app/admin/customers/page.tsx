@@ -127,19 +127,6 @@ export default async function AdminCustomersPage(props: {
         {/* Breadcrumb e Header */}
         <div className="flex items-center justify-between">
           <div>
-            <Breadcrumb className="mb-2">
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link href="/admin">Admin</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage className="text-primary">Clientes</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
             <h1 className="text-2xl max-sm:text-xl font-bold">Clientes</h1>
             <p className="text-sm text-muted-foreground">
               Gerenciar clientes cadastrados no sistema

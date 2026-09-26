@@ -110,22 +110,8 @@ export default async function AdminCategoriesPage(props: {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Breadcrumb e Header */}
         <div className="flex items-center justify-between">
           <div>
-            <Breadcrumb className="mb-2">
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link href="/admin">Admin</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage className="text-primary">Categorias</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
             <h1 className="text-2xl max-sm:text-xl font-bold">Categorias</h1>
             <p className="text-sm text-muted-foreground">
               Gerenciar categorias do catálogo de produtos

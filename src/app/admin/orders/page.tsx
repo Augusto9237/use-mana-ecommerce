@@ -163,19 +163,6 @@ export default async function AdminOrdersPage(props: {
         {/* Breadcrumb e Header */}
         <div className="flex items-center justify-between">
           <div>
-            <Breadcrumb className="mb-2">
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link href="/admin">Admin</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage className="text-primary">Pedidos</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
             <h1 className="text-2xl font-bold">Pedidos</h1>
             <p className="text-sm text-muted-foreground">
               Gerenciar e acompanhar os pedidos dos clientes

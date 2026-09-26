@@ -1,26 +1,34 @@
 import { db } from "@/db";
 import { orderTable } from "@/db/schema";
+import { auth } from "@/lib/auth";
 import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-    const reqUrl = new URL(req.url);
-    const { searchParams } = req.nextUrl;
-    const status = searchParams.get('collection_status');
-    const id = searchParams.get('external_reference');
-    const success = searchParams.get('success');
-    const canceled = searchParams.get('canceled');
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-    if (canceled === 'true' && (status !== 'approved')) {
-        if (id) {
-            await db.delete(orderTable).where(eq(orderTable.id, id));
-        }
-        return NextResponse.redirect(new URL(`${process.env.HOST_URL}/success/false`));
-    }
+  const url = new URL(req.url);
+  const externalReference = url.searchParams.get("external_reference");
 
-    if (id && status === 'approved') {
-        await db.update(orderTable).set({ status: "paid" }).where(eq(orderTable.id, id));
-    }
-  
-    return NextResponse.redirect(new URL(`${process.env.HOST_URL}/success/true`));
-};
+  if (!externalReference || !session?.user?.id) {
+    return NextResponse.redirect(new URL(`${process.env.HOST_URL ?? "/"}/checkout/failure`));
+  }
+
+  const order = await db.query.orderTable.findFirst({
+    where: eq(orderTable.id, externalReference),
+    columns: {
+      id: true,
+      userId: true,
+      status: true,
+    },
+  });
+
+  if (!order || order.userId !== session.user.id || order.status !== "paid") {
+    return NextResponse.redirect(new URL(`${process.env.HOST_URL ?? "/"}/checkout/failure`));
+  }
+
+  return NextResponse.redirect(new URL(`${process.env.HOST_URL ?? "/"}/checkout/success`));
+}

@@ -1,7 +1,33 @@
+import crypto from "node:crypto";
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { cartItemTable, cartTable, orderItemTable, orderTable, productTable, productVariantTable } from "@/db/schema";
+import { cartItemTable, cartTable, orderItemTable, orderTable, productVariantTable } from "@/db/schema";
+
+function isValidWebhookSignature(rawBody: string, signature: string | null): boolean {
+  const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+
+  if (!secret || !signature) {
+    return false;
+  }
+
+  const expected = crypto
+    .createHmac("sha256", secret)
+    .update(rawBody, "utf8")
+    .digest("hex");
+
+  const normalized = signature.replace(/^sha256=/i, "").trim();
+
+  if (normalized.length !== expected.length) {
+    return false;
+  }
+
+  try {
+    return crypto.timingSafeEqual(Buffer.from(normalized, "hex"), Buffer.from(expected, "hex"));
+  } catch {
+    return false;
+  }
+}
 
 async function clearCartForOrder(orderId: string) {
   const order = await db.query.orderTable.findFirst({
@@ -66,18 +92,53 @@ async function decreaseStockForOrder(orderId: string) {
   });
 }
 
+async function markOrderAsPaid(orderId: string, paymentId: number | string) {
+  const existingOrder = await db.query.orderTable.findFirst({
+    where: eq(orderTable.id, orderId),
+    columns: {
+      id: true,
+      status: true,
+      totalPriceInCents: true,
+      paymentId: true,
+    },
+  });
+
+  if (!existingOrder) {
+    console.warn(`Cannot mark order ${orderId} as paid: order not found.`);
+    return false;
+  }
+
+  if (existingOrder.status === "paid") {
+    console.log(`Order ${orderId} already marked as paid; skipping duplicate processing.`);
+    return true;
+  }
+
+  await db
+    .update(orderTable)
+    .set({ status: "paid", paymentId: String(paymentId) })
+    .where(eq(orderTable.id, orderId));
+
+  await decreaseStockForOrder(orderId);
+  await clearCartForOrder(orderId);
+
+  return true;
+}
+
 export async function POST(req: Request) {
   try {
-    // Log raw body for debugging
     const rawBody = await req.text();
-    console.log("Mercado Pago webhook raw body:", rawBody);
+    const signature = req.headers.get("x-signature") || req.headers.get("X-Signature");
+
+    if (!isValidWebhookSignature(rawBody, signature)) {
+      console.warn("Rejected Mercado Pago webhook: invalid signature.");
+      return NextResponse.json({ ok: false, error: "Invalid webhook signature" }, { status: 401 });
+    }
 
     let body: any = {};
     try {
       body = JSON.parse(rawBody);
-    } catch (e) {
-      console.error("Failed to parse webhook body as JSON:", e);
-      // Try to parse as query params (Mercado Pago sometimes sends as x-www-form-urlencoded)
+    } catch (error) {
+      console.error("Failed to parse webhook body as JSON:", error);
       const params = new URLSearchParams(rawBody);
       body = {
         action: params.get("action"),
@@ -88,78 +149,69 @@ export async function POST(req: Request) {
       };
     }
 
-    // Extract event type and payment ID
-    const eventType = body?.type || body?.action; // "payment", "plan", "subscription", etc.
+    const eventType = body?.type || body?.action;
     const paymentId = body?.data?.id;
 
-    console.log(`Webhook event type: ${eventType}, Payment ID: ${paymentId}`);
-
-    // If the webhook body already contains an external_reference (simulation or direct payload), use it first
-    const directExternalReference =
-      body?.external_reference || body?.payment?.external_reference || body?.data?.external_reference || null;
-
-    if (directExternalReference && typeof directExternalReference === "string") {
-      const m = directExternalReference.match(/^order-(.+)$/);
-      if (m) {
-        const orderId = m[1];
-        try {
-          await db
-            .update(orderTable)
-            .set({ status: "paid" })
-            .where(eq(orderTable.id, orderId));
-          await clearCartForOrder(orderId);
-          console.log(`Order ${orderId} marked as paid (webhook via direct external_reference).`);
-        } catch (e) {
-          console.error("Failed to update order status from webhook (direct):", e);
-        }
-      }
+    if (eventType !== "payment" || !paymentId) {
+      return NextResponse.json({ ok: true, ignored: true });
     }
 
-    // Only process payment events with paymentId by fetching details
-    if (eventType === "payment" && paymentId) {
-      // Fetch payment details from Mercado Pago to obtain `external_reference`
-      try {
-        const mpToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
-        if (!mpToken) {
-          console.error("MERCADOPAGO_ACCESS_TOKEN not set — cannot fetch payment details.");
-        } else {
-          const res = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
-            headers: { Authorization: `Bearer ${mpToken}` },
-          });
-          if (!res.ok) {
-            console.error(`Failed to fetch payment ${paymentId} from Mercado Pago:`, res.status);
-          } else {
-            const payment = await res.json();
-            const externalReference = payment?.external_reference || null;
-            if (externalReference && typeof externalReference === "string") {
-              const orderId = externalReference;
-
-              try {
-                await db
-                  .update(orderTable)
-                  .set({ status: "paid", paymentId: payment?.id })
-                  .where(eq(orderTable.id, orderId));
-
-                await decreaseStockForOrder(orderId);
-                await clearCartForOrder(orderId);
-                console.log(`O pedido ${orderId} foi marcado como pago (webhook via fetch).`);
-              } catch (e) {
-                console.error("Failed to update order status from webhook:", e);
-              }
-            } else {
-              console.warn("Payment has no external_reference:", paymentId);
-            }
-          }
-        }
-      } catch (e) {
-        console.error("Error fetching payment details from Mercado Pago:", e);
-      }
+    const mpToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+    if (!mpToken) {
+      console.error("MERCADOPAGO_ACCESS_TOKEN not set — cannot fetch payment details.");
+      return NextResponse.json({ ok: false, error: "Mercado Pago token not configured" }, { status: 500 });
     }
 
-    return NextResponse.json({ ok: true });
+    const res = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+      headers: { Authorization: `Bearer ${mpToken}` },
+    });
+
+    if (!res.ok) {
+      console.error(`Failed to fetch payment ${paymentId} from Mercado Pago:`, res.status);
+      return NextResponse.json({ ok: false, error: "Failed to verify payment" }, { status: 502 });
+    }
+
+    const payment = await res.json();
+    const paymentStatus = String(payment?.status ?? "").toLowerCase();
+    const externalReference = payment?.external_reference ?? null;
+
+    if (paymentStatus !== "approved") {
+      console.warn(`Payment ${paymentId} is not approved. Current status: ${paymentStatus}`);
+      return NextResponse.json({ ok: true, processed: false, status: paymentStatus });
+    }
+
+    if (!externalReference || typeof externalReference !== "string") {
+      console.warn("Payment has no external_reference:", paymentId);
+      return NextResponse.json({ ok: true, processed: false, reason: "missing_external_reference" });
+    }
+
+    const order = await db.query.orderTable.findFirst({
+      where: eq(orderTable.id, externalReference),
+      columns: {
+        id: true,
+        totalPriceInCents: true,
+        status: true,
+      },
+    });
+
+    if (!order) {
+      console.warn(`Payment ${paymentId} references unknown order ${externalReference}.`);
+      return NextResponse.json({ ok: true, processed: false, reason: "unknown_order" });
+    }
+
+    const paymentTotalCents = Math.round(Number(payment?.total_amount ?? payment?.transaction_amount ?? 0) * 100);
+    const orderTotalCents = Number(order.totalPriceInCents ?? 0);
+
+    if (paymentTotalCents !== orderTotalCents) {
+      console.warn(`Payment amount mismatch for order ${externalReference}: payment=${paymentTotalCents}, order=${orderTotalCents}`);
+      return NextResponse.json({ ok: true, processed: false, reason: "amount_mismatch" });
+    }
+
+    await markOrderAsPaid(externalReference, payment.id);
+
+    return NextResponse.json({ ok: true, processed: true, orderId: externalReference });
   } catch (error) {
     console.error("Webhook processing error:", error);
-    // Always return 200 to prevent Mercado Pago from retrying indefinitely
     return NextResponse.json({ ok: false, error: String(error) }, { status: 200 });
   }
 }

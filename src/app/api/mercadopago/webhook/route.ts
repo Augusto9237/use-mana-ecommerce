@@ -4,28 +4,52 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { cartItemTable, cartTable, orderItemTable, orderTable, productVariantTable } from "@/db/schema";
 
-function isValidWebhookSignature(rawBody: string, signature: string | null): boolean {
+function isValidWebhookSignature(
+  dataId: string | null,
+  requestId: string | null,
+  signature: string | null,
+): { valid: boolean; reason?: string } {
   const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
 
-  if (!secret || !signature) {
-    return false;
+  if (!secret) {
+    return { valid: false, reason: "missing_secret" };
+  }
+  if (!signature) {
+    return { valid: false, reason: "missing_signature_header" };
   }
 
+  const signatureParts = new Map(
+    signature.split(",").map((part) => {
+      const [key, value] = part.trim().split("=", 2);
+      return [key, value];
+    }),
+  );
+  const timestamp = signatureParts.get("ts");
+  const receivedSignature = signatureParts.get("v1");
+
+  if (!timestamp || !receivedSignature || !/^[a-f\d]{64}$/i.test(receivedSignature)) {
+    return { valid: false, reason: "malformed_signature_header" };
+  }
+
+  const manifestParts = [
+    dataId ? `id:${dataId.toLowerCase()}` : null,
+    requestId ? `request-id:${requestId}` : null,
+    `ts:${timestamp}`,
+  ].filter(Boolean);
+  const manifest = `${manifestParts.join(";")};`;
   const expected = crypto
     .createHmac("sha256", secret)
-    .update(rawBody, "utf8")
+    .update(manifest, "utf8")
     .digest("hex");
 
-  const normalized = signature.replace(/^sha256=/i, "").trim();
-
-  if (normalized.length !== expected.length) {
-    return false;
-  }
-
   try {
-    return crypto.timingSafeEqual(Buffer.from(normalized, "hex"), Buffer.from(expected, "hex"));
+    const valid = crypto.timingSafeEqual(
+        Buffer.from(receivedSignature, "hex"),
+        Buffer.from(expected, "hex"),
+      );
+    return valid ? { valid: true } : { valid: false, reason: "signature_mismatch" };
   } catch {
-    return false;
+    return { valid: false, reason: "malformed_signature_header" };
   }
 }
 
@@ -127,13 +151,6 @@ async function markOrderAsPaid(orderId: string, paymentId: number | string) {
 export async function POST(req: Request) {
   try {
     const rawBody = await req.text();
-    const signature = req.headers.get("x-signature") || req.headers.get("X-Signature");
-
-    if (!isValidWebhookSignature(rawBody, signature)) {
-      console.warn("Rejected Mercado Pago webhook: invalid signature.");
-      return NextResponse.json({ ok: false, error: "Invalid webhook signature" }, { status: 401 });
-    }
-
     let body: any = {};
     try {
       body = JSON.parse(rawBody);
@@ -149,10 +166,29 @@ export async function POST(req: Request) {
       };
     }
 
-    const eventType = body?.type || body?.action;
-    const paymentId = body?.data?.id;
+    const requestUrl = new URL(req.url);
+    const dataId = requestUrl.searchParams.get("data.id");
+    const signature = req.headers.get("x-signature");
+    const requestId = req.headers.get("x-request-id");
+    const signatureValidation = isValidWebhookSignature(dataId, requestId, signature);
 
-    if (eventType !== "payment" || !paymentId) {
+    if (!signatureValidation.valid) {
+      console.warn(
+        `Mercado Pago webhook signature not verified (${signatureValidation.reason}); validating payment with Mercado Pago API.`,
+      );
+    }
+
+    const eventType =
+      body?.type ||
+      requestUrl.searchParams.get("type") ||
+      requestUrl.searchParams.get("topic") ||
+      (typeof body?.action === "string" ? body.action.split(".")[0] : null);
+    const paymentId =
+      dataId ||
+      requestUrl.searchParams.get("id") ||
+      (body?.data?.id != null ? String(body.data.id) : null);
+
+    if ((eventType !== "payment" && eventType !== "payment.updated") || !paymentId) {
       return NextResponse.json({ ok: true, ignored: true });
     }
 

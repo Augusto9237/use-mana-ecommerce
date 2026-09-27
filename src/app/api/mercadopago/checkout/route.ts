@@ -164,7 +164,6 @@ async function createCheckoutSession(orderId: string, userId: string) {
   });
 
   const response = await preference.create({ body: payload });
-
   const initPoint = response.sandbox_init_point || response.init_point;
   const environment = response.sandbox_init_point ? "sandbox" : "production";
 

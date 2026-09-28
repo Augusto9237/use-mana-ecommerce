@@ -37,8 +37,8 @@ const Home = async () => {
         <CarouselWithProgress promotions={promotions} />
 
         <section className="grid grid-cols-3 max-sm:grid-cols-1 bg-card md:rounded-xl max-sm:gap-0 gap-6 justify-between">
-          <div className="flex  items-center gap-4 p-5 sm:p-6 justify-center w-full h-full flex-1 md:border-r  max-sm:border-b border-border">
-            <ShieldCheck className="size-10 max-sm:size-6 text-primary" />
+          <div className="flex  items-center gap-4 p-5 justify-center w-full h-full flex-1 md:border-r  max-sm:border-b border-border">
+            <ShieldCheck className="size-8 max-sm:size-6 text-primary" />
             <div className="flex flex-col">
               <h2 className="font-semibold max-sm:text-sm">Compra segura</h2>
               <p className="text-sm max-sm:text-xs text-muted-foreground">
@@ -47,8 +47,8 @@ const Home = async () => {
             </div>
           </div>
           {/* <Separator orientation="vertical" className="h-10 max-sm:h-20" /> */}
-          <div className="flex items-center gap-4 p-5 sm:p-6 justify-center  w-full h-full flex-1 max-sm md:border-r  max-sm:border-b border-border">
-            <RotateCcw className="size-10 max-sm:size-6 text-primary" />
+          <div className="flex items-center gap-4 p-5 justify-center  w-full h-full flex-1 max-sm md:border-r  max-sm:border-b border-border">
+            <RotateCcw className="size-8 max-sm:size-6 text-primary" />
             <div className="flex flex-col">
               <h2 className="font-semibold max-sm:text-sm">Troca fácil</h2>
               <p className="text-sm max-sm:text-xs text-muted-foreground">
@@ -57,8 +57,8 @@ const Home = async () => {
             </div>
           </div>
           {/* <Separator orientation="vertical" className="h-10 max-sm:h-20" /> */}
-          <div className="flex items-center gap-4 justify-center p-5 sm:p-6 w-full h-full flex-1">
-            <Truck className="size-10 max-sm:size-6 text-primary" />
+          <div className="flex items-center gap-4 justify-center p-5 w-full h-full flex-1">
+            <Truck className="size-8 max-sm:size-6 text-primary" />
             <div className="flex flex-col">
               <h2 className="font-semibold max-sm:text-sm">Envio rápido</h2>
               <p className="text-sm max-sm:text-xs text-muted-foreground">

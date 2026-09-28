@@ -35,7 +35,6 @@ const Home = async () => {
       <Header />
       <div className="space-y-6 pt-16.5 pb-8 max-w-screen-xl mx-auto flex flex-col justify-center">
         <CarouselWithProgress promotions={promotions} />
-
         <section className="grid grid-cols-3 max-sm:grid-cols-1 bg-card md:rounded-xl max-sm:gap-0 gap-6 justify-between">
           <div className="flex  items-center gap-4 p-5 justify-center w-full h-full flex-1 md:border-r  max-sm:border-b border-border">
             <ShieldCheck className="size-8 max-sm:size-6 text-primary" />

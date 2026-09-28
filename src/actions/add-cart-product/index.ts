@@ -50,9 +50,10 @@ export const addProductToCart = async (data: AddProductToCartSchema) => {
         eq(cartItem.productVariantId, data.productVariantId),
     });
     const requestedQuantity = (cartItem?.quantity ?? 0) + data.quantity;
+    console.log('test resquestedQuantity', requestedQuantity);
     if (sizeInStock.stock < requestedQuantity) {
       throw new Error(
-        `Estoque insuficiente. Disponível: ${sizeInStock.stock} unidade(s).`,
+        `Estoque insuficiente. Disponível: ${sizeInStock.stock - (cartItem?.quantity ?? 0)} unidade(s).`,
       );
     }
     if (cartItem) {

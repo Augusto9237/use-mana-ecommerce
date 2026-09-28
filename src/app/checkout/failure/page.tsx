@@ -9,7 +9,6 @@ export default function CheckoutFailurePage() {
   return (
     <>
       <Header />
-
       <Dialog open={true}>
         <DialogContent className="w-full max-w-md text-center">
            <div className="flex justify-center">
@@ -22,7 +21,7 @@ export default function CheckoutFailurePage() {
             Por favor, tente realizar o pedido novamente.
           </p>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <div className="flex flex-col gap-3">
             <Button asChild className="rounded-full">
               <Link href="/cart/identification">Tentar novamente</Link>
             </Button>

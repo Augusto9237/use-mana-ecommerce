@@ -44,16 +44,45 @@ export const addProductToCart = async (data: AddProductToCartSchema) => {
         .returning();
       cartId = newCart.id;
     }
+    const now = new Date();
+    const brasilDateStr = now.toLocaleDateString("en-CA", {
+      timeZone: "America/Sao_Paulo",
+    });
+    const startOfDay = new Date(`${brasilDateStr}T00:00:00-03:00`);
+
+    const todayOrderItems = await db.query.orderItemTable.findMany({
+      where: (orderItem, { eq, gte, and }) =>
+        and(
+          eq(orderItem.productVariantId, data.productVariantId),
+          gte(orderItem.createdAt, startOfDay),
+        ),
+      with: {
+        order: {
+          columns: {
+            status: true,
+          },
+        },
+      },
+    });
+
+    const orderedTodayQuantity = todayOrderItems
+      .filter((item) => item.order?.status !== "canceled")
+      .reduce((sum, item) => sum + item.quantity, 0);
+
+    const availableStock = sizeInStock.stock - orderedTodayQuantity;
+
     const cartItem = await db.query.cartItemTable.findFirst({
       where: (cartItem, { eq }) =>
         eq(cartItem.cartId, cartId) &&
         eq(cartItem.productVariantId, data.productVariantId),
     });
-    const requestedQuantity = (cartItem?.quantity ?? 0) + data.quantity;
-    console.log('test resquestedQuantity', requestedQuantity);
-    if (sizeInStock.stock < requestedQuantity) {
+    const currentCartQuantity = cartItem?.quantity ?? 0;
+    const requestedQuantity = currentCartQuantity + data.quantity;
+    
+    if (availableStock < requestedQuantity) {
+      const remainingAvailable = Math.max(0, availableStock - currentCartQuantity);
       throw new Error(
-        `Estoque insuficiente. Disponível: ${sizeInStock.stock - (cartItem?.quantity ?? 0)} unidade(s).`,
+        `Estoque insuficiente. Disponível: ${remainingAvailable} unidade(s).`,
       );
     }
     if (cartItem) {

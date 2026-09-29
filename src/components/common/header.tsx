@@ -25,13 +25,20 @@ export const Header = () => {
   return (
     <header className="p-5 backdrop-blur-md fixed top-0 w-full bg-card/70 z-50">
       <div className="flex items-center gap-3 justify-between mx-auto w-full max-w-screen-xl xl:px-5">
-        <Link href="/">
+        <Link href="/" className="h-10 w-40 max-md:w-16 overflow-hidden flex">
           <Image
             src="/logo.png"
             alt="RD Fitness Logo"
             width={40}
             height={22}
-            className="object-contain"
+            className="object-contain md:hidden"
+          />
+          <Image
+            src="/logo-lg.png"
+            alt="RD Fitness Logo"
+            width={100}
+            height={80}
+            className="object-cover max-md:hidden"
           />
         </Link>
 

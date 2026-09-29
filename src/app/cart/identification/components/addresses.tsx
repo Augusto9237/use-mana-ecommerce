@@ -27,6 +27,7 @@ import { Separator } from "@/components/ui/separator";
 import DeliverySummary from "./delivery-summary";
 import { calculateUberQuote } from "@/actions/calculate-uber-quote";
 import Link from "next/link";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const formSchema = z.object({
   email: z.email("E-mail inválido"),
@@ -84,11 +85,10 @@ const Addresses = ({
 
   return (
     <div className="space-y-4 h-full flex-1 min-h-0">
-      <Card>
+      <Card className="flex-1 h-full min-h-0">
         <div className="space-y-5">
           <CardHeader className="flex items-center justify-between">
             <CardTitle>Endereço de entrega</CardTitle>
-            <FormAddress />
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -96,32 +96,44 @@ const Addresses = ({
                 <p>Carregando endereços...</p>
               </div>
             ) : (
-              <RadioGroup
-                value={selectedAddress}
-                onValueChange={setSelectedAddress}
-              >
-                {addresses?.length === 0 && (
-                  <div className="py-4 text-center">
-                    <p className="text-muted-foreground">
-                      Você ainda não possui endereços cadastrados.
-                    </p>
-                  </div>
-                )}
+              <ScrollArea className="h-full">
+                <RadioGroup
+                  value={selectedAddress}
+                  onValueChange={setSelectedAddress}
+                >
+                  {addresses?.length === 0 && (
+                    <div className="py-4 text-center">
+                      <p className="text-muted-foreground">
+                        Você ainda não possui endereços cadastrados.
+                      </p>
+                    </div>
+                  )}
 
-                {addresses?.map((address) => (
-                  <FieldLabel key={address.id} htmlFor={address.id}>
-                    <Field orientation="horizontal">
-                      <FieldContent>
-                        <FieldTitle>{formatAddress(address)}</FieldTitle>
-                      </FieldContent>
-                      <RadioGroupItem value={address.id} id={address.id} />
-                    </Field>
-                  </FieldLabel>
-                ))}
-              </RadioGroup>
+                  {addresses?.map((address) => (
+                    <FieldLabel
+                      key={address.id}
+                      htmlFor={address.id}
+                      onClick={(e) => {
+                        if (selectedAddress === address.id) {
+                          e.preventDefault();
+                          setSelectedAddress(null);
+                        }
+                      }}
+                    >
+                      <Field orientation="horizontal">
+                        <FieldContent>
+                          <FieldTitle>{formatAddress(address)}</FieldTitle>
+                        </FieldContent>
+                        <RadioGroupItem value={address.id} id={address.id} />
+                      </Field>
+                    </FieldLabel>
+                  ))}
+                </RadioGroup>
+                <ScrollBar orientation="vertical" />
+              </ScrollArea>
             )}
 
-            {selectedAddress && selectedAddress !== "add_new" && (
+            {selectedAddress && selectedAddress !== "add_new" ? (
               <div className="mt-4">
                 <Button
                   onClick={handleGoToPayment}
@@ -133,6 +145,10 @@ const Addresses = ({
                     : "Calcular frete"}
                 </Button>
               </div>
+            ) : (
+              <div className="mt-4 w-full flex flex-col">
+                <FormAddress />
+              </div>
             )}
           </CardContent>
 
@@ -143,17 +159,19 @@ const Addresses = ({
           />
         </div>
       </Card>
-      <div className="flex max-sm:grid grid-cols-2 w-full sm:justify-end px-5 max-sm:p-0 py-5 gap-5  max-w-screen-xl mx-auto">
+      <div className="flex max-sm:flex-col-reverse  w-full sm:justify-end gap-4 sm:gap-5  max-w-screen-xl mx-auto">
         <Link href="/" >
           <Button variant="outline" className="max-sm:w-full">Continuar Comprando</Button>
         </Link>
-        <Link href="/cart/confirmation" aria-disabled={shippingFeeInCents === 0} >
-          <Button disabled={shippingFeeInCents === 0} className="max-sm:w-full">
+
+        <Button disabled={shippingFeeInCents === 0} variant={shippingFeeInCents === 0 ? "outline" : "default"} className="max-sm:w-full">
+          <Link href="/cart/confirmation" aria-disabled={shippingFeeInCents === 0} >
             Finalizar compra
-          </Button>
-        </Link>
+          </Link>
+        </Button>
+
       </div>
-    </div>
+    </div >
   );
 };
 

@@ -124,7 +124,7 @@ export function FormAddress({ address, trigger, onSuccess }: FormAddressProps) {
     ) : (
         <Button variant="secondary">
             <Plus />
-            <span className="max-sm:hidden">Novo</span> Endereço
+            Novo Endereço
         </Button>
     );
 

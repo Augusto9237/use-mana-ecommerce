@@ -29,6 +29,7 @@ import { deleteProduct } from "@/actions/delete-product";
 interface Category {
   id: string;
   name: string;
+  imageUrl: string | null;
 }
 
 interface Product {

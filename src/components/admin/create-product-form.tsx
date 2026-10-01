@@ -40,6 +40,7 @@ import {
 } from "@/actions/create-product/schema";
 import { updateProduct } from "@/actions/update-product";
 import { Plus, Pencil } from "lucide-react";
+import Image from "next/image";
 
 interface Product {
   id: string;
@@ -50,7 +51,7 @@ interface Product {
 }
 
 interface CreateProductFormProps {
-  categories: Array<{ id: string; name: string }>;
+  categories: Array<{ id: string; name: string, imageUrl: string | null }>;
   product?: Product;
   trigger?: React.ReactNode;
 }
@@ -126,7 +127,7 @@ export function CreateProductForm({
                 <FormItem>
                   <FormLabel>Categoria</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
+                    <FormControl className="w-full">
                       <SelectTrigger disabled={isLoading}>
                         <SelectValue placeholder="Selecione uma categoria" />
                       </SelectTrigger>
@@ -134,7 +135,7 @@ export function CreateProductForm({
                     <SelectContent>
                       {categories.map((category) => (
                         <SelectItem key={category.id} value={category.id}>
-                          {category.name}
+                          <Image src={category.imageUrl!} alt={category.name} width={20} height={20} className="rounded-full" /> {category.name}
                         </SelectItem>
                       ))}
                     </SelectContent>

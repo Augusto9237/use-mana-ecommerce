@@ -583,5 +583,5 @@ Este projeto é privado e de uso exclusivo da **RD Fitness**.
 ---
 
 <p align="center">
-  Desenvolvido com 💛 por <strong>RD Fitness</strong>
+  Desenvolvido por <strong>Augusto Sousa</strong>
 </p>

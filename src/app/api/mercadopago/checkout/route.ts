@@ -109,6 +109,7 @@ function buildPreferencePayload(
       email: sessionUser.email ?? undefined,
       name: sessionUser.name ?? undefined,
     },
+    type: "pix",
     back_urls: buildBackUrls(baseUrl),
     currency_id: process.env.MERCADOPAGO_CURRENCY || DEFAULT_CURRENCY,
     ...(notificationUrl ? { notification_url: notificationUrl } : {}),
@@ -163,11 +164,38 @@ async function createCheckoutSession(orderId: string, userId: string) {
     name: order.user?.name,
   });
 
-  const response = await preference.create({ body: payload });
-  const initPoint = response.sandbox_init_point || response.init_point;
-  const environment = response.sandbox_init_point ? "sandbox" : "production";
+  const isProduction = process.env.NODE_ENV === "production";
+  const configuredEnvironment =
+    process.env.MERCADOPAGO_ENVIRONMENT?.toLowerCase();
+  const expectedEnvironment = isProduction ? "production" : "sandbox";
 
-  console.log(`[MercadoPago] Using ${environment} init_point:`, initPoint);
+  if (configuredEnvironment && configuredEnvironment !== expectedEnvironment) {
+    throw new CheckoutError(
+      `MERCADOPAGO_ENVIRONMENT must be '${expectedEnvironment}' in this environment`,
+      500,
+    );
+  }
+
+  if (isProduction && !configuredEnvironment) {
+    throw new CheckoutError(
+      "MERCADOPAGO_ENVIRONMENT must be set to 'production' in production",
+      500,
+    );
+  }
+
+  const environment = expectedEnvironment;
+  const response = await preference.create({ body: payload });
+  const initPoint =
+    environment === "sandbox"
+      ? response.sandbox_init_point
+      : response.init_point;
+
+  if (!initPoint) {
+    throw new CheckoutError(
+      `No ${environment} init point returned by Mercado Pago`,
+      500,
+    );
+  }
 
   return {
     initPoint,
@@ -196,10 +224,13 @@ function getAllowedOrigins(): string[] {
 
 function getCorsHeaders(origin: string | null) {
   const allowedOrigins = getAllowedOrigins();
-  const isAllowed = origin && allowedOrigins.includes(origin.replace(/\/$/, ""));
+  const isAllowed =
+    origin && allowedOrigins.includes(origin.replace(/\/$/, ""));
 
   return {
-    "Access-Control-Allow-Origin": isAllowed ? origin : allowedOrigins[0] || "*",
+    "Access-Control-Allow-Origin": isAllowed
+      ? origin
+      : allowedOrigins[0] || "*",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Access-Control-Allow-Credentials": "true",

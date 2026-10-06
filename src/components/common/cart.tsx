@@ -52,6 +52,7 @@ export const Cart = () => {
                     productVariantName={item.productVariant.name}
                     productVariantImageUrl={item.productVariant.imageUrl[0]}
                     productVariantPriceInCents={
+                      item.productVariant.discountPriceInCents ??
                       item.productVariant.priceInCents
                     }
                     quantity={item.quantity}

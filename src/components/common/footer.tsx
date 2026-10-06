@@ -3,7 +3,7 @@ import Image from "next/image";
 const Footer = () => {
   return (
     <div className="w-full gap-1 p-5 bg-card">
-      <div className="w-full max-w-screen-xl mx-auto flex justify-between items-center">
+      <div className="w-full max-w-screen-xl mx-auto flex justify-between items-center px-5">
         <div>
           <p className="text-xs font-medium">©2026 Copyright RD FITNESS</p>
           <p className="text-muted-foreground text-xs font-medium">

@@ -381,6 +381,8 @@ GOOGLE_CLIENT_SECRET=seu-google-client-secret
 
 # ─── Mercado Pago ─────────────────────────────────────
 MERCADOPAGO_ACCESS_TOKEN=seu-access-token
+# sandbox (local/dev) ou production (deploy)
+MERCADOPAGO_ENVIRONMENT=production
 
 # ─── Stripe ───────────────────────────────────────────
 STRIPE_SECRET_KEY=sk_test_xxx

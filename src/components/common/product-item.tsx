@@ -54,9 +54,18 @@ const ProductItem = ({
           {product.description}
         </p>
         <div className="flex justify-between items-center mt-2">
-          <p className="truncate font-semibold text-primary">
-            {formatCentsToBRL(firstVariant.priceInCents)}
-          </p>
+          <div>
+            {firstVariant.discountPriceInCents ? (
+              <div className="flex gap-2 items-center">
+                <p className="text-xs font-medium text-muted-foreground line-through">
+                  {formatCentsToBRL(firstVariant.priceInCents)}
+                </p>
+              </div>
+            ) : null}
+            <p className="truncate font-semibold text-primary text-base">
+              {formatCentsToBRL(firstVariant.discountPriceInCents || firstVariant.priceInCents)}
+            </p>
+          </div>
           <AddToCartButton
             productVariantId={firstVariant.id}
             size={firstVariant.sizeInStock[0].size}

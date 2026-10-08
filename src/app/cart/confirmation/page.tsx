@@ -38,7 +38,7 @@ const ConfirmationPage = async () => {
     redirect("/");
   }
   const cartTotalInCents = cart.items.reduce(
-    (acc, item) => acc + item.productVariant.priceInCents * item.quantity,
+    (acc, item) => acc + (item.productVariant.discountPriceInCents ?? item.productVariant.priceInCents) * item.quantity,
     0,
   );
   if (!cart.shippingAddress) {
@@ -85,7 +85,7 @@ const ConfirmationPage = async () => {
             name: item.productVariant.product.name,
             variantName: item.productVariant.name,
             quantity: item.quantity,
-            priceInCents: item.productVariant.priceInCents,
+            priceInCents: item.productVariant.discountPriceInCents ?? item.productVariant.priceInCents,
             imageUrl: Array.isArray(item.productVariant.imageUrl)
               ? item.productVariant.imageUrl[0] ?? ""
               : item.productVariant.imageUrl,

@@ -39,7 +39,7 @@ export const finishOrder = async (data?: FinishOrderSchema) => {
     throw new Error("Shipping address not found");
   }
   const itemsTotal = cart.items.reduce(
-    (acc, item) => acc + item.productVariant.priceInCents * item.quantity,
+    (acc, item) => acc + (item.productVariant.discountPriceInCents ?? item.productVariant.priceInCents) * item.quantity,
     0,
   );
   const shippingFee = shippingFeeInCents || 0;
@@ -82,7 +82,7 @@ export const finishOrder = async (data?: FinishOrderSchema) => {
         orderId: order.id,
         productVariantId: item.productVariant.id,
         quantity: item.quantity,
-        priceInCents: item.productVariant.priceInCents,
+        priceInCents: item.productVariant.discountPriceInCents ?? item.productVariant.priceInCents,
       }));
     await tx.insert(orderItemTable).values(orderItemsPayload);
   });

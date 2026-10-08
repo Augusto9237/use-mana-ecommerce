@@ -77,7 +77,7 @@ function buildOrderItems(order: OrderWithItems): MercadoPagoItem[] {
     picture_url: item.productVariant.imageUrl[0] ?? undefined,
     category_id: item.productVariant.product.categoryId ?? undefined,
     quantity: item.quantity,
-    unit_price: item.productVariant.priceInCents / 100,
+    unit_price: (item.productVariant.discountPriceInCents || item.productVariant.priceInCents) / 100,
   }));
 
   if (order.shippingFeeInCents && order.shippingFeeInCents > 0) {

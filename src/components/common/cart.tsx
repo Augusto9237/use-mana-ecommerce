@@ -33,7 +33,7 @@ export const Cart = () => {
           ) : null}
         </Button>
       </SheetTrigger>
-      <SheetContent>
+      <SheetContent className="max-sm:max-w-sm">
         <SheetHeader>
           <SheetTitle>Carrinho</SheetTitle>
         </SheetHeader>

@@ -1,3 +1,4 @@
+import { deleteOrder } from "@/actions/delete-order";
 import { db } from "@/db";
 import { orderTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
@@ -29,6 +30,6 @@ export async function GET(req: NextRequest) {
   if (!order || order.userId !== session.user.id) {
     return NextResponse.redirect(new URL(`${process.env.HOST_URL ?? "/"}/checkout/failure`));
   }
-
+  await deleteOrder(order.id);
   return NextResponse.redirect(new URL(`${process.env.HOST_URL ?? "/"}/checkout/failure`));
 }

@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import Link from "next/link";
+import { CircleCheck, CircleX } from "lucide-react";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
@@ -14,7 +14,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -24,17 +23,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { AdminLayout } from "@/components/admin/admin-layout";
 import { CreatePromotionForm } from "./components/create-promotion-form";
-import Image from "next/image";
 import { PromotionBannerDialog } from "./components/promotion-banner-dialog";
 import { PromotionsActionsDropdown } from "./components/promotion-actions-dropdown";
 
@@ -57,12 +47,12 @@ export default async function AdminPromotionsPage(props: {
     ? ilike(promotionTable.title, `%${search}%`)
     : undefined;
 
-  const totalPagesCount = await db
+  const [{ count: totalPromotions }] = await db
     .select({ count: count() })
     .from(promotionTable)
     .where(whereClause);
 
-  const totalPages = Math.ceil(totalPagesCount[0].count / limit);
+  const totalPages = Math.ceil(totalPromotions / limit);
 
   const promotions = await db.query.promotionTable.findMany({
     where: whereClause,
@@ -104,12 +94,19 @@ export default async function AdminPromotionsPage(props: {
     return pages;
   };
 
+  const getPageHref = (page: number) => {
+    const params = new URLSearchParams();
+    if (search) params.set("search", search);
+    params.set("page", page.toString());
+    return `/admin/promotions?${params.toString()}`;
+  };
+
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center gap-4">
+      <div className="flex min-w-0 flex-col gap-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl max-sm:text-xl font-bold">Promoções</h1>
+            <h1 className="text-2xl font-semibold">Promoções</h1>
             <p className="text-sm text-muted-foreground">
               Gerenciar todas as promoções
             </p>
@@ -117,77 +114,98 @@ export default async function AdminPromotionsPage(props: {
           <CreatePromotionForm />
         </div>
 
-        {/* Table */}
-        {promotions.length === 0 ? (
-          <Card>
-            <CardContent className="py-4 text-center">
-              <p className="text-gray-600 mb-4">Nenhuma promoção cadastrada</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="border rounded-lg overflow-hidden bg-card">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-24">Imagem</TableHead>
-                  <TableHead>Título</TableHead>
-                  <TableHead>Descrição</TableHead>
-                  <TableHead>Link</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Criado em</TableHead>
-                  <TableHead className="w-10">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {promotions.map((promotion) => (
+        <div className="overflow-x-auto rounded-md border bg-background">
+          <Table className="min-w-[1100px]">
+            <TableHeader className="bg-muted/50">
+              <TableRow>
+                <TableHead className="w-24">Imagem</TableHead>
+                <TableHead className="min-w-40">Título</TableHead>
+                <TableHead className="min-w-48">Descrição</TableHead>
+                <TableHead className="min-w-48">Link</TableHead>
+                <TableHead className="w-32">Status</TableHead>
+                <TableHead className="w-36">Criada em</TableHead>
+                <TableHead className="w-20 text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {promotions.length > 0 ? (
+                promotions.map((promotion) => (
                   <TableRow key={promotion.id}>
                     <TableCell className="w-24">
                       {promotion.imageUrl ? (
-                        <PromotionBannerDialog src={promotion.imageUrl} alt={promotion.title} />
+                        <PromotionBannerDialog
+                          src={promotion.imageUrl}
+                          alt={promotion.title}
+                        />
                       ) : (
-                        <div className="w-16 h-12 bg-muted rounded flex items-center justify-center text-xs text-muted-foreground">
+                        <div className="flex h-12 w-16 shrink-0 items-center justify-center rounded-md bg-muted text-xs text-muted-foreground">
                           Sem imagem
                         </div>
                       )}
                     </TableCell>
                     <TableCell className="font-medium">{promotion.title}</TableCell>
-                    <TableCell>{promotion.description}</TableCell>
+                    <TableCell className="max-w-64 truncate text-sm text-muted-foreground">
+                      {promotion.description}
+                    </TableCell>
                     <TableCell>
                       <a
                         href={`${url}${promotion.linkUrl}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-primary underline truncate max-w-[150px] block"
+                        className="block max-w-56 truncate text-sm text-primary underline"
                       >
                         {url}{promotion.linkUrl}
                       </a>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={promotion.isActive ? "default" : "secondary"}>
+                      <Badge
+                        variant="outline"
+                        className="gap-1.5 px-2 text-muted-foreground"
+                      >
+                        {promotion.isActive ? (
+                          <CircleCheck className="size-3.5 text-emerald-600" />
+                        ) : (
+                          <CircleX className="size-3.5 text-muted-foreground" />
+                        )}
                         {promotion.isActive ? "Ativa" : "Inativa"}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
                       {new Date(promotion.createdAt).toLocaleDateString("pt-BR")}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-right">
                       <PromotionsActionsDropdown promotion={promotion} />
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={7}
+                    className="h-24 text-center text-muted-foreground"
+                  >
+                    {search
+                      ? "Nenhuma promoção encontrada com esse filtro."
+                      : "Nenhuma promoção cadastrada."}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
-        {/* Paginação */}
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-6">
-            <Pagination>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-muted-foreground">
+            Mostrando {totalPromotions === 0 ? 0 : offset + 1}–
+            {Math.min(offset + promotions.length, totalPromotions)} de {totalPromotions} promoções
+          </p>
+          {totalPages > 1 && (
+            <Pagination className="mx-0 w-auto justify-end">
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
-                    href={`/admin/promotions?page=${currentPage - 1}`}
+                    href={getPageHref(currentPage - 1)}
+                    text="Anterior"
                     className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
                     tabIndex={currentPage === 1 ? -1 : undefined}
                     aria-disabled={currentPage === 1}
@@ -195,12 +213,12 @@ export default async function AdminPromotionsPage(props: {
                 </PaginationItem>
 
                 {getPageNumbers().map((page, index) => (
-                  <PaginationItem key={index}>
+                  <PaginationItem key={`${page}-${index}`}>
                     {page === "..." ? (
                       <PaginationEllipsis />
                     ) : (
                       <PaginationLink
-                        href={`/admin/promotions?page=${page}`}
+                        href={getPageHref(Number(page))}
                         isActive={currentPage === page}
                       >
                         {page}
@@ -211,7 +229,8 @@ export default async function AdminPromotionsPage(props: {
 
                 <PaginationItem>
                   <PaginationNext
-                    href={`/admin/promotions?page=${currentPage + 1}`}
+                    href={getPageHref(currentPage + 1)}
+                    text="Próxima"
                     className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
                     tabIndex={currentPage === totalPages ? -1 : undefined}
                     aria-disabled={currentPage === totalPages}
@@ -219,8 +238,8 @@ export default async function AdminPromotionsPage(props: {
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </AdminLayout>
   );

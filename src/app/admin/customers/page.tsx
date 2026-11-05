@@ -1,12 +1,9 @@
 import { headers } from "next/headers";
-import Link from "next/link";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { count, and, or, ilike, eq } from "drizzle-orm";
 import { userTable } from "@/db/schema";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -15,14 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import {
   Pagination,
   PaginationContent,
@@ -123,11 +112,11 @@ export default async function AdminCustomersPage(props: {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="flex min-w-0 flex-col gap-6">
         {/* Breadcrumb e Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl max-sm:text-xl font-bold">Clientes</h1>
+            <h1 className="text-2xl font-semibold">Clientes</h1>
             <p className="text-sm text-muted-foreground">
               Gerenciar clientes cadastrados no sistema
             </p>
@@ -137,70 +126,89 @@ export default async function AdminCustomersPage(props: {
         {/* Filtros */}
         <CustomerFilters />
 
-        {/* Table */}
-        {customers.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-center">
-              <p className="text-gray-600">Nenhum cliente encontrado com os filtros selecionados.</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="border rounded-lg overflow-hidden bg-card">
-          <Table>
-            <TableHeader>
+        <div className="overflow-x-auto rounded-md border bg-background">
+          <Table className="min-w-[720px]">
+            <TableHeader className="bg-muted/50">
               <TableRow>
                 <TableHead className="w-16">Foto</TableHead>
-                <TableHead>Nome</TableHead>
-                <TableHead>E-mail</TableHead>
-                <TableHead>Perfil</TableHead>
-                <TableHead>Criado em</TableHead>
+                <TableHead className="min-w-48">Nome</TableHead>
+                <TableHead className="min-w-64">E-mail</TableHead>
+                <TableHead className="w-40">Perfil</TableHead>
+                <TableHead className="w-36">Criado em</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {customers.map((customer) => {
-                const initials = customer.name
-                  ? customer.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .slice(0, 2)
-                      .join("")
-                      .toUpperCase()
-                  : "U";
+              {customers.length > 0 ? (
+                customers.map((customer) => {
+                  const initials = customer.name
+                    ? customer.name
+                        .trim()
+                        .split(/\s+/)
+                        .slice(0, 2)
+                        .map((part) => part[0])
+                        .join("")
+                        .toUpperCase()
+                    : "U";
 
-                return (
-                  <TableRow key={customer.id}>
-                    <TableCell className="w-16">
-                      <Avatar className="h-9 w-9">
-                        <AvatarImage src={customer.image || ""} alt={customer.name} />
-                        <AvatarFallback>{initials}</AvatarFallback>
-                      </Avatar>
-                    </TableCell>
-                    <TableCell className="font-medium">{customer.name}</TableCell>
-                    <TableCell>{customer.email}</TableCell>
-                    <TableCell>
-                      <Badge variant={customer.role === "admin" ? "default" : "outline"}>
-                        {customer.role === "admin" ? "Administrador" : "Cliente"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {new Date(customer.createdAt).toLocaleDateString("pt-BR")}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                  return (
+                    <TableRow key={customer.id}>
+                      <TableCell className="w-16">
+                        <Avatar className="size-9">
+                          <AvatarImage
+                            src={customer.image || ""}
+                            alt={customer.name}
+                          />
+                          <AvatarFallback>{initials}</AvatarFallback>
+                        </Avatar>
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {customer.name}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {customer.email}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={customer.role === "admin" ? "default" : "outline"}
+                          className={customer.role === "admin" ? "" : "px-1.5 text-muted-foreground"}
+                        >
+                          {customer.role === "admin" ? "Administrador" : "Cliente"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {new Date(customer.createdAt).toLocaleDateString("pt-BR")}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="h-24 text-center text-muted-foreground"
+                  >
+                    {search || (role && role !== "all")
+                      ? "Nenhum cliente encontrado com esses filtros."
+                      : "Nenhum cliente cadastrado."}
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
-          </div>
-        )}
+        </div>
 
-        {/* Paginação */}
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-6">
-            <Pagination>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-muted-foreground">
+            Mostrando {totalCustomers === 0 ? 0 : offset + 1}–
+            {Math.min(offset + customers.length, totalCustomers)} de {totalCustomers} clientes
+          </p>
+          {totalPages > 1 && (
+            <Pagination className="mx-0 w-auto justify-end">
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
                     href={paginationHref(currentPage - 1)}
+                    text="Anterior"
                     className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
                     tabIndex={currentPage === 1 ? -1 : undefined}
                     aria-disabled={currentPage === 1}
@@ -208,12 +216,12 @@ export default async function AdminCustomersPage(props: {
                 </PaginationItem>
 
                 {getPageNumbers().map((page, index) => (
-                  <PaginationItem key={index}>
+                  <PaginationItem key={`${page}-${index}`}>
                     {page === "..." ? (
                       <PaginationEllipsis />
                     ) : (
                       <PaginationLink
-                        href={paginationHref(page as number)}
+                        href={paginationHref(Number(page))}
                         isActive={currentPage === page}
                       >
                         {page}
@@ -225,6 +233,7 @@ export default async function AdminCustomersPage(props: {
                 <PaginationItem>
                   <PaginationNext
                     href={paginationHref(currentPage + 1)}
+                    text="Próxima"
                     className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
                     tabIndex={currentPage === totalPages ? -1 : undefined}
                     aria-disabled={currentPage === totalPages}
@@ -232,8 +241,8 @@ export default async function AdminCustomersPage(props: {
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </AdminLayout>
   );

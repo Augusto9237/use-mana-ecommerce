@@ -1,11 +1,9 @@
 import { headers } from "next/headers";
-import Link from "next/link";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { count, ilike } from "drizzle-orm";
 import { categoryTable } from "@/db/schema";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -14,14 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import {
   Pagination,
   PaginationContent,
@@ -109,10 +99,10 @@ export default async function AdminCategoriesPage(props: {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="flex min-w-0 flex-col gap-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl max-sm:text-xl font-bold">Categorias</h1>
+            <h1 className="text-2xl font-semibold">Categorias</h1>
             <p className="text-sm text-muted-foreground">
               Gerenciar categorias do catálogo de produtos
             </p>
@@ -123,28 +113,20 @@ export default async function AdminCategoriesPage(props: {
         {/* Filtros */}
         <CategoryFilters />
 
-        {/* Table */}
-        {categories.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-center">
-              <p className="text-muted-foreground mb-4">Nenhuma categoria encontrada</p>
-              <CreateCategoryForm />
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="border rounded-lg overflow-hidden bg-card">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-24">Imagem</TableHead>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Slug</TableHead>
-                  <TableHead>Criada em</TableHead>
-                  <TableHead className="w-20">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {categories.map((category) => (
+        <div className="overflow-x-auto rounded-md border bg-background">
+          <Table className="min-w-[700px]">
+            <TableHeader className="bg-muted/50">
+              <TableRow>
+                <TableHead className="w-24">Imagem</TableHead>
+                <TableHead className="min-w-48">Nome</TableHead>
+                <TableHead className="min-w-48">Slug</TableHead>
+                <TableHead className="w-36">Criada em</TableHead>
+                <TableHead className="w-20 text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {categories.length > 0 ? (
+                categories.map((category) => (
                   <TableRow key={category.id}>
                     <TableCell className="w-24">
                       <ProductImageDialog
@@ -153,28 +135,45 @@ export default async function AdminCategoriesPage(props: {
                       />
                     </TableCell>
                     <TableCell className="font-medium">{category.name}</TableCell>
-                    <TableCell>{category.slug}</TableCell>
-                    <TableCell>
+                    <TableCell className="font-mono text-xs text-muted-foreground">
+                      {category.slug}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
                       {new Date(category.createdAt).toLocaleDateString("pt-BR")}
                     </TableCell>
-                    <TableCell className="w-20">
+                    <TableCell className="text-right">
                       <CategoryActionsDropdown category={category} />
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="h-24 text-center text-muted-foreground"
+                  >
+                    {search
+                      ? "Nenhuma categoria encontrada com esse filtro."
+                      : "Nenhuma categoria cadastrada."}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
-        {/* Paginação */}
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-6">
-            <Pagination>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-muted-foreground">
+            Mostrando {totalCategories === 0 ? 0 : offset + 1}–
+            {Math.min(offset + categories.length, totalCategories)} de {totalCategories} categorias
+          </p>
+          {totalPages > 1 && (
+            <Pagination className="mx-0 w-auto justify-end">
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
                     href={paginationHref(currentPage - 1)}
+                    text="Anterior"
                     className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
                     tabIndex={currentPage === 1 ? -1 : undefined}
                     aria-disabled={currentPage === 1}
@@ -182,12 +181,12 @@ export default async function AdminCategoriesPage(props: {
                 </PaginationItem>
 
                 {getPageNumbers().map((page, index) => (
-                  <PaginationItem key={index}>
+                  <PaginationItem key={`${page}-${index}`}>
                     {page === "..." ? (
                       <PaginationEllipsis />
                     ) : (
                       <PaginationLink
-                        href={paginationHref(page as number)}
+                        href={paginationHref(Number(page))}
                         isActive={currentPage === page}
                       >
                         {page}
@@ -199,6 +198,7 @@ export default async function AdminCategoriesPage(props: {
                 <PaginationItem>
                   <PaginationNext
                     href={paginationHref(currentPage + 1)}
+                    text="Próxima"
                     className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
                     tabIndex={currentPage === totalPages ? -1 : undefined}
                     aria-disabled={currentPage === totalPages}
@@ -206,8 +206,8 @@ export default async function AdminCategoriesPage(props: {
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </AdminLayout>
   );

@@ -13,6 +13,7 @@ import {
   ShoppingBag,
   LogOut,
   UserRoundCog,
+  Monitor,
 } from "lucide-react";
 import {
   Sidebar,
@@ -35,6 +36,11 @@ const menuItems = [
     label: "Dashboard",
     href: "/admin",
     icon: LayoutDashboard,
+  },
+  {
+    label: "PDV",
+    href: "/admin/pdv",
+    icon: Monitor,
   },
   {
     label: "Pedidos",

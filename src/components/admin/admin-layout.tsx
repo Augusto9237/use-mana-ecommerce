@@ -33,9 +33,9 @@ import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
-import { AppSidebar } from "./app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "../ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AppSidebar } from "./app-sidebar";
 
 const menuItems = [
   {
@@ -95,7 +95,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             {/* Top Header */}
             <header className="backdrop-blur-md bg-background/30 fixed right-0 max-sm:w-full sm:w-[calc(100%-var(--sidebar-width))] top-0 z-10">
               <div className="flex items-center justify-end py-3 px-8 max-sm:px-4 gap-4 relative">
-                <SidebarTrigger className="sm:hidden absolute left-4"/>
+                <SidebarTrigger className="sm:hidden absolute left-4" />
                 {/* Right section */}
                 <div className="flex items-center gap-6">
                   <Button variant="ghost" size="icon" className="relative">

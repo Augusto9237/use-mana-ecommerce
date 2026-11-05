@@ -1,13 +1,10 @@
 import { headers } from "next/headers";
-import Link from "next/link";
 import { eq, or, and, count, ilike } from "drizzle-orm";
-import { Eye } from "lucide-react";
+import { CircleCheck, CircleX, LoaderCircle } from "lucide-react";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { orderTable } from "@/db/schema";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -17,14 +14,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import {
   Pagination,
   PaginationContent,
@@ -38,8 +27,6 @@ import { AdminLayout } from "@/components/admin/admin-layout";
 import { OrderFilters } from "./components/order-filters";
 import { OrderActionsDropdown } from "./components/order-actions-dropdown";
 import { formatCentsToBRL } from "@/helpers/money";
-
-type UserWithRole = { role?: string };
 
 export default async function AdminOrdersPage(props: {
   searchParams: Promise<{ page?: string; search?: string; status?: string }>;
@@ -147,130 +134,152 @@ export default async function AdminOrdersPage(props: {
   const getStatusBadge = (orderStatus: typeof orderTable.$inferSelect.status) => {
     switch (orderStatus) {
       case "paid":
-        return <Badge>Pago</Badge>;
+        return (
+          <Badge variant="outline" className="gap-1.5 px-2 text-muted-foreground">
+            <CircleCheck className="size-3.5 text-emerald-600" />
+            Pago
+          </Badge>
+        );
       case "pending":
-        return <Badge variant="outline">Pendente</Badge>;
+        return (
+          <Badge variant="outline" className="gap-1.5 px-2 text-muted-foreground">
+            <LoaderCircle className="size-3.5" />
+            Pendente
+          </Badge>
+        );
       case "canceled":
-        return <Badge variant="destructive">Cancelado</Badge>;
+        return (
+          <Badge variant="outline" className="gap-1.5 px-2 text-muted-foreground">
+            <CircleX className="size-3.5 text-destructive" />
+            Cancelado
+          </Badge>
+        );
       default:
-        return <Badge>{orderStatus}</Badge>;
+        return (
+          <Badge variant="outline" className="px-2 text-muted-foreground">
+            {orderStatus}
+          </Badge>
+        );
     }
   };
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        {/* Breadcrumb e Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Pedidos</h1>
-            <p className="text-sm text-muted-foreground">
-              Gerenciar e acompanhar os pedidos dos clientes
-            </p>
-          </div>
+      <div className="flex min-w-0 flex-col gap-6">
+        <div>
+          <h1 className="text-2xl font-semibold">Pedidos</h1>
+          <p className="text-sm text-muted-foreground">
+            Gerenciar e acompanhar os pedidos dos clientes
+          </p>
         </div>
 
-        {/* Filtros */}
-        <OrderFilters />
+        <div className="flex min-w-0 flex-col gap-4">
+          <OrderFilters />
 
-        {/* Tabela de Pedidos */}
-        {orders.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground">Nenhum pedido encontrado</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="border rounded-lg overflow-hidden bg-card">
-            <Table>
-              <TableHeader>
+          <div className="overflow-x-auto rounded-md border bg-background">
+            <Table className="min-w-[760px]">
+              <TableHeader className="bg-muted/50">
                 <TableRow>
-                  <TableHead className="w-[120px]">Pedido ID</TableHead>
+                  <TableHead className="w-[140px] pl-3">Pedido</TableHead>
                   <TableHead>Cliente</TableHead>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead className="w-[190px]">Data</TableHead>
+                  <TableHead className="w-[140px]">Status</TableHead>
                   <TableHead className="text-right">Total</TableHead>
-                  <TableHead className="w-20 text-center">Ações</TableHead>
+                  <TableHead className="w-[72px] text-center">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {orders.map((order) => (
-                  <TableRow key={order.id}>
-                    <TableCell className="font-mono text-xs text-muted-foreground">
-                      #{order.id.slice(0, 8)}...
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col">
-                        <span className="font-medium text-foreground">
-                          {order.recipientName}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {order.email}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {new Date(order.createdAt).toLocaleDateString("pt-BR")} às{" "}
-                      {new Date(order.createdAt).toLocaleTimeString("pt-BR", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </TableCell>
-                    <TableCell>{getStatusBadge(order.status)}</TableCell>
-                    <TableCell className="text-right font-semibold">
-                      {formatCentsToBRL(order.totalPriceInCents)}
-                    </TableCell>
-                    <TableCell className="text-center w-20">
-                      <OrderActionsDropdown order={order} />
+                {orders.length > 0 ? (
+                  orders.map((order) => (
+                    <TableRow key={order.id}>
+                      <TableCell className="font-mono text-xs text-muted-foreground pl-3">
+                        #{order.id.slice(0, 8)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex min-w-0 flex-col">
+                          <span className="truncate font-medium text-foreground">
+                            {order.recipientName}
+                          </span>
+                          <span className="truncate text-xs text-muted-foreground">
+                            {order.email}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {new Date(order.createdAt).toLocaleDateString("pt-BR")} às{" "}
+                        {new Date(order.createdAt).toLocaleTimeString("pt-BR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </TableCell>
+                      <TableCell>{getStatusBadge(order.status)}</TableCell>
+                      <TableCell className="text-right font-medium tabular-nums">
+                        {formatCentsToBRL(order.totalPriceInCents)}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <OrderActionsDropdown order={order} />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={6}
+                      className="h-24 text-center text-muted-foreground"
+                    >
+                      Nenhum pedido encontrado.
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </div>
-        )}
 
-        {/* Paginação */}
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-6">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    href={getPaginationHref(currentPage - 1)}
-                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                    tabIndex={currentPage === 1 ? -1 : undefined}
-                    aria-disabled={currentPage === 1}
-                  />
-                </PaginationItem>
-
-                {getPageNumbers().map((page, index) => (
-                  <PaginationItem key={index}>
-                    {page === "..." ? (
-                      <PaginationEllipsis />
-                    ) : (
-                      <PaginationLink
-                        href={getPaginationHref(Number(page))}
-                        isActive={currentPage === page}
-                      >
-                        {page}
-                      </PaginationLink>
-                    )}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-muted-foreground">
+              Mostrando {totalOrders === 0 ? 0 : offset + 1}–
+              {Math.min(offset + orders.length, totalOrders)} de {totalOrders} pedidos
+            </p>
+            {totalPages > 1 && (
+              <Pagination className="mx-0 w-auto justify-end">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href={getPaginationHref(currentPage - 1)}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                      tabIndex={currentPage === 1 ? -1 : undefined}
+                      aria-disabled={currentPage === 1}
+                    />
                   </PaginationItem>
-                ))}
 
-                <PaginationItem>
-                  <PaginationNext
-                    href={getPaginationHref(currentPage + 1)}
-                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
-                    tabIndex={currentPage === totalPages ? -1 : undefined}
-                    aria-disabled={currentPage === totalPages}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+                  {getPageNumbers().map((page, index) => (
+                    <PaginationItem key={`${page}-${index}`}>
+                      {page === "..." ? (
+                        <PaginationEllipsis />
+                      ) : (
+                        <PaginationLink
+                          href={getPaginationHref(Number(page))}
+                          isActive={currentPage === page}
+                        >
+                          {page}
+                        </PaginationLink>
+                      )}
+                    </PaginationItem>
+                  ))}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      href={getPaginationHref(currentPage + 1)}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                      tabIndex={currentPage === totalPages ? -1 : undefined}
+                      aria-disabled={currentPage === totalPages}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </AdminLayout>
   );

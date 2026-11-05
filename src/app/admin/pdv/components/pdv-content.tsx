@@ -208,7 +208,7 @@ const PdvContent = ({ products, categories }: PdvContentProps) => {
         <ScrollArea className="flex-1 pr-3">
           <div className="space-y-4 pb-4 p-0.5">
             {/* Grid de produtos */}
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="flex flex-wrap gap-4">
               {filteredProducts.map((product) => (
                 <PdvProductCard
                   key={product.id}

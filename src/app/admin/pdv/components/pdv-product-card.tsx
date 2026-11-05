@@ -47,8 +47,8 @@ const PdvProductCard = ({
   return (
     <Card
       className={cn(
-        "w-full p-0 gap-3 relative group transition-all hover:ring-2 hover:ring-primary/50 cursor-pointer",
-        isSelected && "ring-2 ring-primary",
+        "w-50 max-sm:w-44 p-0 gap-3 relative group transition-all hover:ring-1 hover:ring-primary cursor-pointer",
+        isSelected && "ring-3 ring-primary/50",
         className,
       )}
     >

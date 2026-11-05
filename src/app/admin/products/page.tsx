@@ -15,7 +15,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -25,20 +24,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { AdminLayout } from "@/components/admin/admin-layout";
 import { CreateProductForm } from "@/components/admin/create-product-form";
 import { ProductActionsDropdown } from "./components/product-actions-dropdown";
 import { ProductImageDialog } from "./components/product-image-dialog";
 import { ProductFilters } from "./components/product-filters";
-import Image from "next/image";
 
 type UserWithRole = { role?: string };
 
@@ -58,10 +48,6 @@ export default async function AdminProductsPage(props: {
 
   const categories = await db.query.categoryTable.findMany();
 
-  const [{ count: totalProducts }] = await db
-    .select({ count: count() })
-    .from(productTable);
-
   const filters = [];
 
   if (category) {
@@ -80,12 +66,12 @@ export default async function AdminProductsPage(props: {
 
   const whereClause = filters.length ? and(...filters) : undefined;
 
-  const totalPagesCount = await db
+  const [{ count: filteredProducts }] = await db
     .select({ count: count() })
     .from(productTable)
     .where(whereClause);
 
-  const totalPages = Math.ceil(totalPagesCount[0].count / limit);
+  const totalPages = Math.ceil(filteredProducts / limit);
 
   const products = await db.query.productTable.findMany({
     where: whereClause,
@@ -131,14 +117,22 @@ export default async function AdminProductsPage(props: {
     return pages;
   };
 
+  const getPageHref = (page: number) => {
+    const params = new URLSearchParams();
+    if (search) params.set("search", search);
+    if (category) params.set("category", category);
+    params.set("page", page.toString());
+    return `/admin/products?${params.toString()}`;
+  };
+
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="flex min-w-0 flex-col gap-6">
         {/* Breadcrumb e Header */}
-        <div className="flex gap-4 items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl max-sm:text-xl font-bold">Produtos</h1>
+            <h1 className="text-2xl font-semibold">Produtos</h1>
             <p className="text-sm text-muted-foreground">
               Gerenciar todos os produtos do catálogo
             </p>
@@ -148,68 +142,93 @@ export default async function AdminProductsPage(props: {
 
         <ProductFilters categories={categories} />
 
-        {/* Table */}
-        {products.length === 0 ? (
-          <Card>
-            <CardContent className="py-4 text-center">
-              <p className="text-foreground mb-4">Nenhum produto cadastrado</p>
-              <Link href="/admin/products/create">
-                <Button>Criar Primeiro Produto</Button>
-              </Link>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="border rounded-lg overflow-hidden bg-card">
-          <Table>
-            <TableHeader>
+        <div className="overflow-x-auto rounded-md border bg-background">
+          <Table className="min-w-[900px]">
+            <TableHeader className="bg-muted/50">
               <TableRow>
                 <TableHead className="w-24">Imagem</TableHead>
-                <TableHead>Nome</TableHead>
-                <TableHead>Slug</TableHead>
-                <TableHead>Descrição</TableHead>
+                <TableHead className="min-w-40">Nome</TableHead>
+                <TableHead className="min-w-40">Slug</TableHead>
+                <TableHead className="min-w-48">Descrição</TableHead>
                 <TableHead>Categoria</TableHead>
-                <TableHead>Variantes</TableHead>
-                <TableHead>Criado em</TableHead>
-                <TableHead className="w-20">Ações</TableHead>
+                <TableHead className="w-24">Variantes</TableHead>
+                <TableHead className="w-32">Criado em</TableHead>
+                <TableHead className="w-20 text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell className="w-24">
-                    <ProductImageDialog
-                      src={product.variants[0]?.imageUrl[0] || ""}
-                      alt={product.name}
-                    />
-                  </TableCell>
-                  <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell>{product.slug}</TableCell>
-                  <TableCell className="max-w-60 overflow-hidden text-ellipsis truncate">{product.description}</TableCell>
-                  <TableCell>{product.category?.name || "-"}</TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">{product.variants.length}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    {new Date(product.createdAt).toLocaleDateString("pt-BR")}
-                  </TableCell>
-                  <TableCell className="w-20">
-                    <ProductActionsDropdown product={product} categories={categories} />
+              {products.length > 0 ? (
+                products.map((product) => (
+                  <TableRow key={product.id}>
+                    <TableCell className="w-24">
+                      <ProductImageDialog
+                        src={product.variants[0]?.imageUrl[0] || ""}
+                        alt={product.name}
+                      />
+                    </TableCell>
+                    <TableCell className="font-medium">{product.name}</TableCell>
+                    <TableCell className="font-mono text-xs text-muted-foreground">
+                      {product.slug}
+                    </TableCell>
+                    <TableCell className="max-w-60 truncate text-muted-foreground">
+                      {product.description}
+                    </TableCell>
+                    <TableCell>{product.category?.name || "-"}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="px-1.5 text-muted-foreground">
+                        {product.variants.length}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {new Date(product.createdAt).toLocaleDateString("pt-BR")}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <ProductActionsDropdown
+                        product={product}
+                        categories={categories}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={8}
+                    className="h-28 text-center text-muted-foreground"
+                  >
+                    <div className="flex flex-col items-center gap-3">
+                      <span>
+                        {search || category
+                          ? "Nenhum produto encontrado com esses filtros."
+                          : "Nenhum produto cadastrado."}
+                      </span>
+                      {!search && !category && (
+                        <Button asChild size="sm">
+                          <Link href="/admin/products/create">
+                            Criar primeiro produto
+                          </Link>
+                        </Button>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
-          </div>
-        )}
+        </div>
 
-        {/* Paginação */}
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-6">
-            <Pagination>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-muted-foreground">
+            Mostrando {filteredProducts === 0 ? 0 : offset + 1}–
+            {Math.min(offset + products.length, filteredProducts)} de {filteredProducts} produtos
+          </p>
+          {totalPages > 1 && (
+            <Pagination className="mx-0 w-auto justify-end">
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious
-                    href={`/admin/products?page=${currentPage - 1}`}
+                    href={getPageHref(currentPage - 1)}
+                    text="Anterior"
                     className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
                     tabIndex={currentPage === 1 ? -1 : undefined}
                     aria-disabled={currentPage === 1}
@@ -222,7 +241,7 @@ export default async function AdminProductsPage(props: {
                       <PaginationEllipsis />
                     ) : (
                       <PaginationLink
-                        href={`/admin/products?page=${page}`}
+                        href={getPageHref(Number(page))}
                         isActive={currentPage === page}
                       >
                         {page}
@@ -233,7 +252,8 @@ export default async function AdminProductsPage(props: {
 
                 <PaginationItem>
                   <PaginationNext
-                    href={`/admin/products?page=${currentPage + 1}`}
+                    href={getPageHref(currentPage + 1)}
+                    text="Próxima"
                     className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
                     tabIndex={currentPage === totalPages ? -1 : undefined}
                     aria-disabled={currentPage === totalPages}
@@ -241,8 +261,8 @@ export default async function AdminProductsPage(props: {
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </AdminLayout>
   );

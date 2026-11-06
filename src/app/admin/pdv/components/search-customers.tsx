@@ -114,23 +114,23 @@ const SearchCustomers = ({
                     }
                 </Button>
             </DialogTrigger>
-            <DialogContent className="border-border bg-card gap-5 p-5 sm:max-w-2xl sm:p-6">
-                <DialogHeader className="border-b">
+            <DialogContent className="border-border bg-card gap-5 p-5 sm:max-w-2xl p-0">
+                <DialogHeader className="border-b p-4">
                     <DialogTitle>Buscar Cliente</DialogTitle>
                     <DialogDescription>
                         Busque e selecione o cliente para esta venda.
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="relative flex -items-center gap-4">
-                    <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                <div className="relative flex -items-center gap-4 px-4">
+                    <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-6 size-4 -translate-y-1/2" />
                     <Input
                         autoFocus
                         value={searchQuery}
                         onChange={(event) => setSearchQuery(event.target.value)}
                         placeholder="Digite o nome, CPF ou telefone..."
                         aria-label="Buscar cliente por nome, CPF, telefone ou e-mail"
-                        className="pr-10 pl-10"
+                        className="pr-10 pl-8"
                     />
                     <CreateUserForm>
                         <Button size="icon">
@@ -139,7 +139,7 @@ const SearchCustomers = ({
                     </CreateUserForm>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between px-4">
                     <h3 className="text-sm font-semibold">Clientes encontrados</h3>
                     {!searchQuery.trim() &&
                         filteredCustomers.length > INITIAL_CUSTOMER_LIMIT && (
@@ -160,7 +160,7 @@ const SearchCustomers = ({
                     value={draftCustomerId}
                     onValueChange={setDraftCustomerId}
                     aria-label="Selecione um cliente"
-                    className="max-h-[min(50dvh,24rem)] gap-2 overflow-y-auto pr-1"
+                    className="max-h-[min(50dvh,24rem)] gap-2 overflow-y-auto px-4 pb-4"
                 >
                     {visibleCustomers.map((customer) => {
                         const initials = customer.name

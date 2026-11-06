@@ -169,7 +169,7 @@ export function CreateUserForm({ children }: { children?: React.ReactNode }) {
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex min-h-0 flex-1 flex-col"
           >
-            <div className="flex-1 space-y-6 overflow-y-auto p-4">
+            <div className="scroll-fade-y flex-1 space-y-6 overflow-y-auto p-4 no-scrollbar">
               <div className="grid w-full gap-6">
                 <FormField
                   control={form.control}

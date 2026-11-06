@@ -1,11 +1,34 @@
+'use server';
 import { auth } from "@/lib/auth";
 
-export const newUser = await auth.api.createUser({
-    body: {
-        email: "user@example.com", // required, The email of the user.
-        password: "some-secure-password", // required, The password of the user.
-        name: "James Smith", // required, The name of the user.
-        role: "user", // A string or array of strings representing the roles to apply to the new user.
-        data: { customField: "customValue" }, // Extra fields for the user. Including custom additional fields.
-    },
-});
+type CreateUserParams = {
+    email: string;
+    password: string;
+    name: string;
+    role?: "user" | "admin" | ("user" | "admin")[] | undefined
+};
+
+export async function createUser({ email, password, name, role }: CreateUserParams) {
+    try {
+        const newUser = await auth.api.createUser({
+            body: {
+                email: email, // required, The email of the user.
+                password: password, // required, The password of the user.
+                name: name, // required, The name of the user.
+                role: role, // A string or array of strings representing the roles to apply to the new user.
+            }
+        })
+
+        return {
+            success: true,
+            data: newUser
+        }
+
+    } catch (error) {
+        console.error("Error creating user:", error);
+        return {
+            success: false,
+            error: error
+        }
+    }
+}

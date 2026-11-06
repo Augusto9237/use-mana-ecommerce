@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowRight, Pencil, Search, X } from "lucide-react";
+import { ArrowRight, Pencil, Search, UserRoundPlus, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { CreateUserForm } from "@/components/admin/create-user-form";
 
 export interface PdvCustomer {
     id: string;
@@ -105,7 +106,7 @@ const SearchCustomers = ({
                         <>
                             <Pencil />
                             Alterar cliente
-                        </> : 
+                        </> :
                         <>
                             <Search />
                             Selecionar cliente
@@ -121,7 +122,7 @@ const SearchCustomers = ({
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="relative">
+                <div className="relative flex -items-center gap-4">
                     <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
                     <Input
                         autoFocus
@@ -131,18 +132,11 @@ const SearchCustomers = ({
                         aria-label="Buscar cliente por nome, CPF, telefone ou e-mail"
                         className="pr-10 pl-10"
                     />
-                    {searchQuery && (
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon-sm"
-                            aria-label="Limpar busca"
-                            className="text-muted-foreground absolute top-1/2 right-2 -translate-y-1/2"
-                            onClick={() => setSearchQuery("")}
-                        >
-                            <X />
+                    <CreateUserForm>
+                        <Button size="icon">
+                            <UserRoundPlus />
                         </Button>
-                    )}
+                    </CreateUserForm>
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -188,8 +182,8 @@ const SearchCustomers = ({
                             <div
                                 key={customer.id}
                                 className={`flex items-center gap-3 rounded-xl border p-3 transition-colors ${isSelected
-                                        ? "border-primary bg-primary/5"
-                                        : "border-border bg-background/40 hover:border-muted-foreground/40"
+                                    ? "border-primary bg-primary/5"
+                                    : "border-border bg-background/40 hover:border-muted-foreground/40"
                                     }`}
                             >
                                 <RadioGroupItem

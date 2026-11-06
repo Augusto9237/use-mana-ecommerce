@@ -21,6 +21,10 @@ export const userTable = pgTable("user", {
     .notNull(),
   image: text("image"),
   role: roleEnum("role").default("user").notNull(),
+  // Campos exigidos pelo plugin admin():
+  banned: boolean("banned").default(false),
+  banReason: text("ban_reason"),
+  banExpires: timestamp("ban_expires"),
   createdAt: timestamp("created_at")
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),

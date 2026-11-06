@@ -71,6 +71,13 @@
       "when": 1787625845698,
       "tag": "0009_add_issuer_and_impersonated_by",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793935313714,
+      "tag": "0010_round_eternity",
+      "breakpoints": true
     }
   ]
 }

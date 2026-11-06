@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import PdvProductCard from "./pdv-product-card";
 import PdvCartItem, { type PdvCartItemData } from "./pdv-cart-item";
 import SearchCustomers, { type PdvCustomer } from "./search-customers";
-import { Card, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 
 type ProductWithVariants = typeof productTable.$inferSelect & {
   variants: (typeof productVariantTable.$inferSelect)[];
@@ -259,13 +259,11 @@ const PdvContent = ({ products, categories, customers }: PdvContentProps) => {
           {/* Header do carrinho */}
           <div className="flex items-center justify-between border-b px-5 py-4">
             <div className="flex min-w-0 flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <CardTitle>Carrinho</CardTitle>
-              </div>
+              <CardTitle>Carrinho</CardTitle>
               {selectedCustomer && (
-                <p className="truncate text-xs text-muted-foreground">
+                <CardDescription >
                   Cliente: {selectedCustomer.name}
-                </p>
+                </CardDescription>
               )}
             </div>
             {cartItems.length > 0 && (

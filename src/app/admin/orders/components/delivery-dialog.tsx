@@ -186,7 +186,7 @@ export function DeliveryDialog({
                 </Button>
             </DialogTrigger>
             <DialogContent className="p-0 pb-6">
-                <DialogHeader className="p-6 pb-4 border-b">
+                <DialogHeader className="p-4 pb-4 border-b">
                     <DialogTitle>
                         Entrega
                     </DialogTitle>

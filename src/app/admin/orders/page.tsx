@@ -185,7 +185,7 @@ export default async function AdminOrdersPage(props: {
                   <TableHead className="w-[190px]">Data</TableHead>
                   <TableHead className="w-[140px]">Status</TableHead>
                   <TableHead className="text-right">Total</TableHead>
-                  <TableHead className="w-[72px] text-center">Ações</TableHead>
+                  <TableHead className="w-[72px] text-right pr-4">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -216,7 +216,7 @@ export default async function AdminOrdersPage(props: {
                       <TableCell className="text-right font-medium tabular-nums">
                         {formatCentsToBRL(order.totalPriceInCents)}
                       </TableCell>
-                      <TableCell className="text-center">
+                      <TableCell className="justify-end items-end text-right pr-4 flex">
                         <OrderActionsDropdown order={order} />
                       </TableCell>
                     </TableRow>

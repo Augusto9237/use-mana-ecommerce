@@ -25,6 +25,7 @@ import { AdminLayout } from "@/components/admin/admin-layout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { CustomerFilters } from "./components/customer-filters";
+import { CreateUserForm } from "@/components/admin/create-user-form";
 
 export default async function AdminCustomersPage(props: {
   searchParams: Promise<{ page?: string; search?: string; role?: string }>;
@@ -113,7 +114,6 @@ export default async function AdminCustomersPage(props: {
   return (
     <AdminLayout>
       <div className="flex min-w-0 flex-col gap-6">
-        {/* Breadcrumb e Header */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold">Clientes</h1>
@@ -121,6 +121,8 @@ export default async function AdminCustomersPage(props: {
               Gerenciar clientes cadastrados no sistema
             </p>
           </div>
+
+          <CreateUserForm/>
         </div>
 
         {/* Filtros */}

@@ -115,7 +115,7 @@ const SearchCustomers = ({
                 </Button>
             </DialogTrigger>
             <DialogContent className="border-border bg-card gap-5 p-5 sm:max-w-2xl sm:p-6">
-                <DialogHeader className="gap-1">
+                <DialogHeader className="border-b">
                     <DialogTitle>Buscar Cliente</DialogTitle>
                     <DialogDescription>
                         Busque e selecione o cliente para esta venda.

@@ -29,7 +29,8 @@ export const removeProductFromCart = async (
   if (!cartItem) {
     throw new Error("Cart item not found");
   }
-  const cartDoesNotBelongToUser = cartItem.cart.userId !== session.user.id;
+  const cartDoesNotBelongToUser =
+    cartItem.cart.userId !== session.user.id && session.user.role !== "admin";
   if (cartDoesNotBelongToUser) {
     throw new Error("Unauthorized");
   }

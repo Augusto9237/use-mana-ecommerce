@@ -2,9 +2,13 @@
 
 import { MinusIcon, PlusIcon, TrashIcon } from "lucide-react";
 import Image from "next/image";
+import { toast } from "sonner";
 
 import { formatCentsToBRL } from "@/helpers/money";
 import { Button } from "@/components/ui/button";
+import { useDecreaseCartProduct } from "@/hooks/mutations/use-decrease-cart-product";
+import { useIncreaseCartProduct } from "@/hooks/mutations/use-increase-cart-product";
+import { useRemoveProductFromCart } from "@/hooks/mutations/use-remove-product-from-cart";
 
 export interface PdvCartItemData {
   id: string;
@@ -20,17 +24,39 @@ export interface PdvCartItemData {
 
 interface PdvCartItemProps {
   item: PdvCartItemData;
-  onIncrease: (id: string) => void;
-  onDecrease: (id: string) => void;
-  onRemove: (id: string) => void;
+  userId: string;
 }
 
-const PdvCartItem = ({
-  item,
-  onIncrease,
-  onDecrease,
-  onRemove,
-}: PdvCartItemProps) => {
+const PdvCartItem = ({ item, userId }: PdvCartItemProps) => {
+  const decreaseMutation = useDecreaseCartProduct(item.id, userId);
+  const increaseMutation = useIncreaseCartProduct(
+    item.productVariantId,
+    item.size,
+    userId,
+  );
+  const removeMutation = useRemoveProductFromCart(item.id, userId);
+
+  const handleDecrease = () => {
+    decreaseMutation.mutate(undefined, {
+      onSuccess: () => toast.success("Quantidade do produto diminuída."),
+      onError: (error) => toast.error(error.message),
+    });
+  };
+
+  const handleIncrease = () => {
+    increaseMutation.mutate(undefined, {
+      onSuccess: () => toast.success("Quantidade do produto aumentada."),
+      onError: (error) => toast.error(error.message),
+    });
+  };
+
+  const handleRemove = () => {
+    removeMutation.mutate(undefined, {
+      onSuccess: () => toast.success("Produto removido do carrinho."),
+      onError: (error) => toast.error(error.message),
+    });
+  };
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
@@ -50,7 +76,8 @@ const PdvCartItem = ({
             <Button
               className="h-4 w-4"
               variant="ghost"
-              onClick={() => onDecrease(item.id)}
+              onClick={handleDecrease}
+              disabled={decreaseMutation.isPending}
             >
               <MinusIcon />
             </Button>
@@ -58,7 +85,8 @@ const PdvCartItem = ({
             <Button
               className="h-4 w-4"
               variant="ghost"
-              onClick={() => onIncrease(item.id)}
+              onClick={handleIncrease}
+              disabled={increaseMutation.isPending}
             >
               <PlusIcon />
             </Button>
@@ -69,11 +97,12 @@ const PdvCartItem = ({
         <Button
           variant="outline"
           size="icon"
-          onClick={() => onRemove(item.id)}
+          onClick={handleRemove}
+          disabled={removeMutation.isPending}
         >
           <TrashIcon />
         </Button>
-        <p className="text-sm max-sm:text-xs font-bold">
+        <p className="text-sm font-bold max-sm:text-xs">
           {formatCentsToBRL(item.priceInCents * item.quantity)}
         </p>
       </div>

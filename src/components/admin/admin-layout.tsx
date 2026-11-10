@@ -39,12 +39,14 @@ import { AppSidebar } from "./app-sidebar";
 const pageLabels: Record<string, string> = {
   "/admin": "Dashboard",
   "/admin/pdv": "PDV",
+  "/admin/pdv/confimation": "Confirmar",
   "/admin/orders": "Pedidos",
   "/admin/products": "Produtos",
   "/admin/categories": "Categorias",
   "/admin/customers": "Clientes",
   "/admin/promotions": "Promoções",
   "/admin/settings": "Configurações",
+
 };
 
 interface AdminLayoutProps {

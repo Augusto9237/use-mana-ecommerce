@@ -58,7 +58,7 @@ const PdvCartItem = ({ item, userId }: PdvCartItemProps) => {
   };
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between relative gap-2">
       <div className="flex items-center gap-4">
         <Image
           src={item.imageUrl}
@@ -67,8 +67,8 @@ const PdvCartItem = ({ item, userId }: PdvCartItemProps) => {
           height={78}
           className="rounded-lg"
         />
-        <div className="flex flex-col gap-1">
-          <p className="text-sm font-semibold">{item.productName}</p>
+        <div className="flex flex-col gap-1 overflow-hidden h-full">
+          <p className="text-sm font-semibold text-nowrap truncate">{item.productName}</p>
           <p className="text-muted-foreground text-xs font-medium">
             {item.variantColor} • Tam. {item.size}
           </p>
@@ -93,11 +93,12 @@ const PdvCartItem = ({ item, userId }: PdvCartItemProps) => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-end justify-center gap-2">
+      <div className="h-full min-h-16 flex flex-1 flex-col items-end justify-end w-8 gap-2">
         <Button
           variant="outline"
-          size="icon"
+          size="icon-xs"
           onClick={handleRemove}
+          className="absolute top-0 rounded-sm"
           disabled={removeMutation.isPending}
         >
           <TrashIcon />

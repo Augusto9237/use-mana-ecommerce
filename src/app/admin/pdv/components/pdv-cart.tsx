@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
+import Link from "next/link";
 import { toast } from "sonner";
 
 import { removeProductFromCart } from "@/actions/remove-cart-product";
@@ -48,7 +49,7 @@ const PdvCart = ({ selectedCustomer }: PdvCartProps) => {
 
   return (
     <Card className="w-full max-w-sm flex-1 flex-col gap-0 overflow-hidden p-0">
-      <div className="flex items-center justify-between border-b px-5 py-4">
+      <div className="flex items-center justify-between border-b px-5 py-4 relative">
         <div className="flex min-w-0 flex-col gap-1">
           <CardTitle>Carrinho</CardTitle>
           {selectedCustomer && (
@@ -59,7 +60,7 @@ const PdvCart = ({ selectedCustomer }: PdvCartProps) => {
           <Button
             variant="ghost"
             size="sm"
-            className="text-muted-foreground hover:text-destructive h-7 px-2 text-xs"
+            className="text-muted-foreground hover:text-destructive h-7 px-2 text-xs absolute top-4 right-4"
             disabled={clearCartMutation.isPending}
             onClick={handleClearCart}
           >
@@ -121,13 +122,12 @@ const PdvCart = ({ selectedCustomer }: PdvCartProps) => {
               <p>Total</p>
               <p>{formatCentsToBRL(cart.totalPriceInCents)}</p>
             </div>
-            <Button
-              className="mt-5"
-              onClick={() =>
-                toast.info("Funcionalidade de finalização em desenvolvimento.")
-              }
-            >
-              Finalizar venda
+            <Button className="mt-5" asChild>
+              <Link
+                href={`/admin/pdv/confimation?customerId=${selectedCustomer?.id}`}
+              >
+                Finalizar venda
+              </Link>
             </Button>
           </div>
         )}

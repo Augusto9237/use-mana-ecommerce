@@ -18,15 +18,18 @@ interface PdvProductActionsProps {
   productVariantId: string;
   sizes: Array<{ size: string; stock: number }>;
   customers: PdvCustomer[];
+  selectedCustomerId?: string;
 }
 
 const PdvProductActions = ({
   productVariantId,
   sizes,
   customers,
+  selectedCustomerId,
 }: PdvProductActionsProps) => {
   const [selectedCustomer, setSelectedCustomer] = useState<PdvCustomer | null>(
-    null,
+    () =>
+      customers.find((customer) => customer.id === selectedCustomerId) ?? null,
   );
   const [selectedSize, setSelectedSize] = useState(
     sizes.find((item) => item.stock > 0)?.size ?? "",
@@ -63,11 +66,13 @@ const PdvProductActions = ({
 
   return (
     <div className="flex flex-col gap-6 px-5">
-      <SearchCustomers
-        customers={customers}
-        selectedCustomer={selectedCustomer}
-        onSelectCustomer={setSelectedCustomer}
-      />
+      <div className="absolute top-0 right-0 w-full max-w-sm">
+        <SearchCustomers
+          customers={customers}
+          selectedCustomer={selectedCustomer}
+          onSelectCustomer={setSelectedCustomer}
+        />
+      </div>
 
       <div className="flex items-center justify-between gap-4">
         <div className="space-y-4">

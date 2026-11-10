@@ -6,7 +6,12 @@ import { AdminLayout } from "@/components/admin/admin-layout";
 
 import PdvContent from "./components/pdv-content";
 
-export default async function PdvPage() {
+interface PdvPageProps {
+  searchParams: Promise<{ customerId?: string }>;
+}
+
+export default async function PdvPage({ searchParams }: PdvPageProps) {
+  const { customerId } = await searchParams;
   await auth.api.getSession({
     headers: await headers(),
   });
@@ -56,6 +61,7 @@ export default async function PdvPage() {
         products={validProducts}
         categories={categories}
         customers={customerOptions}
+        selectedCustomerId={customerId}
       />
     </AdminLayout>
   );

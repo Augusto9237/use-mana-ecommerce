@@ -14,13 +14,16 @@ import { auth } from "@/lib/auth";
 
 import PdvProductActions from "./components/pdv-product-actions";
 import PdvCart from "../components/pdv-cart";
+import { ChevronLeft } from "lucide-react";
 
 interface PdvProductVariantPageProps {
     params: Promise<{ slug: string }>;
+    searchParams: Promise<{ customerId?: string }>;
 }
 
 const PdvProductVariantPage = async ({
     params,
+    searchParams,
 }: PdvProductVariantPageProps) => {
     //   const session = await auth.api.getSession({
     //     headers: await headers(),
@@ -32,7 +35,7 @@ const PdvProductVariantPage = async ({
     //     redirect("/");
     //   }
 
-    const { slug } = await params;
+    const [{ slug }, { customerId }] = await Promise.all([params, searchParams]);
     const productVariant = await db.query.productVariantTable.findFirst({
         where: eq(productVariantTable.slug, slug),
         with: {
@@ -68,28 +71,32 @@ const PdvProductVariantPage = async ({
         };
     });
 
+    const selectedCustomer = customers.find((customer) => customer.id === customerId);
+
     return (
         <AdminLayout>
-            <div className="flex w-full flex-col gap-6">
-                <header className="flex items-center justify-between gap-6">
+            <div className="flex w-full flex-col gap-6 relative max-h-screen">
+                <header className="flex items-center justify-start gap-2">
+                    <Button asChild variant="ghost" size="icon">
+                        <Link href="/admin/pdv"><ChevronLeft /></Link>
+                    </Button>
                     <h1 className="text-2xl font-semibold tracking-tight">
                         {productVariant.product.name} - {productVariant.name}
                     </h1>
                 </header>
-                {/* <Button asChild variant="outline" className="w-fit">
-                    <Link href="/admin/pdv">Voltar ao PDV</Link>
-                </Button> */}
 
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
-                    <div className="col-span-2 flex flex-col gap-6">
+
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-4 lg:gap-8">
+                    <div className="col-span-3 flex flex-col lg:flex-row gap-6 lg:gap-7 lg:pl-5">
                         <CarouselProducts images={productVariant.imageUrl} />
 
-                        <div className="flex flex-col gap-6">
+                        <div className="flex flex-col gap-6 w-full max-w-md">
                             <div className="px-5 lg:pt-5">
                                 <VariantSelector
                                     selectedVariantSlug={productVariant.slug}
                                     variants={productVariant.product.variants}
                                     basePath="/admin/pdv"
+                                    customerId={customerId}
                                 />
                             </div>
 
@@ -118,6 +125,7 @@ const PdvProductVariantPage = async ({
                                 productVariantId={productVariant.id}
                                 sizes={productVariant.sizeInStock}
                                 customers={customerOptions}
+                                selectedCustomerId={customerId}
                             />
 
                             <div className="px-5">
@@ -127,7 +135,16 @@ const PdvProductVariantPage = async ({
                             </div>
                         </div>
                     </div>
-                    <PdvCart/>
+                    {customerId && selectedCustomer && (
+                        <PdvCart selectedCustomer={
+                            {
+                                id: selectedCustomer.id,
+                                email: selectedCustomer.email,
+                                name: selectedCustomer.name,
+                                cpfOrCnpj: selectedCustomer.shippingAddresses[0]?.cpfOrCnpj ?? null,
+                                phone: selectedCustomer.shippingAddresses[0]?.phone ?? null
+                            }} />
+                    )}
                 </div>
             </div>
         </AdminLayout>

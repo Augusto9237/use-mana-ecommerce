@@ -17,6 +17,7 @@ interface PdvProductCardProps {
   className?: string;
   textContainerClassName?: string;
   isSelected?: boolean;
+  customerId?: string;
   onAdd: (product: typeof productTable.$inferSelect & {
     variants: (typeof productVariantTable.$inferSelect)[];
   }) => void;
@@ -27,6 +28,7 @@ const PdvProductCard = ({
   className,
   textContainerClassName,
   isSelected,
+  customerId,
   onAdd,
 }: PdvProductCardProps) => {
   const firstVariant = product.variants[0];
@@ -44,6 +46,9 @@ const PdvProductCard = ({
           100,
       )
     : 0;
+  const detailHref = `/admin/pdv/${firstVariant.slug}${
+    customerId ? `?customerId=${encodeURIComponent(customerId)}` : ""
+  }`;
 
   return (
     <Card
@@ -61,7 +66,7 @@ const PdvProductCard = ({
       )}
 
       {/* Imagem — mesmo padrão do ProductItem */}
-      <Link href={`/admin/pdv/${firstVariant.slug}`}>
+      <Link href={detailHref}>
         <Image
           src={firstVariant.imageUrl[0]}
           alt={firstVariant.name}
@@ -79,10 +84,7 @@ const PdvProductCard = ({
           textContainerClassName,
         )}
       >
-        <Link
-          href={`/admin/pdv/${firstVariant.slug}`}
-          className="truncate text-sm font-medium"
-        >
+        <Link href={detailHref} className="truncate text-sm font-medium">
           {product.name}
         </Link>
         <p className="text-muted-foreground truncate text-xs font-medium">

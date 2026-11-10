@@ -26,13 +26,20 @@ interface PdvContentProps {
   })[];
   categories: (typeof categoryTable.$inferSelect)[];
   customers: PdvCustomer[];
+  selectedCustomerId?: string;
 }
 
-const PdvContent = ({ products, categories, customers }: PdvContentProps) => {
+const PdvContent = ({
+  products,
+  categories,
+  customers,
+  selectedCustomerId,
+}: PdvContentProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCustomer, setSelectedCustomer] = useState<PdvCustomer | null>(
-    null,
+    () =>
+      customers.find((customer) => customer.id === selectedCustomerId) ?? null,
   );
   const queryClient = useQueryClient();
   const { data: cart } = usePdvCart(selectedCustomer?.id);
@@ -194,6 +201,7 @@ const PdvContent = ({ products, categories, customers }: PdvContentProps) => {
                         item.productVariantId === product.variants[0]?.id,
                     )}
                     onAdd={handleAddProduct}
+                    customerId={selectedCustomer?.id}
                   />
                 ))}
               </div>

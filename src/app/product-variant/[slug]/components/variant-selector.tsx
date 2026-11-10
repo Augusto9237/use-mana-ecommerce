@@ -7,18 +7,22 @@ interface VariantSelectorProps {
   selectedVariantSlug: string;
   variants: (typeof productVariantTable.$inferSelect)[];
   basePath?: string;
+  customerId?: string;
 }
 
 export default function VariantSelector({
   selectedVariantSlug,
   variants,
   basePath = "/product-variant",
+  customerId,
 }: VariantSelectorProps) {
   return (
     <div className="flex items-center gap-4">
       {variants.map((variant) => (
         <Link
-          href={`${basePath}/${variant.slug}`}
+          href={`${basePath}/${variant.slug}${
+            customerId ? `?customerId=${encodeURIComponent(customerId)}` : ""
+          }`}
           key={variant.id}
           className={
             selectedVariantSlug === variant.slug

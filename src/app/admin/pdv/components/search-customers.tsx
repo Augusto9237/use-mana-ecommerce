@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Pencil, Search, UserRoundPlus, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -43,6 +44,9 @@ const SearchCustomers = ({
     selectedCustomer,
     onSelectCustomer,
 }: SearchCustomersProps) => {
+    const pathname = usePathname();
+    const router = useRouter();
+    const searchParams = useSearchParams();
     const [open, setOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [showAll, setShowAll] = useState(false);
@@ -95,6 +99,11 @@ const SearchCustomers = ({
         if (!customer) return;
 
         onSelectCustomer(customer);
+        const nextSearchParams = new URLSearchParams(searchParams.toString());
+        nextSearchParams.set("customerId", customer.id);
+        router.replace(`${pathname}?${nextSearchParams.toString()}`, {
+            scroll: false,
+        });
         setOpen(false);
     };
 

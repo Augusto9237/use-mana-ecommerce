@@ -18,6 +18,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -126,18 +127,17 @@ export function OrderDetailsDialog({
         <DialogHeader className="p-6 pb-4 border-b">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
-              <DialogTitle className="text-xl flex items-center gap-2">
-                <Hash className="size-5 text-muted-foreground" />
+              <DialogTitle>
                 <span>Pedido</span>
               </DialogTitle>
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
+              <DialogDescription className="flex items-center gap-2">
                 <Calendar className="size-3.5" />
                 Realizado em {new Date(order.createdAt).toLocaleDateString("pt-BR")} às{" "}
                 {new Date(order.createdAt).toLocaleTimeString("pt-BR", {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}
-              </p>
+              </DialogDescription>
             </div>
           </div>
         </DialogHeader>

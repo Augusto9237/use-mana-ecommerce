@@ -56,12 +56,12 @@ export const getCart = async () => {
 };
 
 export const getPdvCart = async (userId: string) => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  if (!session?.user || session.user.role !== "admin") {
-    throw new Error("Unauthorized");
-  }
+  // const session = await auth.api.getSession({
+  //   headers: await headers(),
+  // });
+  // if (!session?.user || session.user.role !== "admin") {
+  //   throw new Error("Unauthorized");
+  // }
   if (typeof userId !== "string" || !userId.trim()) {
     throw new Error("Cliente não informado");
   }

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Plus } from "lucide-react";
 
 import { productTable, productVariantTable } from "@/db/schema";
@@ -60,14 +61,16 @@ const PdvProductCard = ({
       )}
 
       {/* Imagem — mesmo padrão do ProductItem */}
-      <Image
-        src={firstVariant.imageUrl[0]}
-        alt={firstVariant.name}
-        sizes="100vw"
-        height={0}
-        width={0}
-        className="h-auto w-full rounded-lg"
-      />
+      <Link href={`/admin/pdv/${firstVariant.slug}`}>
+        <Image
+          src={firstVariant.imageUrl[0]}
+          alt={firstVariant.name}
+          sizes="100vw"
+          height={0}
+          width={0}
+          className="h-auto w-full rounded-lg"
+        />
+      </Link>
 
       {/* Conteúdo de texto — mesmo padrão do ProductItem */}
       <div
@@ -76,7 +79,12 @@ const PdvProductCard = ({
           textContainerClassName,
         )}
       >
-        <p className="truncate text-sm font-medium">{product.name}</p>
+        <Link
+          href={`/admin/pdv/${firstVariant.slug}`}
+          className="truncate text-sm font-medium"
+        >
+          {product.name}
+        </Link>
         <p className="text-muted-foreground truncate text-xs font-medium">
           {product.description}
         </p>

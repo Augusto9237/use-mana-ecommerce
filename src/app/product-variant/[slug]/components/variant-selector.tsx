@@ -6,14 +6,19 @@ import { productVariantTable } from "@/db/schema";
 interface VariantSelectorProps {
   selectedVariantSlug: string;
   variants: (typeof productVariantTable.$inferSelect)[];
+  basePath?: string;
 }
 
-export default function VariantSelector({ selectedVariantSlug, variants }: VariantSelectorProps) {
+export default function VariantSelector({
+  selectedVariantSlug,
+  variants,
+  basePath = "/product-variant",
+}: VariantSelectorProps) {
   return (
     <div className="flex items-center gap-4">
       {variants.map((variant) => (
         <Link
-          href={`/product-variant/${variant.slug}`}
+          href={`${basePath}/${variant.slug}`}
           key={variant.id}
           className={
             selectedVariantSlug === variant.slug
@@ -33,4 +38,3 @@ export default function VariantSelector({ selectedVariantSlug, variants }: Varia
     </div>
   );
 };
-

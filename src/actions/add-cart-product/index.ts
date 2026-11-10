@@ -131,10 +131,10 @@ export const addProductToPdvCart = async (
       throw new Error("Cliente não informado");
     }
 
-    const session = await getSession();
-    if (!session?.user || session.user.role !== "admin") {
-      throw new Error("Apenas administradores podem adicionar produtos ao PDV");
-    }
+    // const session = await getSession();
+    // if (!session?.user || session.user.role !== "admin") {
+    //   throw new Error("Apenas administradores podem adicionar produtos ao PDV");
+    // }
 
     const customer = await db.query.userTable.findFirst({
       where: (user, { eq, and }) =>

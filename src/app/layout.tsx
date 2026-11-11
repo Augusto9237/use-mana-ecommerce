@@ -1,7 +1,7 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter, Raleway, Outfit, Montserrat } from "next/font/google";
+import { Geist, Geist_Mono, Outfit, Montserrat, Unbounded } from "next/font/google";
 
 import { Toaster } from "@/components/ui/sonner";
 import ReactQueryProvider from "@/providers/react-query";
@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 const montserratHeading = Montserrat({ subsets: ['latin'], variable: '--font-heading' });
 
-const outfit = Outfit({ subsets: ['latin'], variable: '--font-sans' });
+const unbounde = Unbounded({ subsets: ['latin'], weight: ["200", "300", "400", "500", "600", "700", "800", "900"], variable: '--font-sans' });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-br" className={cn("font-sans", outfit.variable, montserratHeading.variable)}>
+    <html lang="pt-br" className={cn("font-sans", montserratHeading.variable)}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased light:bg-secondary dark:bg-background dark`}
       >

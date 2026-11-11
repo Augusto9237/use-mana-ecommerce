@@ -12,6 +12,7 @@ import {
 import AutoScroll from "embla-carousel-auto-scroll"
 import { Progress } from "@/components/ui/progress";
 import Image from "next/image";
+import { lookupZipcode } from "@/lib/lookup-zipcode";
 
 interface promotions {
   id: string;

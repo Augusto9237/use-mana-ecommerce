@@ -28,6 +28,7 @@ import DeliverySummary from "./delivery-summary";
 import { calculateUberQuote } from "@/actions/calculate-uber-quote";
 import Link from "next/link";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { lookupZipcode } from "@/lib/lookup-zipcode";
 
 const formSchema = z.object({
   email: z.email("E-mail inválido"),
@@ -55,9 +56,11 @@ const Addresses = ({
   defaultShippingAddressId,
 }: AddressesProps) => {
   const router = useRouter();
+
   const [selectedAddress, setSelectedAddress] = useState<string | null>(
     defaultShippingAddressId || null,
   );
+  const [carrier, setCarrier] = useState<string>("");
   const [shippingFeeInCents, setShippingFeeInCents] = useState<number>(0);
   const updateCartShippingAddressMutation = useUpdateCartShippingAddress();
   const { data: addresses, isLoading } = useUserAddresses({
@@ -72,9 +75,15 @@ const Addresses = ({
         shippingAddressId: selectedAddress,
       });
 
-      const uberQuote = await calculateUberQuote();
-      const shippingFeeInCents = uberQuote && !("error" in uberQuote) ? uberQuote.feeInCents : 0;
-      setShippingFeeInCents(shippingFeeInCents);
+      const address = addresses?.find((address) => address.id === selectedAddress);
+
+      if (!address) {
+        throw new Error("Endereço selecionado não encontrado.");
+      }
+
+      const shipping = await lookupZipcode(address.zipCode);
+      setShippingFeeInCents(shipping.valorFrete);
+      setCarrier(shipping.transportadora);
       toast.success("Endereço selecionado para entrega!");
       router.refresh();
     } catch (error) {
@@ -156,6 +165,7 @@ const Addresses = ({
 
           <DeliverySummary
             shippingFeeInCents={shippingFeeInCents}
+            carrier={carrier}
           />
         </div>
       </Card>

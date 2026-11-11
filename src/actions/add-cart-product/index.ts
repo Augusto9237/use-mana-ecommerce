@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 
 import { db } from "@/db";
-import { cartItemTable, cartTable, userTable } from "@/db/schema";
+import { cartItemTable, cartTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
 import { AddProductToCartSchema, addProductToCartSchema } from "./schema";
@@ -62,9 +62,11 @@ const addProductToUserCart = async (
   const availableStock = sizeInStock.stock - orderedTodayQuantity;
 
   const cartItem = await db.query.cartItemTable.findFirst({
-    where: (cartItem, { eq }) =>
-      eq(cartItem.cartId, cartId) &&
-      eq(cartItem.productVariantId, data.productVariantId),
+    where: (cartItem, { eq, and }) =>
+      and(
+        eq(cartItem.cartId, cartId),
+        eq(cartItem.productVariantId, data.productVariantId),
+      ),
   });
   const currentCartQuantity = cartItem?.quantity ?? 0;
   const requestedQuantity = currentCartQuantity + data.quantity;

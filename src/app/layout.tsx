@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RD Fitness",
+  title: "Use Mana",
   description: "Moda fitness de alta qualidade para você alcançar seus objetivos com estilo e conforto.",
 };
 

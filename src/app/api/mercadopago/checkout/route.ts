@@ -51,7 +51,7 @@ function getBaseUrl(): string {
   const candidates = [
     process.env.NEXT_PUBLIC_URL,
     notificationUrl ? new URL(notificationUrl).origin : undefined,
-    process.env.NEXTAUTH_URL,
+    process.env.BETTER_AUTH_URL,
     "http://localhost:3000",
   ];
 

@@ -21,6 +21,8 @@ import { Badge } from "../ui/badge";
 
 export const Cart = () => {
   const { data: cart } = useCart();
+
+  console.log("cart", cart);
   return (
     <Sheet>
       <SheetTrigger asChild>

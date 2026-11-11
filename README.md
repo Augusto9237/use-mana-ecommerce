@@ -47,6 +47,8 @@
 - 🎨 **Variantes de produto** com múltiplas cores, tamanhos e controle de estoque por SKU
 - 💳 **Duplo gateway de pagamento** — Mercado Pago + Stripe
 - 🚚 **Entrega automatizada** via Uber Direct com cotação em tempo real e rastreamento
+- 🧾 **Ponto de Venda (PDV)** para registrar vendas presenciais pelo painel administrativo
+- 📍 **Consulta de cidade pelo CEP** no checkout, com frete tabelado por localidade no Pará
 - 📦 **Painel admin completo** com dashboard de métricas, gestão de pedidos, produtos, categorias, promoções e clientes
 - 🔐 **Autenticação robusta** com Better Auth (e-mail/senha + Google OAuth)
 - ☁️ **Upload de imagens** para Cloudflare R2 via Better Upload
@@ -66,7 +68,8 @@
 | **Página de Produto** | Detalhes completos com galeria de imagens, seletor de cor/tamanho e preço com desconto |
 | **Carrinho de Compras** | Sidebar com adição, remoção, ajuste de quantidade e cálculo automático de totais |
 | **Busca** | Pesquisa de produtos por nome em tempo real |
-| **Checkout** | Fluxo completo com seleção de endereço, cálculo de frete (Uber Direct) e pagamento |
+| **Checkout** | Fluxo completo com seleção de endereço, consulta de CEP, frete tabelado e pagamento |
+| **Consulta de CEP e frete** | Consulta cidade e estado pelo ViaCEP e calcula uma tarifa fixa conforme a localidade |
 | **Meus Pedidos** | Histórico de pedidos com status (pendente, pago, cancelado) |
 | **Endereços** | CRUD completo de endereços de entrega com CPF/CNPJ |
 | **Promoções** | Banner carrossel com promoções ativas na homepage |
@@ -82,8 +85,25 @@
 | **Gestão de Pedidos** | Visualizar todos os pedidos, detalhes, atualizar status, solicitar entrega Uber |
 | **Gestão de Promoções** | Criar e gerenciar banners promocionais (ativar/desativar) |
 | **Gestão de Clientes** | Listagem de clientes cadastrados |
+| **Ponto de Venda (PDV)** | Registrar vendas presenciais para clientes, com seleção de produtos, forma de pagamento e retirada ou entrega |
+| **Comprovante do PDV** | Pré-visualizar e imprimir o comprovante da venda |
 | **Upload de Imagens** | Upload drag-and-drop para Cloudflare R2 |
 | **Top Produtos** | Ranking dos produtos mais vendidos baseado nos pedidos |
+
+### Consulta de CEP e frete tabelado
+
+No checkout, o CEP do endereço selecionado é consultado no **ViaCEP** para identificar a cidade e o estado. A entrega está disponível para CEPs do **Pará (PA)** e usa estas tarifas fixas:
+
+| Localidade | Modalidade | Frete |
+|---|---|---:|
+| São Sebastião da Boa Vista | Motoboy | R$ 5,00 |
+| Demais localidades do Pará | Barco | R$ 10,00 |
+
+CEPs inválidos, não encontrados ou fora do Pará não são aceitos para esse cálculo.
+
+### Ponto de Venda (PDV)
+
+O PDV fica no painel administrativo, em `/admin/pdv`. O fluxo permite selecionar um cliente, buscar e adicionar produtos ao carrinho, escolher entre **retirada no balcão** (frete grátis) e **entrega no endereço** (cotação via Uber Direct), registrar a forma de pagamento e finalizar a venda. Ao concluir, o sistema registra o pedido, atualiza o estoque, limpa o carrinho e oferece a prévia ou impressão do comprovante.
 
 ---
 
@@ -244,7 +264,8 @@ rd-fitness/
 │   │   │   ├── categories/            # CRUD de categorias
 │   │   │   ├── orders/                # Gestão de pedidos
 │   │   │   ├── promotions/            # Gestão de promoções
-│   │   │   └── customers/             # Listagem de clientes
+│   │   │   ├── customers/             # Listagem de clientes
+│   │   │   └── pdv/                   # Ponto de venda e confirmação de vendas
 │   │   ├── authentication/         # Página de login
 │   │   ├── product-variant/[slug]/ # Página de detalhe do produto
 │   │   ├── cart/                   # Página do carrinho
@@ -292,6 +313,7 @@ rd-fitness/
 │   │   ├── auth.ts                # Configuração Better Auth
 │   │   ├── auth-client.ts         # Client-side auth
 │   │   ├── admin-auth.ts          # Validação de admin
+│   │   ├── lookup-zipcode.ts      # Consulta de CEP e cálculo do frete tabelado
 │   │   ├── mercadopago.ts         # Client Mercado Pago
 │   │   ├── uber.ts                # Client Uber Direct (OAuth2, cotação, entrega)
 │   │   ├── cloudflare.ts          # Client Cloudflare R2
@@ -510,6 +532,8 @@ UPDATE "user" SET role = 'admin' WHERE email = 'seu-email@example.com';
 | `/admin/orders` | Gestão de pedidos |
 | `/admin/promotions` | Gestão de promoções |
 | `/admin/customers` | Listagem de clientes |
+| `/admin/pdv` | Ponto de venda: seleção de cliente e produtos |
+| `/admin/pdv/confimation` | Confirmação da venda, pagamento, entrega e comprovante |
 
 ---
 
@@ -531,11 +555,17 @@ UPDATE "user" SET role = 'admin' WHERE email = 'seu-email@example.com';
 ### Uber Direct
 
 - **OAuth2** com cache de token em memória
-- **Cotação de frete** em tempo real baseado no endereço de entrega
+- **Cotação de frete** em tempo real baseada no endereço de entrega, inclusive nas vendas do PDV
 - **Criação de entrega** automática após confirmação de pagamento
 - **Webhooks** em `/api/uber` para atualização de status de entrega
 - **Cancelamento** de entregas em andamento
 - **Verificação de assinatura HMAC** nos webhooks
+
+### ViaCEP e frete tabelado
+
+- Consulta a cidade e a UF do endereço pelo CEP informado
+- Aceita CEPs do Pará e calcula tarifa fixa: **R$ 5,00** para São Sebastião da Boa Vista (motoboy) e **R$ 10,00** para as demais localidades (barco)
+- CEPs inválidos, não encontrados ou de outros estados são rejeitados
 
 ### Cloudflare R2
 

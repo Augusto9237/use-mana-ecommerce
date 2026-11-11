@@ -1,3 +1,13 @@
+import { z } from "zod";
+
+const viaCepResponseSchema = z.union([
+  z.object({ erro: z.literal(true) }),
+  z.object({
+    localidade: z.string(),
+    uf: z.string(),
+  }),
+]);
+
 export async function lookupZipcode(
   cep: string,
 ): Promise<{ transportadora: string; valorFrete: number }> {
@@ -13,31 +23,21 @@ export async function lookupZipcode(
     throw new Error("Erro ao consultar a API de CEP.");
   }
 
-  const data: unknown = await response.json();
-
-  if (data === null || typeof data !== "object") {
-    throw new Error("Resposta inválida da API de CEP.");
-  }
-
-  if ("erro" in data && data.erro === true) {
+  const data = viaCepResponseSchema.parse(await response.json());
+  if ("erro" in data) {
     throw new Error("CEP não encontrado.");
   }
 
-  if (
-    !("localidade" in data) ||
-    typeof data.localidade !== "string" ||
-    !("uf" in data) ||
-    typeof data.uf !== "string"
-  ) {
-    throw new Error("Resposta inválida da API de CEP.");
+  if (data.uf !== "PA") {
+    throw new Error(
+      "CEP não pertence ao estado do Pará. Apenas CEPs do estado do Pará são aceitos.",
+    );
   }
 
-  if(data.uf !== "PA") {
-    throw new Error("CEP não pertence ao estado do Pará. Apenas CEPs do estado do Pará são aceitos.");
-  }
+  const isSaoSebastiaoDaBoaVista = data.localidade === "São Sebastião da Boa Vista";
 
   return {
-    transportadora: data.localidade === "São Sebastião da Boa Vista"? "Motoboy" : "Barco",
-    valorFrete: data.localidade === "São Sebastião da Boa Vista"? 500 : 1000,
-  }
+    transportadora: isSaoSebastiaoDaBoaVista ? "Motoboy" : "Barco",
+    valorFrete: isSaoSebastiaoDaBoaVista ? 500 : 1000,
+  };
 }

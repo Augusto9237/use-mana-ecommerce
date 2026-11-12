@@ -73,7 +73,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               <SidebarTrigger className="-ml-1" />
               <Separator
                 orientation="vertical"
-                className="mr-2 h-4"
+                className="mr-2 h-5 my-auto"
               />
               <Breadcrumb>
                 <BreadcrumbList className="flex-nowrap">

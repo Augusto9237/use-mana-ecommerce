@@ -2,7 +2,7 @@
   <img src="public/logo-lg.png" alt="RD Fitness Logo" width="200" />
 </p>
 
-<h1 align="center">RD Fitness</h1>
+<h1 align="center">Use Mana</h1>
 
 <p align="center">
   <strong>E-commerce completo de moda fitness com painel administrativo, pagamentos integrados e entrega via Uber Direct.</strong>

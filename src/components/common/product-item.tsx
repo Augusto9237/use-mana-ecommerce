@@ -40,7 +40,7 @@ const ProductItem = ({
           sizes="100vw"
           height={0}
           width={0}
-          className="h-auto w-full"
+          className="h-auto w-full aspect-square object-cover"
         />
       </Link>
       <div

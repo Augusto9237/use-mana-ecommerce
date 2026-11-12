@@ -11,6 +11,7 @@ import { auth } from "@/lib/auth";
 import CartSummary from "../components/cart-summary";
 import { formatAddress } from "../helpers/address";
 import FinishOrderButton from "./components/finish-order-button";
+import { lookupZipcode } from "@/lib/lookup-zipcode";
 
 const ConfirmationPage = async () => {
   const session = await auth.api.getSession({
@@ -45,12 +46,9 @@ const ConfirmationPage = async () => {
     redirect("/cart/identification");
   }
 
-  // Calcular cotação de frete da Uber Direct
-  const uberQuote = await calculateUberQuote();
-  const shippingFeeInCents = uberQuote && !("error" in uberQuote) ? uberQuote.feeInCents : 0;
-  const uberQuoteId = uberQuote && !("error" in uberQuote) ? uberQuote.quoteId : undefined;
-  const uberUnavailable = uberQuote !== null && "error" in uberQuote;
-  const totalInCents = cartTotalInCents + shippingFeeInCents;
+
+  const delivery = (await lookupZipcode(cart.shippingAddress.zipCode)).valorFrete
+  const totalInCents = delivery + cartTotalInCents
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -67,18 +65,11 @@ const ConfirmationPage = async () => {
               </CardContent>
             </Card>
 
-            {uberUnavailable && (
-              <p className="text-sm text-destructive">
-                ⚠️ Não foi possível calcular o frete para este endereço. Verifique o endereço ou tente novamente.
-              </p>
-            )}
-
-
           </CardContent>
         </Card>
         <CartSummary
           subtotalInCents={cartTotalInCents}
-          shippingFeeInCents={shippingFeeInCents}
+          shippingFeeInCents={delivery}
           totalInCents={totalInCents}
           products={cart.items.map((item) => ({
             id: item.productVariant.id,
@@ -92,9 +83,7 @@ const ConfirmationPage = async () => {
           }))}
         />
         <FinishOrderButton
-          uberQuoteId={uberQuoteId}
-          shippingFeeInCents={shippingFeeInCents}
-          disabled={uberUnavailable}
+          shippingFeeInCents={delivery}
         />
       </div>
 

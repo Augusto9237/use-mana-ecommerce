@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminLayout } from "@/components/admin/admin-layout";
 import Image from "next/image";
 import { formatCentsToBRL } from "@/helpers/money";
-import { Boxes, DollarSign, ReceiptText, Users } from "lucide-react";
+import { Boxes, CircleCheck, CircleX, DollarSign, LoaderCircle, ReceiptText, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { OrderDetailsDialog } from "./orders/components/order-details-dialog";
+import { OrderActionsDropdown } from "./orders/components/order-actions-dropdown";
 
 type UserWithRole = { role?: string };
 
@@ -65,6 +65,7 @@ export default async function AdminPage() {
   const totalProducts = await db.query.productTable.findMany();
   const totalOrders = await db.query.orderTable.findMany({
     with: {
+      user: true,
       items: {
         with: {
           productVariant: {
@@ -128,13 +129,32 @@ export default async function AdminPage() {
   const getStatusBadge = (orderStatus: typeof totalOrders[number]["status"]) => {
     switch (orderStatus) {
       case "paid":
-        return <Badge>Pago</Badge>;
+        return (
+          <Badge variant="outline" className="gap-1.5 px-2 text-muted-foreground">
+            <CircleCheck className="size-3.5 text-emerald-600" />
+            Pago
+          </Badge>
+        );
       case "pending":
-        return <Badge variant="outline">Pendente</Badge>;
+        return (
+          <Badge variant="outline" className="gap-1.5 px-2 text-muted-foreground">
+            <LoaderCircle className="size-3.5" />
+            Pendente
+          </Badge>
+        );
       case "canceled":
-        return <Badge variant="destructive">Cancelado</Badge>;
+        return (
+          <Badge variant="outline" className="gap-1.5 px-2 text-muted-foreground">
+            <CircleX className="size-3.5 text-destructive" />
+            Cancelado
+          </Badge>
+        );
       default:
-        return <Badge>{orderStatus}</Badge>;
+        return (
+          <Badge variant="outline" className="px-2 text-muted-foreground">
+            {orderStatus}
+          </Badge>
+        );
     }
   };
 
@@ -209,36 +229,35 @@ export default async function AdminPage() {
                 <CardTitle>Últimos Pedidos</CardTitle>
 
                 <Link href={"/admin/orders"}>
-                  <span className="text-sm text-muted-foreground hover:underline hover:text-forenground">Ver todos</span>
+                  <span className="text-sm text-muted-foreground hover:underline hover:text-foreground">Ver todos</span>
                 </Link>
               </CardHeader>
               <CardContent className="p-0">
-                {latestOrders.length === 0 ? (
-                  <p className="text-sm text-muted-foreground px-6 pb-6">Nenhum pedido registrado ainda.</p>
-                ) : (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="w-[120px] pl-6">Pedido ID</TableHead>
-                          <TableHead>Cliente</TableHead>
-                          <TableHead>Data</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead className="text-right">Total</TableHead>
-                          <TableHead className="w-[100px] text-center pr-6">Ações</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {latestOrders.map((order) => (
+                <div className="overflow-x-auto">
+                  <Table className="min-w-[760px]">
+                    <TableHeader className="bg-muted/50">
+                      <TableRow>
+                        <TableHead className="w-[140px] pl-3">Pedido</TableHead>
+                        <TableHead>Cliente</TableHead>
+                        <TableHead className="w-[190px]">Data</TableHead>
+                        <TableHead className="w-[140px]">Status</TableHead>
+                        <TableHead className="text-right">Total</TableHead>
+                        <TableHead className="w-[72px] text-right pr-4">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {latestOrders.length > 0 ? (
+                        latestOrders.map((order) => (
                           <TableRow key={order.id}>
-                            <TableCell className="font-mono text-xs text-muted-foreground pl-6">
-                              #{order.id.slice(0, 8)}...
+                            <TableCell className="font-mono text-xs text-muted-foreground pl-3">
+                              #{order.id.slice(0, 8)}
                             </TableCell>
                             <TableCell>
-                              <div className="flex flex-col">
-                                <span className="font-medium text-foreground">
+                              <div className="flex min-w-0 flex-col">
+                                <span className="truncate font-medium text-foreground">
                                   {order.recipientName}
                                 </span>
-                                <span className="text-xs text-muted-foreground">
+                                <span className="truncate text-xs text-muted-foreground">
                                   {order.email}
                                 </span>
                               </div>
@@ -251,18 +270,27 @@ export default async function AdminPage() {
                               })}
                             </TableCell>
                             <TableCell>{getStatusBadge(order.status)}</TableCell>
-                            <TableCell className="text-right font-semibold">
+                            <TableCell className="text-right font-medium tabular-nums">
                               {formatCentsToBRL(order.totalPriceInCents)}
                             </TableCell>
-                            <TableCell className="text-center pr-6">
-                              {/* Cast object schema type compatibility */}
-                              <OrderDetailsDialog order={order as any} />
+                            <TableCell className="justify-end items-end text-right pr-4 flex">
+                              <OrderActionsDropdown order={order as any} />
                             </TableCell>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                )}
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell
+                            colSpan={6}
+                            className="h-24 text-center text-muted-foreground"
+                          >
+                            Nenhum pedido encontrado.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
               </CardContent>
             </Card>
           </div>

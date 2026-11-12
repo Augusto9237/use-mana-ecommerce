@@ -36,7 +36,7 @@ export const Header = () => {
           <Image
             src="/logo-lg.png"
             alt="RD Fitness Logo"
-            width={80}
+            width={120}
             height={80}
             className="object-cover max-md:hidden"
           />

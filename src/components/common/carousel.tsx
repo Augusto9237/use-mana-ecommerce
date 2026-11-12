@@ -73,7 +73,7 @@ export default function CarouselWithProgress({ promotions }: CarouselWithProgres
               <a href={p.linkUrl}>
                 <Image
                   alt="carousel-item"
-                  className="size-full object-cover sm:aspect-video"
+                  className="size-full object-cover object-center sm:max-h-[700px]"
                   src={p.imageUrl}
                   width={1920}
                   height={1080}

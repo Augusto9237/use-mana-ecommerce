@@ -7,13 +7,11 @@ import { useFinishOrder } from "@/hooks/mutations/use-finish-order";
 import { useRouter } from "next/navigation";
 
 interface FinishOrderButtonProps {
-  uberQuoteId?: string;
   shippingFeeInCents?: number;
   disabled?: boolean;
 }
 
 const FinishOrderButton = ({
-  uberQuoteId,
   shippingFeeInCents,
   disabled,
 }: FinishOrderButtonProps) => {
@@ -22,7 +20,6 @@ const FinishOrderButton = ({
 
   const handleFinishOrder = async () => {
     const { orderId } = await finishOrderMutation.mutateAsync({
-      uberQuoteId,
       shippingFeeInCents,
     });
 

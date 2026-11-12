@@ -29,6 +29,7 @@ import { calculateUberQuote } from "@/actions/calculate-uber-quote";
 import Link from "next/link";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { lookupZipcode } from "@/lib/lookup-zipcode";
+import { MapPin } from "lucide-react";
 
 const formSchema = z.object({
   email: z.email("E-mail inválido"),
@@ -129,11 +130,12 @@ const Addresses = ({
                         }
                       }}
                     >
-                      <Field orientation="horizontal">
+                      <Field orientation="horizontal" className="flex items-center">
+                        <MapPin className="size-7 my-auto"/>
                         <FieldContent>
-                          <FieldTitle>{formatAddress(address)}</FieldTitle>
+                          <FieldTitle className="text-sm">{formatAddress(address)}</FieldTitle>
                         </FieldContent>
-                        <RadioGroupItem value={address.id} id={address.id} />
+                        <RadioGroupItem value={address.id} id={address.id}/>
                       </Field>
                     </FieldLabel>
                   ))}

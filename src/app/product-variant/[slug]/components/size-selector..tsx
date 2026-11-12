@@ -19,6 +19,7 @@ export function SizeSelector({ sizes, setSelectedSize }: SizeSelectorProps) {
           aria-label={`Toggle ${item.size}`}
           disabled={item.stock === 0}
           onClick={() => setSelectedSize(item.size)}
+          size="sm"
         >
           {item.size}
         </ToggleGroupItem>

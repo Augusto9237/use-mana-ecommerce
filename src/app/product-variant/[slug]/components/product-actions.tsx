@@ -30,17 +30,17 @@ const ProductActions = ({ productVariantId, sizes }: ProductActionsProps) => {
       <div className="px-5">
         <div className="flex items-center justify-between w-full">
           <div className="space-y-4">
-            <h3 className="font-medium">Tamanho</h3>
+            <h3 className="font-medium text-sm">Tamanho</h3>
             <SizeSelector sizes={sizes} setSelectedSize={setSelectedSize} />
           </div>
           <div className="space-y-4">
-            <h3 className="font-medium">Quantidade</h3>
+            <h3 className="font-medium text-sm">Quantidade</h3>
             <div className="flex w-[100px] items-center justify-between rounded-lg border">
-              <Button size="icon" variant="ghost" onClick={handleDecrement}>
+              <Button size="icon-sm" variant="ghost" onClick={handleDecrement}>
                 <MinusIcon />
               </Button>
               <p>{quantity}</p>
-              <Button size="icon" variant="ghost" onClick={handleIncrement}>
+              <Button size="icon-sm" variant="ghost" onClick={handleIncrement}>
                 <PlusIcon />
               </Button>
             </div>

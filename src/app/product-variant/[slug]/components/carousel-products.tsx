@@ -19,7 +19,7 @@ export default function CarouselProducts({ images }: CarouselProductsProps) {
             <div>
               <img
                 alt="dddepth-248"
-                className="size-full object-cover"
+                className="size-full object-cover aspect-square"
                 src={image}
               />
             </div>

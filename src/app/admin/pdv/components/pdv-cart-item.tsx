@@ -65,7 +65,7 @@ const PdvCartItem = ({ item, userId }: PdvCartItemProps) => {
           alt={item.variantName}
           width={78}
           height={78}
-          className="rounded-lg"
+          className="rounded-lg aspect-square object-cover"
         />
         <div className="flex flex-col gap-1 overflow-hidden h-full">
           <p className="text-sm font-semibold text-nowrap truncate">{item.productName}</p>

@@ -12,6 +12,7 @@ import CartSummary from "../components/cart-summary";
 import { formatAddress } from "../helpers/address";
 import FinishOrderButton from "./components/finish-order-button";
 import { lookupZipcode } from "@/lib/lookup-zipcode";
+import { MapPin } from "lucide-react";
 
 const ConfirmationPage = async () => {
   const session = await auth.api.getSession({
@@ -53,15 +54,18 @@ const ConfirmationPage = async () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <div className="space-y-5 px-5 pt-20 pb-8 w-full max-w-7xl mx-auto flex-1 h-full">
+      <div className="space-y-5 px-5 pt-24 pb-8 w-full max-w-7xl mx-auto flex-1 h-full">
         <Card>
           <CardHeader>
             <CardTitle>Endereço de Entrega</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            <Card>
-              <CardContent>
-                <p className="text-sm">{formatAddress(cart.shippingAddress)}</p>
+            <Card className="p-0">
+              <CardContent className="p-4 flex flex-row items-center gap-4">
+                <MapPin className="size-8"/>
+                <p className="text-sm">
+                  {formatAddress(cart.shippingAddress)}
+                </p>
               </CardContent>
             </Card>
 

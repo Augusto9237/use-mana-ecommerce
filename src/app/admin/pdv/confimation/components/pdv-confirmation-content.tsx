@@ -550,36 +550,25 @@ export function PdvConfirmationContent({
               <ScrollArea className="max-h-80 pr-2">
                 <div className="space-y-3">
                   {items.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center justify-between gap-3 py-2 border-b last:border-b-0"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="relative size-14 rounded-lg bg-muted/40 overflow-hidden shrink-0 border">
-                          <Image
-                            src={item.imageUrl}
-                            alt={item.name}
-                            fill
-                            sizes="56px"
-                            className="object-contain p-1"
-                          />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium truncate">
-                            {item.name}
-                          </p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {item.color} • Tam. {item.size} • Qtd: {item.quantity}
+                    <div className="flex items-center justify-between" key={item.id}>
+                      <div className="flex items-center gap-4">
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.name}
+                          width={78}
+                          height={78}
+                          className="rounded-lg aspect-square object-cover size-[80px]"
+                        />
+                        <div className="flex flex-col gap-1">
+                          <p className="text-sm font-semibold">{item.name}</p>
+                          <p className="text-muted-foreground text-xs font-medium">
+                            {item.variantName}
                           </p>
                         </div>
                       </div>
-
-                      <div className="text-right shrink-0">
+                      <div className="flex flex-col items-end justify-center gap-2">
                         <p className="text-sm font-bold">
-                          {formatCentsToBRL(item.priceInCents * item.quantity)}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground">
-                          {formatCentsToBRL(item.priceInCents)} un.
+                          {formatCentsToBRL(item.priceInCents)}
                         </p>
                       </div>
                     </div>
@@ -668,7 +657,7 @@ export function PdvConfirmationContent({
                       ) : (
                         <>
                           <CheckCircle2 className="mr-2 size-5" />
-                          Concluir Venda no PDV
+                          Concluir Venda
                         </>
                       )}
                     </Button>

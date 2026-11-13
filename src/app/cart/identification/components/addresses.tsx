@@ -131,11 +131,11 @@ const Addresses = ({
                       }}
                     >
                       <Field orientation="horizontal" className="flex items-center">
-                        <MapPin className="size-7 my-auto"/>
+                        <MapPin className="size-7 md:size-5 my-auto" />
                         <FieldContent>
                           <FieldTitle className="text-sm">{formatAddress(address)}</FieldTitle>
                         </FieldContent>
-                        <RadioGroupItem value={address.id} id={address.id}/>
+                        <RadioGroupItem value={address.id} id={address.id} />
                       </Field>
                     </FieldLabel>
                   ))}

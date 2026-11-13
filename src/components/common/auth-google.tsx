@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Chrome, Link, LogInIcon } from "lucide-react";
+import { LogInIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {

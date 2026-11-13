@@ -47,7 +47,6 @@ const ConfirmationPage = async () => {
     redirect("/cart/identification");
   }
 
-
   const delivery = (await lookupZipcode(cart.shippingAddress.zipCode)).valorFrete
   const totalInCents = delivery + cartTotalInCents
 
@@ -61,8 +60,8 @@ const ConfirmationPage = async () => {
           </CardHeader>
           <CardContent className="space-y-6">
             <Card className="p-0">
-              <CardContent className="p-4 flex flex-row items-center gap-4">
-                <MapPin className="size-8"/>
+              <CardContent className="p-4 flex flex-row items-center gap-2">
+                <MapPin className="size-8 md:size-5" />
                 <p className="text-sm">
                   {formatAddress(cart.shippingAddress)}
                 </p>

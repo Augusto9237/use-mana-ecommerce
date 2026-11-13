@@ -1,5 +1,4 @@
 import { desc, eq } from "drizzle-orm";
-import Image from "next/image";
 
 import CategorySelector from "@/components/common/category-selector";
 import Footer from "@/components/common/footer";
@@ -8,8 +7,9 @@ import ProductList from "@/components/common/product-list";
 import { db } from "@/db";
 import { productTable, promotionTable } from "@/db/schema";
 import CarouselWithProgress from "@/components/common/carousel";
-import { CreditCard, RotateCcw, ShieldCheck, Truck } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { RotateCcw, ShieldCheck, Truck } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 const Home = async () => {
   const products = await db.query.productTable.findMany({

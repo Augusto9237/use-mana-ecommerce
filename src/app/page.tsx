@@ -9,7 +9,7 @@ import { productTable, promotionTable } from "@/db/schema";
 import CarouselWithProgress from "@/components/common/carousel";
 import { RotateCcw, ShieldCheck, Truck } from "lucide-react";
 
-export const revalidate = 60; // revalida a cada 60 segundos
+export const dynamic = "force-dynamic";
 
 const Home = async () => {
   const products = await db.query.productTable.findMany({

@@ -3,13 +3,18 @@
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Pencil, Plus } from "lucide-react";
-import { PatternFormat } from "react-number-format";
 import { useForm } from "react-hook-form";
+import { PatternFormat } from "react-number-format";
 import { toast } from "sonner";
-import z from "zod";
 
-import { shippingAddressTable } from "@/db/schema";
-import { createPdvShippingAddress } from "@/actions/pdv";
+import {
+  createShippingAddressSchema,
+  type CreateShippingAddressSchema,
+} from "@/actions/create-shipping-address/schema";
+import {
+  createPdvShippingAddress,
+  updatePdvShippingAddress,
+} from "@/actions/pdv";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,27 +32,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { shippingAddressTable } from "@/db/schema";
+import { useCreateShippingAddress } from "@/hooks/mutations/use-create-shipping-address";
+import { useUpdateShippingAddress } from "@/hooks/mutations/use-update-shipping-address";
+import { useUpdateCartShippingAddress } from "@/hooks/mutations/use-update-cart-shipping-address";
 
 type ShippingAddress = typeof shippingAddressTable.$inferSelect;
 
-const formSchema = z.object({
-  email: z.string().email("E-mail inválido"),
-  fullName: z.string().min(1, "Nome completo é obrigatório"),
-  cpf: z.string().min(14, "CPF inválido"),
-  phone: z.string().min(15, "Celular inválido"),
-  zipCode: z.string().min(9, "CEP inválido"),
-  address: z.string().min(1, "Endereço é obrigatório"),
-  number: z.string().min(1, "Número é obrigatório"),
-  complement: z.string().optional(),
-  neighborhood: z.string().min(1, "Bairro é obrigatório"),
-  city: z.string().min(1, "Cidade é obrigatória"),
-  state: z.string().min(1, "Estado é obrigatório"),
-});
+type FormValues = CreateShippingAddressSchema;
 
-type FormValues = z.infer<typeof formSchema>;
-
-interface PdvAddressFormProps {
-  customerId: string;
+interface AddressFormProps {
+  customerId?: string;
+  linkToCart?: boolean;
   customerDefaultInfo?: {
     name?: string;
     email?: string;
@@ -59,19 +55,23 @@ interface PdvAddressFormProps {
   onSuccess?: (addressId: string) => void;
 }
 
-export function PdvAddressForm({
+export function AddressForm({
   customerId,
+  linkToCart = false,
   customerDefaultInfo,
   address,
   trigger,
   onSuccess,
-}: PdvAddressFormProps) {
+}: AddressFormProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isEditing = !!address;
+  const createAddressMutation = useCreateShippingAddress();
+  const updateAddressMutation = useUpdateShippingAddress();
+  const updateCartAddressMutation = useUpdateCartShippingAddress();
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(createShippingAddressSchema),
     defaultValues: {
       email: address?.email ?? customerDefaultInfo?.email ?? "",
       fullName: address?.recipientName ?? customerDefaultInfo?.name ?? "",
@@ -90,17 +90,46 @@ export function PdvAddressForm({
   const onSubmit = async (values: FormValues) => {
     try {
       setIsSubmitting(true);
-      const newAddress = await createPdvShippingAddress(values, customerId);
+      let addressId: string;
+
+      if (customerId) {
+        const savedAddress = address
+          ? await updatePdvShippingAddress({
+              customerId,
+              addressId: address.id,
+              data: values,
+            })
+          : await createPdvShippingAddress(values, customerId);
+        addressId = savedAddress.id;
+      } else if (address) {
+        await updateAddressMutation.mutateAsync({ id: address.id, ...values });
+        addressId = address.id;
+      } else {
+        const newAddress = await createAddressMutation.mutateAsync(values);
+        addressId = newAddress.id;
+        if (linkToCart) {
+          await updateCartAddressMutation.mutateAsync({
+            shippingAddressId: addressId,
+          });
+        }
+      }
+
       toast.success(
         isEditing
           ? "Endereço atualizado com sucesso!"
           : "Endereço cadastrado com sucesso!",
       );
       setOpen(false);
-      form.reset();
-      onSuccess?.(newAddress.id);
-    } catch (error: any) {
-      toast.error(error.message || "Erro ao salvar endereço.");
+      if (isEditing) {
+        form.reset(values);
+      } else {
+        form.reset();
+      }
+      onSuccess?.(addressId);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao salvar endereço.",
+      );
       console.error(error);
     } finally {
       setIsSubmitting(false);
@@ -122,7 +151,7 @@ export function PdvAddressForm({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger ?? defaultTrigger}</DialogTrigger>
-      <DialogContent className="max-h-[94dvh] overflow-hidden flex flex-col sm:max-w-lg">
+      <DialogContent className="flex max-h-[94dvh] flex-col overflow-hidden sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
             {isEditing
@@ -133,9 +162,9 @@ export function PdvAddressForm({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col flex-1 min-h-0"
+            className="flex min-h-0 flex-1 flex-col"
           >
-            <div className="flex-1 overflow-y-auto space-y-4 pr-2 py-2">
+            <div className="flex-1 space-y-4 overflow-y-auto py-2 pr-2">
               <FormField
                 control={form.control}
                 name="fullName"
@@ -153,7 +182,7 @@ export function PdvAddressForm({
                 )}
               />
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="email"
@@ -192,7 +221,7 @@ export function PdvAddressForm({
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="phone"
@@ -282,7 +311,7 @@ export function PdvAddressForm({
                 )}
               />
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <FormField
                   control={form.control}
                   name="neighborhood"
@@ -347,4 +376,3 @@ export function PdvAddressForm({
     </Dialog>
   );
 }
-

@@ -21,8 +21,8 @@ import { useUpdateCartShippingAddress } from "@/hooks/mutations/use-update-cart-
 import { useCart } from "@/hooks/queries/use-cart";
 import { useUserAddresses } from "@/hooks/queries/use-user-addresses";
 
+import { AddressForm } from "@/components/common/address-form";
 import { formatAddress } from "../../helpers/address";
-import { FormAddress } from "./new-address";
 import { Separator } from "@/components/ui/separator";
 import DeliverySummary from "./delivery-summary";
 import { calculateUberQuote } from "@/actions/calculate-uber-quote";
@@ -158,7 +158,7 @@ const Addresses = ({
               </div>
             ) : (
               <div className="mt-4 w-full flex flex-col">
-                <FormAddress />
+                <AddressForm linkToCart />
               </div>
             )}
           </CardContent>

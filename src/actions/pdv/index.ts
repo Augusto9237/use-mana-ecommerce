@@ -20,6 +20,7 @@ import {
   createShippingAddressSchema,
   type CreateShippingAddressSchema,
 } from "../create-shipping-address/schema";
+import { updateShippingAddressSchema } from "../update-shipping-address/schema";
 
 const getAdminSession = async () => {
   const session = await auth.api.getSession({
@@ -90,6 +91,61 @@ export const createPdvShippingAddress = async (
   revalidatePath(`/admin/pdv/confimation?customerId=${customerId}`);
   revalidatePath(`/admin/pdv/confirmation?customerId=${customerId}`);
 
+  return shippingAddress;
+};
+
+export const updatePdvShippingAddress = async ({
+  customerId,
+  addressId,
+  data,
+}: {
+  customerId: string;
+  addressId: string;
+  data: CreateShippingAddressSchema;
+}) => {
+  await getAdminSession();
+  const customer = await db.query.userTable.findFirst({
+    where: (user, { eq, and }) =>
+      and(eq(user.id, customerId), eq(user.role, "user")),
+  });
+
+  if (!customer) {
+    throw new Error("Cliente não encontrado.");
+  }
+
+  const validatedData = updateShippingAddressSchema.parse({
+    id: addressId,
+    ...data,
+  });
+
+  const [shippingAddress] = await db
+    .update(shippingAddressTable)
+    .set({
+      recipientName: validatedData.fullName,
+      street: validatedData.address,
+      number: validatedData.number,
+      complement: validatedData.complement || null,
+      city: validatedData.city,
+      state: validatedData.state,
+      neighborhood: validatedData.neighborhood,
+      zipCode: validatedData.zipCode,
+      phone: validatedData.phone,
+      email: validatedData.email,
+      cpfOrCnpj: validatedData.cpf,
+    })
+    .where(
+      and(
+        eq(shippingAddressTable.id, addressId),
+        eq(shippingAddressTable.userId, customerId),
+      ),
+    )
+    .returning();
+
+  if (!shippingAddress) {
+    throw new Error("Endereço de entrega não encontrado para este cliente.");
+  }
+
+  revalidatePath(`/admin/pdv/confimation?customerId=${customerId}`);
   return shippingAddress;
 };
 

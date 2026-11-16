@@ -45,6 +45,7 @@ export const createShippingAddress = async (
     .returning();
 
   revalidatePath("/cart/identification");
+  revalidatePath("/addreses");
 
   return shippingAddress;
 };

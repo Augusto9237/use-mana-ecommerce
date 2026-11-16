@@ -25,6 +25,7 @@ import {
   finishPdvOrder,
   updatePdvCartShippingAddress,
 } from "@/actions/pdv";
+import { AddressForm } from "@/components/common/address-form";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -46,7 +47,6 @@ import { shippingAddressTable } from "@/db/schema";
 import { formatCentsToBRL } from "@/helpers/money";
 import { cn } from "@/lib/utils";
 
-import { PdvAddressForm } from "./pdv-address-form";
 import { PdvPrintAlertDialog } from "./pdv-print-alert-dialog";
 import { PdvReceiptDialog } from "./pdv-receipt-dialog";
 import type { PdvReceiptData } from "./pdv-receipt";
@@ -367,7 +367,7 @@ export function PdvConfirmationContent({
                 </CardDescription>
               </div>
 
-              <PdvAddressForm
+              <AddressForm
                 customerId={customer.id}
                 customerDefaultInfo={{
                   name: customer.name,
@@ -387,7 +387,7 @@ export function PdvConfirmationContent({
                   <p className="text-xs text-muted-foreground mb-3">
                     Cadastre o endereço do cliente para prosseguir com a venda.
                   </p>
-                  <PdvAddressForm
+                  <AddressForm
                     customerId={customer.id}
                     customerDefaultInfo={{
                       name: customer.name,

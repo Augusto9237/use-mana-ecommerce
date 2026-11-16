@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { EllipsisVertical, Pencil, Trash2 } from "lucide-react";
+import { EllipsisVertical, Trash2 } from "lucide-react";
 
+import { AddressForm } from "@/components/common/address-form";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,7 +12,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { FormAddress } from "@/app/cart/identification/components/new-address";
 
 type ShippingAddress = {
   id: string;
@@ -33,9 +33,7 @@ type ShippingAddress = {
 
 export default function AddressCardActions({ address }: { address: ShippingAddress }) {
   const router = useRouter();
-  const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState<ShippingAddress>({ ...address });
 
   const handleDelete = async () => {
     if (!confirm("Excluir este endereço?")) return;
@@ -48,23 +46,6 @@ export default function AddressCardActions({ address }: { address: ShippingAddre
     setLoading(false);
     if (res.ok) router.refresh();
     else alert("Erro ao excluir");
-  };
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    const res = await fetch("/api/shipping-address/update", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    setLoading(false);
-    if (res.ok) {
-      setEditing(false);
-      router.refresh();
-    } else {
-      alert("Erro ao salvar");
-    }
   };
 
   return (
@@ -81,12 +62,18 @@ export default function AddressCardActions({ address }: { address: ShippingAddre
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-32">
-        <FormAddress address={address} trigger={
-          <DropdownMenuItem className="gap-2" onSelect={(e) => e.preventDefault()}>
-            <Pencil className="size-4" />
-            Editar
-          </DropdownMenuItem>
-        } />
+        <AddressForm
+          address={address}
+          onSuccess={() => router.refresh()}
+          trigger={
+            <DropdownMenuItem
+              className="gap-2"
+              onSelect={(e) => e.preventDefault()}
+            >
+              Editar
+            </DropdownMenuItem>
+          }
+        />
         <DropdownMenuItem
           onClick={handleDelete}
           disabled={loading}

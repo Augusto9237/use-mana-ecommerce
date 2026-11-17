@@ -20,6 +20,23 @@ import {
 import { Form, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { authClient } from "@/lib/auth-client";
+import { SignInForm } from "@/app/authentication/components/sign-in-form";
+import { SignUpForm } from "@/app/authentication/components/sign-up-form";
+
+type GoogleAuthDialogProps = {
+    title?: string;
+    description?: string;
+};
+
 
 const signInSchema = z.object({
     email: z.email("E-mail inválido."),
@@ -53,92 +70,79 @@ export function AuthenticationModal({
     const router = useRouter();
     const [open, setOpen] = React.useState(false);
     const [isGoogleLoading, setIsGoogleLoading] = React.useState(false);
-    const signInForm = useForm<SignInValues>({
-        resolver: zodResolver(signInSchema),
-        defaultValues: { email: "", password: "" },
-    });
-    const signUpForm = useForm<SignUpValues>({
-        resolver: zodResolver(signUpSchema),
-        defaultValues: {
-            name: "",
-            email: "",
-            password: "",
-            passwordConfirmation: "",
-        },
-    });
+    // const signInForm = useForm<SignInValues>({
+    //     resolver: zodResolver(signInSchema),
+    //     defaultValues: { email: "", password: "" },
+    // });
+    // const signUpForm = useForm<SignUpValues>({
+    //     resolver: zodResolver(signUpSchema),
+    //     defaultValues: {
+    //         name: "",
+    //         email: "",
+    //         password: "",
+    //         passwordConfirmation: "",
+    //     },
+    // });
 
-    async function onSignIn(values: SignInValues) {
-        await authClient.signIn.email({
-            email: values.email,
-            password: values.password,
-            fetchOptions: {
-                onSuccess: () => {
-                    setOpen(false);
-                    router.push("/");
-                },
-                onError: ({ error }) => {
-                    if (error.code === "USER_NOT_FOUND") {
-                        toast.error("E-mail não encontrado.");
-                        return signInForm.setError("email", {
-                            message: "E-mail não encontrado.",
-                        });
-                    }
-                    if (error.code === "INVALID_EMAIL_OR_PASSWORD") {
-                        toast.error("E-mail ou senha inválidos.");
-                        signInForm.setError("email", {
-                            message: "E-mail ou senha inválidos.",
-                        });
-                        return signInForm.setError("password", {
-                            message: "E-mail ou senha inválidos.",
-                        });
-                    }
-                    toast.error(error.message);
-                },
-            },
-        });
-    }
+    // async function onSignIn(values: SignInValues) {
+    //     await authClient.signIn.email({
+    //         email: values.email,
+    //         password: values.password,
+    //         fetchOptions: {
+    //             onSuccess: () => {
+    //                 setOpen(false);
+    //                 router.push("/");
+    //             },
+    //             onError: ({ error }) => {
+    //                 if (error.code === "USER_NOT_FOUND") {
+    //                     toast.error("E-mail não encontrado.");
+    //                     return signInForm.setError("email", {
+    //                         message: "E-mail não encontrado.",
+    //                     });
+    //                 }
+    //                 if (error.code === "INVALID_EMAIL_OR_PASSWORD") {
+    //                     toast.error("E-mail ou senha inválidos.");
+    //                     signInForm.setError("email", {
+    //                         message: "E-mail ou senha inválidos.",
+    //                     });
+    //                     return signInForm.setError("password", {
+    //                         message: "E-mail ou senha inválidos.",
+    //                     });
+    //                 }
+    //                 toast.error(error.message);
+    //             },
+    //         },
+    //     });
+    // }
 
-    async function onSignUp(values: SignUpValues) {
-        await authClient.signUp.email({
-            name: values.name,
-            email: values.email,
-            password: values.password,
-            fetchOptions: {
-                onSuccess: () => {
-                    setOpen(false);
-                    router.push("/");
-                },
-                onError: ({ error }) => {
-                    if (error.code === "USER_ALREADY_EXISTS") {
-                        toast.error("E-mail já cadastrado.");
-                        return signUpForm.setError("email", {
-                            message: "E-mail já cadastrado.",
-                        });
-                    }
-                    toast.error(error.message);
-                },
-            },
-        });
-    }
+    // async function onSignUp(values: SignUpValues) {
+    //     await authClient.signUp.email({
+    //         name: values.name,
+    //         email: values.email,
+    //         password: values.password,
+    //         fetchOptions: {
+    //             onSuccess: () => {
+    //                 setOpen(false);
+    //                 router.push("/");
+    //             },
+    //             onError: ({ error }) => {
+    //                 if (error.code === "USER_ALREADY_EXISTS") {
+    //                     toast.error("E-mail já cadastrado.");
+    //                     return signUpForm.setError("email", {
+    //                         message: "E-mail já cadastrado.",
+    //                     });
+    //                 }
+    //                 toast.error(error.message);
+    //             },
+    //         },
+    //     });
+    // }
 
     async function handleSignInWithGoogle() {
         setIsGoogleLoading(true);
         try {
             await authClient.signIn.social({
-                provider: "google",
-                fetchOptions: {
-                    onError: ({ error }) => {
-                        if (error.code === "USER_ALREADY_EXISTS") {
-                            toast.error("E-mail já cadastrado.");
-                            signUpForm.setError("email", {
-                                message: "E-mail já cadastrado.",
-                            });
-                            return;
-                        }
-
-                        toast.error(error.message);
-                    }
-                },
+                provider: "google"
             });
         } finally {
             setIsGoogleLoading(false);
@@ -153,76 +157,25 @@ export function AuthenticationModal({
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                    <DialogTitle>{title}</DialogTitle>
-                    <DialogDescription>{description}</DialogDescription>
-                </DialogHeader>
+            <DialogContent className="sm:max-w-4xl grid md:grid-cols-2 p-0 overflow-hidden gap-0">
+                <div className="flex flex-col flex-1 gap-5 p-5">
+                    <DialogHeader>
+                        <DialogTitle>{title}</DialogTitle>
+                        <DialogDescription>{description}</DialogDescription>
+                    </DialogHeader>
 
-                <Tabs defaultValue="sign-in" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="sign-in">Entrar</TabsTrigger>
-                        <TabsTrigger value="sign-up">Criar conta</TabsTrigger>
-                    </TabsList>
+                    <Tabs defaultValue="sign-in" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="sign-in">Entrar</TabsTrigger>
+                            <TabsTrigger value="sign-up">Criar conta</TabsTrigger>
+                        </TabsList>
 
-                    <TabsContent value="sign-in" className="mt-5">
-                        <Form {...signInForm}>
-                            <form onSubmit={signInForm.handleSubmit(onSignIn)}>
-                                <FieldGroup className="gap-4">
-                                    <FormField
-                                        control={signInForm.control}
-                                        name="email"
-                                        render={({ field, fieldState }) => (
-                                            <Field data-invalid={fieldState.invalid}>
-                                                <FieldLabel htmlFor="sign-in-email">E-mail</FieldLabel>
-                                                <Input
-                                                    {...field}
-                                                    id="sign-in-email"
-                                                    type="email"
-                                                    autoComplete="email"
-                                                    placeholder="Digite seu e-mail"
-                                                    aria-invalid={fieldState.invalid}
-                                                    aria-describedby={fieldState.error ? "sign-in-email-error" : undefined}
-                                                />
-                                                <FieldError
-                                                    id="sign-in-email-error"
-                                                    errors={[fieldState.error]}
-                                                />
-                                            </Field>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={signInForm.control}
-                                        name="password"
-                                        render={({ field, fieldState }) => (
-                                            <Field data-invalid={fieldState.invalid}>
-                                                <FieldLabel htmlFor="sign-in-password">Senha</FieldLabel>
-                                                <Input
-                                                    {...field}
-                                                    id="sign-in-password"
-                                                    type="password"
-                                                    autoComplete="current-password"
-                                                    placeholder="Digite sua senha"
-                                                    aria-invalid={fieldState.invalid}
-                                                    aria-describedby={fieldState.error ? "sign-in-password-error" : undefined}
-                                                />
-                                                <FieldError
-                                                    id="sign-in-password-error"
-                                                    errors={[fieldState.error]}
-                                                />
-                                            </Field>
-                                        )}
-                                    />
-                                    <Button type="submit" className="w-full" disabled={signInForm.formState.isSubmitting}>
-                                        {signInForm.formState.isSubmitting ? "Entrando..." : "Entrar"}
-                                    </Button>
-                                </FieldGroup>
-                            </form>
-                        </Form>
-                    </TabsContent>
+                        <TabsContent value="sign-in" className="mt-5">
+                            <SignInForm />
+                        </TabsContent>
 
-                    <TabsContent value="sign-up" className="mt-5">
-                        <Form {...signUpForm}>
+                        <TabsContent value="sign-up" className="mt-5">
+                            {/* <Form {...signUpForm}>
                             <form onSubmit={signUpForm.handleSubmit(onSignUp)}>
                                 <FieldGroup className="gap-4">
                                     <FormField
@@ -311,56 +264,51 @@ export function AuthenticationModal({
                                     </Button>
                                 </FieldGroup>
                             </form>
-                        </Form>
-                    </TabsContent>
-                </Tabs>
+                        </Form> */}
+                            <SignUpForm />
+                        </TabsContent>
+                    </Tabs>
 
-                <FieldSeparator>Ou continue com</FieldSeparator>
-                <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={handleSignInWithGoogle}
-                    type="button"
-                    disabled={isGoogleLoading}
-                >
-                    <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true">
-                        <path
-                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                            fill="#4285F4"
-                        />
-                        <path
-                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                            fill="#34A853"
-                        />
-                        <path
-                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                            fill="#FBBC05"
-                        />
-                        <path
-                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                            fill="#EA4335"
-                        />
-                    </svg>
-                    {isGoogleLoading ? "Conectando..." : "Continuar com Google"}
-                </Button>
+                    <FieldSeparator className="bg-card">Ou continue com</FieldSeparator>
+                    <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={handleSignInWithGoogle}
+                        type="button"
+                        disabled={isGoogleLoading}
+                    >
+                        <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true">
+                            <path
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                                fill="#4285F4"
+                            />
+                            <path
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                                fill="#34A853"
+                            />
+                            <path
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                                fill="#FBBC05"
+                            />
+                            <path
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                fill="#EA4335"
+                            />
+                        </svg>
+                        {isGoogleLoading ? "Conectando..." : "Continuar com Google"}
+                    </Button>
+                </div>
+                <div className="relative hidden bg-muted md:block">
+                    <img
+                        src="/logo.png"
+                        alt="Image"
+                        className="absolute inset-0 h-full w-full object-contain object-center p-20"
+                    />
+                </div>
             </DialogContent>
         </Dialog>
     );
 }
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import { authClient } from "@/lib/auth-client";
-
-type GoogleAuthDialogProps = {
-    title?: string;
-    description?: string;
-};
 
 
 

@@ -139,82 +139,82 @@ export default async function AdminProductsPage(props: {
           </div>
           <CreateProductForm categories={categories} />
         </div>
-
-        <ProductFilters categories={categories} />
-
-        <div className="overflow-x-auto rounded-md border bg-background">
-          <Table className="min-w-[900px]">
-            <TableHeader className="bg-muted/50">
-              <TableRow>
-                <TableHead className="w-24">Imagem</TableHead>
-                <TableHead className="min-w-40">Nome</TableHead>
-                <TableHead className="min-w-40">Slug</TableHead>
-                <TableHead className="min-w-48">Descrição</TableHead>
-                <TableHead>Categoria</TableHead>
-                <TableHead className="w-24">Variantes</TableHead>
-                <TableHead className="w-32">Criado em</TableHead>
-                <TableHead className="w-20 text-right">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.length > 0 ? (
-                products.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell className="w-24">
-                      <ProductImageDialog
-                        src={product.variants[0]?.imageUrl[0] || ""}
-                        alt={product.name}
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">{product.name}</TableCell>
-                    <TableCell className="font-mono text-xs text-muted-foreground">
-                      {product.slug}
-                    </TableCell>
-                    <TableCell className="max-w-60 truncate text-muted-foreground">
-                      {product.description}
-                    </TableCell>
-                    <TableCell>{product.category?.name || "-"}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="px-1.5 text-muted-foreground">
-                        {product.variants.length}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {new Date(product.createdAt).toLocaleDateString("pt-BR")}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <ProductActionsDropdown
-                        product={product}
-                        categories={categories}
-                      />
+        <div className="flex min-w-0 flex-col gap-4">
+          <ProductFilters categories={categories} />
+          <div className="overflow-x-auto rounded-md border bg-background">
+            <Table className="min-w-[900px]">
+              <TableHeader className="bg-muted/50">
+                <TableRow>
+                  <TableHead className="w-24">Imagem</TableHead>
+                  <TableHead className="min-w-40">Nome</TableHead>
+                  <TableHead className="min-w-40">Slug</TableHead>
+                  <TableHead className="min-w-48">Descrição</TableHead>
+                  <TableHead>Categoria</TableHead>
+                  <TableHead className="w-24">Variantes</TableHead>
+                  <TableHead className="w-32">Criado em</TableHead>
+                  <TableHead className="w-20 text-right">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {products.length > 0 ? (
+                  products.map((product) => (
+                    <TableRow key={product.id}>
+                      <TableCell className="w-24">
+                        <ProductImageDialog
+                          src={product.variants[0]?.imageUrl[0] || ""}
+                          alt={product.name}
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium">{product.name}</TableCell>
+                      <TableCell className="font-mono text-xs text-muted-foreground">
+                        {product.slug}
+                      </TableCell>
+                      <TableCell className="max-w-60 truncate text-muted-foreground">
+                        {product.description}
+                      </TableCell>
+                      <TableCell>{product.category?.name || "-"}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="px-1.5 text-muted-foreground">
+                          {product.variants.length}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {new Date(product.createdAt).toLocaleDateString("pt-BR")}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <ProductActionsDropdown
+                          product={product}
+                          categories={categories}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={8}
+                      className="h-28 text-center text-muted-foreground"
+                    >
+                      <div className="flex flex-col items-center gap-3">
+                        <span>
+                          {search || category
+                            ? "Nenhum produto encontrado com esses filtros."
+                            : "Nenhum produto cadastrado."}
+                        </span>
+                        {!search && !category && (
+                          <Button asChild size="sm">
+                            <Link href="/admin/products/create">
+                              Criar primeiro produto
+                            </Link>
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={8}
-                    className="h-28 text-center text-muted-foreground"
-                  >
-                    <div className="flex flex-col items-center gap-3">
-                      <span>
-                        {search || category
-                          ? "Nenhum produto encontrado com esses filtros."
-                          : "Nenhum produto cadastrado."}
-                      </span>
-                      {!search && !category && (
-                        <Button asChild size="sm">
-                          <Link href="/admin/products/create">
-                            Criar primeiro produto
-                          </Link>
-                        </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

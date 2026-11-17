@@ -110,56 +110,57 @@ export default async function AdminCategoriesPage(props: {
           <CreateCategoryForm />
         </div>
 
-        {/* Filtros */}
-        <CategoryFilters />
+        <div className="flex min-w-0 flex-col gap-4">
+          <CategoryFilters />
 
-        <div className="overflow-x-auto rounded-md border bg-background">
-          <Table className="min-w-[700px]">
-            <TableHeader className="bg-muted/50">
-              <TableRow>
-                <TableHead className="w-24">Imagem</TableHead>
-                <TableHead className="min-w-48">Nome</TableHead>
-                <TableHead className="min-w-48">Slug</TableHead>
-                <TableHead className="w-36">Criada em</TableHead>
-                <TableHead className="w-20 text-right">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {categories.length > 0 ? (
-                categories.map((category) => (
-                  <TableRow key={category.id}>
-                    <TableCell className="w-24">
-                      <ProductImageDialog
-                        src={category.imageUrl || ""}
-                        alt={category.name}
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">{category.name}</TableCell>
-                    <TableCell className="font-mono text-xs text-muted-foreground">
-                      {category.slug}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {new Date(category.createdAt).toLocaleDateString("pt-BR")}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <CategoryActionsDropdown category={category} />
+          <div className="overflow-x-auto rounded-md border bg-background">
+            <Table className="min-w-[700px]">
+              <TableHeader className="bg-muted/50">
+                <TableRow>
+                  <TableHead className="w-24">Imagem</TableHead>
+                  <TableHead className="min-w-48">Nome</TableHead>
+                  <TableHead className="min-w-48">Slug</TableHead>
+                  <TableHead className="w-36">Criada em</TableHead>
+                  <TableHead className="w-20 text-right">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {categories.length > 0 ? (
+                  categories.map((category) => (
+                    <TableRow key={category.id}>
+                      <TableCell className="w-24">
+                        <ProductImageDialog
+                          src={category.imageUrl || ""}
+                          alt={category.name}
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium">{category.name}</TableCell>
+                      <TableCell className="font-mono text-xs text-muted-foreground">
+                        {category.slug}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {new Date(category.createdAt).toLocaleDateString("pt-BR")}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <CategoryActionsDropdown category={category} />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={5}
+                      className="h-24 text-center text-muted-foreground"
+                    >
+                      {search
+                        ? "Nenhuma categoria encontrada com esse filtro."
+                        : "Nenhuma categoria cadastrada."}
                     </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="h-24 text-center text-muted-foreground"
-                  >
-                    {search
-                      ? "Nenhuma categoria encontrada com esse filtro."
-                      : "Nenhuma categoria cadastrada."}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

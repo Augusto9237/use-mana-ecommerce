@@ -142,9 +142,10 @@ export function AddressForm({
       <span className="sr-only">Editar endereço</span>
     </Button>
   ) : (
-    <Button variant="outline" size="sm" type="button">
+    <Button variant="secondary" size="sm" type="button">
       <Plus className="mr-1.5 size-4" />
-      Novo Endereço
+      <span className="max-sm:hidden">Novo</span>
+      Endereço
     </Button>
   );
 
@@ -164,7 +165,7 @@ export function AddressForm({
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex min-h-0 flex-1 flex-col"
           >
-            <div className="flex-1 space-y-4 overflow-y-auto py-2 pr-2">
+            <div className="scroll-fade-y no-scrollbar flex-1 space-y-4 overflow-y-auto py-2 mb-1 pr-2">
               <FormField
                 control={form.control}
                 name="fullName"
@@ -361,7 +362,7 @@ export function AddressForm({
               </div>
             </div>
 
-            <div className="mt-4 border-t pt-4">
+            <div className="border-t pt-4">
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting
                   ? "Salvando..."

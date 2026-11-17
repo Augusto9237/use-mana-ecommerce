@@ -163,7 +163,7 @@ export function PdvConfirmationContent({
     const addressToUse =
       selectedAddressId || addresses[0]?.id;
 
-    if (!addressToUse) {
+    if (deliveryType === "delivery" && !addressToUse) {
       toast.error(
         "É necessário ter ao menos um endereço de cadastro para o cliente.",
       );
@@ -338,7 +338,7 @@ export function PdvConfirmationContent({
                   <div>
                     <p className="text-sm font-semibold">Entrega no Endereço</p>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Envio via Uber Direct / Entregador para o endereço do cliente.
+                      Envio via Mototaxi / Barco para o endereço do cliente.
                     </p>
                     <span className="inline-block mt-2 text-xs font-semibold text-primary">
                       {shippingFeeInCents > 0
@@ -387,17 +387,6 @@ export function PdvConfirmationContent({
                   <p className="text-xs text-muted-foreground mb-3">
                     Cadastre o endereço do cliente para prosseguir com a venda.
                   </p>
-                  <AddressForm
-                    customerId={customer.id}
-                    customerDefaultInfo={{
-                      name: customer.name,
-                      email: customer.email,
-                    }}
-                    onSuccess={(newId) => {
-                      setSelectedAddressId(newId);
-                      router.refresh();
-                    }}
-                  />
                 </div>
               ) : (
                 <ScrollArea className="max-h-64">

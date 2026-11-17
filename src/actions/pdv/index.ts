@@ -333,7 +333,7 @@ export const finishPdvOrder = async ({
     where: eq(shippingAddressTable.id, shippingAddressId),
   });
 
-  if (!shippingAddress) {
+  if (deliveryType === "delivery" && !shippingAddress) {
     throw new Error("Endereço de entrega/cobrança não encontrado.");
   }
 

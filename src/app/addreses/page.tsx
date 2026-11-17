@@ -30,7 +30,7 @@ export default async function MyAddressPage() {
       <Header />
       <div className="px-5 max-w-screen-xl mx-auto pt-24 flex-1">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl max-sm:text-lg font-bold">Meus Endereços</h2>
+          <h2 className="text-2xl max-sm:text-xl font-bold">Meus Endereços</h2>
           <AddressForm
             trigger={
               <Button>

@@ -92,7 +92,7 @@ export const Header = () => {
 
                       <Link href="/addreses" className="flex items-center gap-3 font-semibold">
                         <MapPinHouse />
-                        Meu Endereço
+                        Meus Endereços
                       </Link>
 
                       {session?.user?.role === "admin" && (

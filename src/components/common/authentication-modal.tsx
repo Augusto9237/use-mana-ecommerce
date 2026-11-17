@@ -29,8 +29,8 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { authClient } from "@/lib/auth-client";
-import { SignInForm } from "@/app/authentication/components/sign-in-form";
-import { SignUpForm } from "@/app/authentication/components/sign-up-form";
+import { SignInForm } from "@/components/common/sign-in-form";
+import { SignUpForm } from "@/components/common/sign-up-form";
 
 type GoogleAuthDialogProps = {
     title?: string;

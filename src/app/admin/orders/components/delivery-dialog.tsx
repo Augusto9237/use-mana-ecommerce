@@ -19,14 +19,14 @@ import { recalculateUberQuote } from "@/actions/recalculate-uber-quote";
 interface DeliveryDialogProps {
     order: {
         id: string;
-        street: string;
+        street: string | null;
         complement: string | null;
-        city: string;
-        state: string;
-        neighborhood: string;
-        zipCode: string;
-        country: string;
-        phone: string;
+        city: string | null;
+        state: string | null;
+        neighborhood: string | null;
+        zipCode: string | null;
+        country: string | null;
+        phone: string | null;
         shippingFeeInCents: number;
         status: "pending" | "paid" | "canceled";
         uberDeliveryId?: string | null;
@@ -205,7 +205,7 @@ export function DeliveryDialog({
                                 <div>
                                     <span className="font-medium text-sm">Rua:</span>
                                     <span className="ml-1 text-muted-foreground">
-                                        {order.street}
+                                        {order.street ?? "Sem endereço de entrega"}
                                     </span>
                                 </div>
                                 <div>
@@ -217,19 +217,21 @@ export function DeliveryDialog({
                                 <div>
                                     <span className="font-medium text-sm">Bairro:</span>
                                     <span className="ml-1 text-muted-foreground">
-                                        {order.neighborhood}, {order.city} - {order.state}
+                                        {[order.neighborhood, order.city, order.state]
+                                            .filter(Boolean)
+                                            .join(", ") || "Não informado"}
                                     </span>
                                 </div>
                                 <div>
                                     <span className="font-medium text-sm">CEP:</span>
                                     <span className="ml-1 text-muted-foreground">
-                                        {order.zipCode}
+                                        {order.zipCode ?? "Não informado"}
                                     </span>
                                 </div>
                                 <div >
                                     <span className="font-medium text-sm">Telefone:</span>
                                     <span className="ml-1 text-muted-foreground">
-                                        {order.phone}
+                                        {order.phone ?? "Não informado"}
                                     </span>
                                 </div>
                                 <div >

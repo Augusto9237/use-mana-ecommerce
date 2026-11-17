@@ -36,17 +36,17 @@ interface OrderDetailsDialogProps {
     id: string;
     userId: string;
     recipientName: string;
-    street: string;
-    number: string;
+    street: string | null;
+    number: string | null;
     complement: string | null;
-    city: string;
-    state: string;
-    neighborhood: string;
-    zipCode: string;
-    country: string;
-    phone: string;
+    city: string | null;
+    state: string | null;
+    neighborhood: string | null;
+    zipCode: string | null;
+    country: string | null;
+    phone: string | null;
     email: string;
-    cpfOrCnpj: string;
+    cpfOrCnpj: string | null;
     totalPriceInCents: number;
     shippingFeeInCents: number;
     status: "pending" | "paid" | "canceled";
@@ -176,7 +176,7 @@ export function OrderDetailsDialog({
                     <div>
                       <p className="text-xs text-muted-foreground">Telefone</p>
                       <p className="text-sm font-medium text-foreground">
-                        {order.phone}
+                        {order.phone ?? "Não informado"}
                       </p>
                     </div>
                   </div>
@@ -185,7 +185,7 @@ export function OrderDetailsDialog({
                     <div>
                       <p className="text-xs text-muted-foreground">CPF / CNPJ</p>
                       <p className="text-sm font-medium text-foreground">
-                        {order.cpfOrCnpj}
+                        {order.cpfOrCnpj ?? "Não informado"}
                       </p>
                     </div>
                   </div>
@@ -196,25 +196,33 @@ export function OrderDetailsDialog({
               <div>
                 <h3 className="font-semibold tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
                   <MapPin className="size-4" />
-                  Endereço de Entrega
+                  {order.street ? "Endereço de Entrega" : "Retirada na loja"}
                 </h3>
                 <div className="bg-muted/30 p-4 rounded-xl border border-muted/50 space-y-2.5 text-sm">
-                  <p className="font-medium text-foreground">
-                    {order.recipientName}
-                  </p>
-                  <p className="text-muted-foreground">
-                    {order.street}, Nº {order.number}
-                    {order.complement && ` - ${order.complement}`}
-                  </p>
-                  <p className="text-muted-foreground">
-                    {order.neighborhood}
-                  </p>
-                  <p className="text-muted-foreground">
-                    {order.city} - {order.state}
-                  </p>
-                  <p className="text-muted-foreground font-mono">
-                    CEP: {order.zipCode}
-                  </p>
+                  {order.street ? (
+                    <>
+                      <p className="font-medium text-foreground">
+                        {order.recipientName}
+                      </p>
+                      <p className="text-muted-foreground">
+                        {order.street}, Nº {order.number ?? ""}
+                        {order.complement && ` - ${order.complement}`}
+                      </p>
+                      <p className="text-muted-foreground">
+                        {order.neighborhood}
+                      </p>
+                      <p className="text-muted-foreground">
+                        {order.city} - {order.state}
+                      </p>
+                      <p className="text-muted-foreground font-mono">
+                        CEP: {order.zipCode}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-muted-foreground">
+                      O cliente retirará o pedido na loja.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

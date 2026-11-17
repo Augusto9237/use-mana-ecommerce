@@ -78,6 +78,13 @@
       "when": 1793935313714,
       "tag": "0010_round_eternity",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1794887240292,
+      "tag": "0011_allow_pickup_orders",
+      "breakpoints": true
     }
   ]
 }

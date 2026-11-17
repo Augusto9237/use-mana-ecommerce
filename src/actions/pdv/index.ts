@@ -278,7 +278,7 @@ export const calculatePdvUberQuote = async (customerId: string) => {
 
 interface FinishPdvOrderParams {
   customerId: string;
-  shippingAddressId: string;
+  shippingAddressId?: string | null;
   paymentMethod: "money" | "pix" | "credit_card" | "debit_card";
   deliveryType: "pickup" | "delivery";
   shippingFeeInCents?: number;
@@ -329,9 +329,12 @@ export const finishPdvOrder = async ({
     throw new Error("Carrinho vazio ou não encontrado.");
   }
 
-  const shippingAddress = await db.query.shippingAddressTable.findFirst({
-    where: eq(shippingAddressTable.id, shippingAddressId),
-  });
+  const shippingAddress =
+    deliveryType === "delivery" && shippingAddressId
+      ? await db.query.shippingAddressTable.findFirst({
+          where: eq(shippingAddressTable.id, shippingAddressId),
+        })
+      : undefined;
 
   if (deliveryType === "delivery" && !shippingAddress) {
     throw new Error("Endereço de entrega/cobrança não encontrado.");
@@ -357,19 +360,19 @@ export const finishPdvOrder = async ({
       .insert(orderTable)
       .values({
         userId: customer.id,
-        shippingAddressId: shippingAddress.id,
-        recipientName: shippingAddress.recipientName,
-        street: shippingAddress.street,
-        number: shippingAddress.number,
-        complement: shippingAddress.complement,
-        city: shippingAddress.city,
-        state: shippingAddress.state,
-        neighborhood: shippingAddress.neighborhood,
-        zipCode: shippingAddress.zipCode,
-        country: shippingAddress.country || "Brasil",
-        phone: shippingAddress.phone,
-        email: shippingAddress.email,
-        cpfOrCnpj: shippingAddress.cpfOrCnpj,
+        shippingAddressId: shippingAddress?.id ?? null,
+        recipientName: shippingAddress?.recipientName ?? customer.name,
+        street: shippingAddress?.street ?? null,
+        number: shippingAddress?.number ?? null,
+        complement: shippingAddress?.complement ?? null,
+        city: shippingAddress?.city ?? null,
+        state: shippingAddress?.state ?? null,
+        neighborhood: shippingAddress?.neighborhood ?? null,
+        zipCode: shippingAddress?.zipCode ?? null,
+        country: shippingAddress?.country ?? null,
+        phone: shippingAddress?.phone ?? null,
+        email: shippingAddress?.email ?? customer.email,
+        cpfOrCnpj: shippingAddress?.cpfOrCnpj ?? null,
         totalPriceInCents,
         shippingFeeInCents: finalShippingFee,
         uberQuoteId: deliveryType === "delivery" ? uberQuoteId ?? null : null,

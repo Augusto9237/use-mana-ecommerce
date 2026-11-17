@@ -20,7 +20,19 @@ export async function triggerUberDelivery(orderId: string) {
     throw new Error(`Pedido ${orderId} não encontrado`);
   }
 
-  
+  if (
+    !order.uberQuoteId ||
+    !order.street ||
+    !order.number ||
+    !order.neighborhood ||
+    !order.city ||
+    !order.state ||
+    !order.zipCode ||
+    !order.phone
+  ) {
+    throw new Error("O pedido não possui os dados necessários para entrega.");
+  }
+
   // Monta o endereço de entrega formatado
   const dropoffAddress = `${order.street}, ${order.number}${
     order.complement ? ` - ${order.complement}` : ""
@@ -35,7 +47,7 @@ export async function triggerUberDelivery(orderId: string) {
   }));
 
   const delivery = await createUberDelivery({
-    quoteId: order.uberQuoteId!, // quem chamou garantiu que existe
+    quoteId: order.uberQuoteId,
     externalOrderId: orderId,
     dropoffName: order.recipientName,
     dropoffAddress,

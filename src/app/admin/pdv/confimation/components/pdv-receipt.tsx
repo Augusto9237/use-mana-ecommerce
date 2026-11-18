@@ -64,10 +64,10 @@ export const PdvReceipt = forwardRef<HTMLDivElement, PdvReceiptProps>(
         {/* Cabeçalho da Loja */}
         <div className="text-center pb-3 border-b border-dashed border-zinc-400">
           <h2 className="text-base font-extrabold tracking-wider uppercase">
-            RD FITNESS
+            Use Mana
           </h2>
           <p className="text-[10px] text-zinc-600">
-            Equipamentos & Vestuário Fitness
+            Roupas
           </p>
           <p className="text-[10px] text-zinc-600">
             CNPJ: 00.000.000/0001-00 • Balcão PDV

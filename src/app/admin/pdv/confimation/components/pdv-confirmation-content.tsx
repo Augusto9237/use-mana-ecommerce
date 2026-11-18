@@ -274,19 +274,6 @@ export function PdvConfirmationContent({
             Confirme os dados de entrega, resumo dos produtos e forma de pagamento.
           </p>
         </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="h-9 gap-1.5 text-xs font-medium"
-            onClick={handleOpenReceiptPreview}
-          >
-            <Printer className="size-4" />
-            {isSaleCompleted ? "Ver / Reimprimir Cupom" : "Prévia do Cupom"}
-          </Button>
-        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
@@ -631,7 +618,7 @@ export function PdvConfirmationContent({
                     </div>
                   </>
                 ) : (
-                  <>
+                  <div className="flex flex-col gap-4">
                     <Button
                       className="w-full text-base font-semibold"
                       size="lg"
@@ -650,10 +637,21 @@ export function PdvConfirmationContent({
                         </>
                       )}
                     </Button>
-                    <Button variant="ghost" asChild className="w-full text-xs">
-                      <Link href="/admin/pdv">Cancelar e voltar ao PDV</Link>
-                    </Button>
-                  </>
+                    <div className="grid grid-cols-2 gap-4">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={handleOpenReceiptPreview}
+                      >
+                        <Printer className="size-4" />
+                        {isSaleCompleted ? "Cupom Fiscal" : "Orçamento"}
+                      </Button>
+                      <Button variant="outline" asChild size="sm">
+                        <Link href="/admin/pdv">Cancelar</Link>
+                      </Button>
+                    </div>
+                  </div>
                 )}
               </div>
             </CardContent>

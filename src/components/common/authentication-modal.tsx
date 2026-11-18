@@ -1,12 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { LogInIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import z from "zod";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -175,96 +173,6 @@ export function AuthenticationModal({
                         </TabsContent>
 
                         <TabsContent value="sign-up" className="mt-5">
-                            {/* <Form {...signUpForm}>
-                            <form onSubmit={signUpForm.handleSubmit(onSignUp)}>
-                                <FieldGroup className="gap-4">
-                                    <FormField
-                                        control={signUpForm.control}
-                                        name="name"
-                                        render={({ field, fieldState }) => (
-                                            <Field data-invalid={fieldState.invalid}>
-                                                <FieldLabel htmlFor="sign-up-name">Nome</FieldLabel>
-                                                <Input
-                                                    {...field}
-                                                    id="sign-up-name"
-                                                    autoComplete="name"
-                                                    placeholder="Digite seu nome"
-                                                    aria-invalid={fieldState.invalid}
-                                                    aria-describedby={fieldState.error ? "sign-up-name-error" : undefined}
-                                                />
-                                                <FieldError id="sign-up-name-error" errors={[fieldState.error]} />
-                                            </Field>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={signUpForm.control}
-                                        name="email"
-                                        render={({ field, fieldState }) => (
-                                            <Field data-invalid={fieldState.invalid}>
-                                                <FieldLabel htmlFor="sign-up-email">E-mail</FieldLabel>
-                                                <Input
-                                                    {...field}
-                                                    id="sign-up-email"
-                                                    type="email"
-                                                    autoComplete="email"
-                                                    placeholder="Digite seu e-mail"
-                                                    aria-invalid={fieldState.invalid}
-                                                    aria-describedby={fieldState.error ? "sign-up-email-error" : undefined}
-                                                />
-                                                <FieldError id="sign-up-email-error" errors={[fieldState.error]} />
-                                            </Field>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={signUpForm.control}
-                                        name="password"
-                                        render={({ field, fieldState }) => (
-                                            <Field data-invalid={fieldState.invalid}>
-                                                <FieldLabel htmlFor="sign-up-password">Senha</FieldLabel>
-                                                <Input
-                                                    {...field}
-                                                    id="sign-up-password"
-                                                    type="password"
-                                                    autoComplete="new-password"
-                                                    placeholder="Mínimo de 8 caracteres"
-                                                    aria-invalid={fieldState.invalid}
-                                                    aria-describedby={fieldState.error ? "sign-up-password-error" : undefined}
-                                                />
-                                                <FieldError id="sign-up-password-error" errors={[fieldState.error]} />
-                                            </Field>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={signUpForm.control}
-                                        name="passwordConfirmation"
-                                        render={({ field, fieldState }) => (
-                                            <Field data-invalid={fieldState.invalid}>
-                                                <FieldLabel htmlFor="sign-up-password-confirmation">Confirmar senha</FieldLabel>
-                                                <Input
-                                                    {...field}
-                                                    id="sign-up-password-confirmation"
-                                                    type="password"
-                                                    autoComplete="new-password"
-                                                    placeholder="Digite sua senha novamente"
-                                                    aria-invalid={fieldState.invalid}
-                                                    aria-describedby={fieldState.error ? "sign-up-password-confirmation-error" : undefined}
-                                                />
-                                                <FieldError
-                                                    id="sign-up-password-confirmation-error"
-                                                    errors={[fieldState.error]}
-                                                />
-                                            </Field>
-                                        )}
-                                    />
-                                    <FieldDescription>
-                                        A senha deve ter pelo menos 8 caracteres.
-                                    </FieldDescription>
-                                    <Button type="submit" className="w-full" disabled={signUpForm.formState.isSubmitting}>
-                                        {signUpForm.formState.isSubmitting ? "Criando conta..." : "Criar conta"}
-                                    </Button>
-                                </FieldGroup>
-                            </form>
-                        </Form> */}
                             <SignUpForm />
                         </TabsContent>
                     </Tabs>
@@ -299,10 +207,13 @@ export function AuthenticationModal({
                     </Button>
                 </div>
                 <div className="relative hidden bg-muted md:block">
-                    <img
-                        src="/logo.png"
+                    <Image
+                        src="/logo2.png"
                         alt="Image"
-                        className="absolute inset-0 h-full w-full object-contain object-center p-20"
+                        width={0}
+                        height={0}
+                        sizes="100vw"
+                        className="absolute inset-0 h-full w-full object-cover"
                     />
                 </div>
             </DialogContent>

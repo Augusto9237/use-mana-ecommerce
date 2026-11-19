@@ -4,7 +4,6 @@ import Stripe from "stripe";
 
 import { db } from "@/db";
 import { orderTable } from "@/db/schema";
-import { triggerUberDelivery } from "@/lib/delivery-trigger";
 
 export const POST = async (request: Request) => {
   if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
@@ -34,11 +33,6 @@ export const POST = async (request: Request) => {
         status: "paid",
       })
       .where(eq(orderTable.id, orderId));
-
-    // Disparar entrega Uber Direct de forma assíncrona
-    triggerUberDelivery(orderId).catch((err) =>
-      console.error("[Stripe Webhook] Erro ao acionar entrega Uber:", err)
-    );
   }
   return NextResponse.json({ received: true });
 };

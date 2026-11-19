@@ -15,6 +15,7 @@ import { auth } from "@/lib/auth";
 import PdvProductActions from "./components/pdv-product-actions";
 import PdvCart from "../components/pdv-cart";
 import { ChevronLeft } from "lucide-react";
+import { ButtonBack } from "@/components/ui/button-back";
 
 interface PdvProductVariantPageProps {
     params: Promise<{ slug: string }>;
@@ -25,15 +26,15 @@ const PdvProductVariantPage = async ({
     params,
     searchParams,
 }: PdvProductVariantPageProps) => {
-    //   const session = await auth.api.getSession({
-    //     headers: await headers(),
-    //   });
-    //   if (!session?.user) {
-    //     redirect("/authentication");
-    //   }
-    //   if (session.user.role !== "admin") {
-    //     redirect("/");
-    //   }
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+    if (!session?.user) {
+        redirect("/authentication");
+    }
+    if (session.user.role !== "admin") {
+        redirect("/");
+    }
 
     const [{ slug }, { customerId }] = await Promise.all([params, searchParams]);
     const productVariant = await db.query.productVariantTable.findFirst({
@@ -77,9 +78,7 @@ const PdvProductVariantPage = async ({
         <AdminLayout>
             <div className="flex w-full flex-col gap-6 relative max-h-screen">
                 <header className="flex items-center justify-start gap-2">
-                    <Button asChild variant="ghost" size="icon">
-                        <Link href="/admin/pdv"><ChevronLeft /></Link>
-                    </Button>
+                    <ButtonBack />
                     <h1 className="text-2xl font-semibold tracking-tight">
                         {productVariant.product.name} - {productVariant.name}
                     </h1>

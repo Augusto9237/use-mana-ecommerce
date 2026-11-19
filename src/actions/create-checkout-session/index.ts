@@ -68,8 +68,8 @@ export const createCheckoutSession = async (
       price_data: {
         currency: "brl",
         product_data: {
-          name: "Frete (Uber Direct)",
-          description: "Entrega expressa via Uber Direct",
+          name: "Frete",
+          description: "Frete tabelado",
           images: [],
         },
         unit_amount: order.shippingFeeInCents,

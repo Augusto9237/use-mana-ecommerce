@@ -18,7 +18,7 @@ export const finishOrder = async (data?: FinishOrderSchema) => {
     throw new Error("Unauthorized");
   }
 
-  const { uberQuoteId, shippingFeeInCents } = finishOrderSchema.parse(data || {});
+  const { shippingFeeInCents } = finishOrderSchema.parse(data || {});
 
   const cart = await db.query.cartTable.findFirst({
     where: eq(cartTable.userId, session.user.id),
@@ -68,8 +68,6 @@ export const finishOrder = async (data?: FinishOrderSchema) => {
         userId: session.user.id,
         totalPriceInCents,
         shippingFeeInCents: shippingFee,
-        uberQuoteId,
-        uberDeliveryStatus: uberQuoteId ? "pending_payment" : null,
         shippingAddressId: cart.shippingAddress!.id,
       })
       .returning();

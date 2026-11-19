@@ -21,10 +21,10 @@ import {
 import { toast } from "sonner";
 
 import {
-  calculatePdvUberQuote,
   finishPdvOrder,
   updatePdvCartShippingAddress,
 } from "@/actions/pdv";
+import { lookupZipcode } from "@/lib/lookup-zipcode";
 import { AddressForm } from "@/components/common/address-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -95,7 +95,6 @@ export function PdvConfirmationContent({
   >("pix");
 
   const [shippingFeeInCents, setShippingFeeInCents] = useState<number>(0);
-  const [uberQuoteId, setUberQuoteId] = useState<string | undefined>(undefined);
   const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
   const [isFinishingOrder, setIsFinishingOrder] = useState(false);
 
@@ -131,25 +130,15 @@ export function PdvConfirmationContent({
         shippingAddressId: selectedAddressId,
       });
 
-      const quote = await calculatePdvUberQuote(customer.id);
-
-      if (!quote) {
-        toast.error("Não foi possível calcular o frete para este endereço.");
+      const address = addresses.find((item) => item.id === selectedAddressId);
+      if (!address) {
+        toast.error("Endereço selecionado não encontrado.");
         return;
       }
 
-      if ("error" in quote && quote.error) {
-        toast.error(quote.message || "Erro no cálculo de frete da Uber.");
-        return;
-      }
-
-      if ("feeInCents" in quote && typeof quote.feeInCents === "number") {
-        setShippingFeeInCents(quote.feeInCents);
-        setUberQuoteId(quote.quoteId);
-        toast.success(
-          `Frete calculado: ${formatCentsToBRL(quote.feeInCents)} via Uber Direct!`,
-        );
-      }
+      const shipping = await lookupZipcode(address.zipCode);
+      setShippingFeeInCents(shipping.valorFrete);
+      toast.success(`Frete tabelado calculado: ${formatCentsToBRL(shipping.valorFrete)}.`);
     } catch (error: any) {
       toast.error(error.message || "Erro ao calcular frete.");
       console.error(error);
@@ -170,9 +159,9 @@ export function PdvConfirmationContent({
       return;
     }
 
-    if (deliveryType === "delivery" && shippingFeeInCents === 0 && !uberQuoteId) {
+    if (deliveryType === "delivery" && shippingFeeInCents === 0) {
       toast.warning(
-        "Atenção: O frete ainda não foi cotado. Calcule o frete ou confirme a taxa zerada.",
+        "Atenção: O frete ainda não foi calculado. Calcule o frete ou confirme a taxa zerada.",
       );
     }
 
@@ -184,7 +173,6 @@ export function PdvConfirmationContent({
         paymentMethod,
         deliveryType,
         shippingFeeInCents: finalShippingFee,
-        uberQuoteId,
       });
 
       if (result.success && result.orderId) {
@@ -382,7 +370,6 @@ export function PdvConfirmationContent({
                     onValueChange={(val) => {
                       setSelectedAddressId(val);
                       setShippingFeeInCents(0);
-                      setUberQuoteId(undefined);
                     }}
                     className="space-y-2 pr-2"
                   >
@@ -430,14 +417,14 @@ export function PdvConfirmationContent({
                     {isCalculatingShipping ? (
                       <>
                         <Loader2 className="mr-2 size-4 animate-spin" />
-                        Calculando cotação Uber...
+                        Calculando frete tabelado...
                       </>
                     ) : (
                       <>
                         <Truck className="mr-2 size-4" />
                         {shippingFeeInCents > 0
-                          ? "Recalcular Frete Uber"
-                          : "Calcular Frete Uber Direct"}
+                          ? "Recalcular Frete"
+                          : "Calcular Frete"}
                       </>
                     )}
                   </Button>

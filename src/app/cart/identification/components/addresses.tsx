@@ -25,7 +25,6 @@ import { AddressForm } from "@/components/common/address-form";
 import { formatAddress } from "../../helpers/address";
 import { Separator } from "@/components/ui/separator";
 import DeliverySummary from "./delivery-summary";
-import { calculateUberQuote } from "@/actions/calculate-uber-quote";
 import Link from "next/link";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { lookupZipcode } from "@/lib/lookup-zipcode";

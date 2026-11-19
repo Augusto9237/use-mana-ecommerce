@@ -5,7 +5,7 @@
 <h1 align="center">Use Mana</h1>
 
 <p align="center">
-  <strong>E-commerce completo de moda fitness com painel administrativo, pagamentos integrados e entrega via Uber Direct.</strong>
+  <strong>E-commerce completo de moda fitness com painel administrativo, pagamentos integrados e frete tabelado.</strong>
 </p>
 
 <p align="center">
@@ -39,14 +39,14 @@
 
 ## 🎯 Sobre o Projeto
 
-**RD Fitness** é uma plataforma de e-commerce moderna e completa, desenvolvida especificamente para o segmento de **moda fitness**. A aplicação oferece uma experiência de compra premium com design dark mode, sistema de variantes de produtos (cores, tamanhos, estoque), carrinho de compras inteligente, checkout com múltiplos gateways de pagamento e entrega automatizada via **Uber Direct**.
+**RD Fitness** é uma plataforma de e-commerce moderna e completa, desenvolvida especificamente para o segmento de **moda fitness**. A aplicação oferece uma experiência de compra premium com design dark mode, sistema de variantes de produtos (cores, tamanhos, estoque), carrinho de compras inteligente, checkout com múltiplos gateways de pagamento e frete tabelado por CEP.
 
 ### Diferenciais
 
 - 🛒 **Carrinho inteligente** com persistência no banco de dados vinculado ao usuário
 - 🎨 **Variantes de produto** com múltiplas cores, tamanhos e controle de estoque por SKU
 - 💳 **Duplo gateway de pagamento** — Mercado Pago + Stripe
-- 🚚 **Entrega automatizada** via Uber Direct com cotação em tempo real e rastreamento
+- 🚚 **Frete tabelado** por região e opção de retirada no balcão
 - 🧾 **Ponto de Venda (PDV)** para registrar vendas presenciais pelo painel administrativo
 - 📍 **Consulta de cidade pelo CEP** no checkout, com frete tabelado por localidade no Pará
 - 📦 **Painel admin completo** com dashboard de métricas, gestão de pedidos, produtos, categorias, promoções e clientes
@@ -82,7 +82,7 @@
 | **Dashboard** | Visão geral com total de produtos, pedidos, receita e clientes |
 | **Gestão de Produtos** | CRUD completo de produtos com variantes (cor, tamanho, preço, custo, estoque) |
 | **Gestão de Categorias** | Criar, editar e excluir categorias com imagem |
-| **Gestão de Pedidos** | Visualizar todos os pedidos, detalhes, atualizar status, solicitar entrega Uber |
+| **Gestão de Pedidos** | Visualizar todos os pedidos, detalhes e atualizar status |
 | **Gestão de Promoções** | Criar e gerenciar banners promocionais (ativar/desativar) |
 | **Gestão de Clientes** | Listagem de clientes cadastrados |
 | **Ponto de Venda (PDV)** | Registrar vendas presenciais para clientes, com seleção de produtos, forma de pagamento e retirada ou entrega |
@@ -103,7 +103,7 @@ CEPs inválidos, não encontrados ou fora do Pará não são aceitos para esse c
 
 ### Ponto de Venda (PDV)
 
-O PDV fica no painel administrativo, em `/admin/pdv`. O fluxo permite selecionar um cliente, buscar e adicionar produtos ao carrinho, escolher entre **retirada no balcão** (frete grátis) e **entrega no endereço** (cotação via Uber Direct), registrar a forma de pagamento e finalizar a venda. Ao concluir, o sistema registra o pedido, atualiza o estoque, limpa o carrinho e oferece a prévia ou impressão do comprovante.
+O PDV fica no painel administrativo, em `/admin/pdv`. O fluxo permite selecionar um cliente, buscar e adicionar produtos ao carrinho, escolher entre **retirada no balcão** (frete grátis) e **entrega no endereço** (frete tabelado), registrar a forma de pagamento e finalizar a venda. Ao concluir, o sistema registra o pedido, atualiza o estoque, limpa o carrinho e oferece a prévia ou impressão do comprovante.
 
 ---
 
@@ -143,7 +143,6 @@ O PDV fica no painel administrativo, em `/admin/pdv`. O fluxo permite selecionar
 
 | Tecnologia | Finalidade |
 |---|---|
-| [Uber Direct API](https://developer.uber.com/docs/deliveries) | Cotação de frete, criação e rastreamento de entregas |
 
 ### Storage
 
@@ -230,8 +229,8 @@ O PDV fica no painel administrativo, em `/admin/pdv`. O fluxo permite selecionar
 ┌─────────────────────────────────────────────────────────┐
 │                  INTEGRAÇÕES EXTERNAS                    │
 │  ┌──────────────┐  ┌──────────┐  ┌──────────────────┐  │
-│  │ Mercado Pago │  │  Stripe  │  │   Uber Direct    │  │
-│  │ (Pagamentos) │  │ (Pagam.) │  │  (Frete/Entrega) │  │
+│  │ Mercado Pago │  │  Stripe  │  │   Frete tabelado │  │
+│  │ (Pagamentos) │  │ (Pagam.) │  │   (ViaCEP)       │  │
 │  └──────────────┘  └──────────┘  └──────────────────┘  │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -249,8 +248,6 @@ rd-fitness/
 │   │   ├── add-cart-product/       # Adicionar produto ao carrinho
 │   │   ├── create-checkout-session/# Criar sessão de checkout
 │   │   ├── create-product/         # Criar produto (admin)
-│   │   ├── calculate-uber-quote/   # Cotação de frete Uber
-│   │   ├── request-uber-delivery/  # Solicitar entrega Uber
 │   │   ├── payment/                # Processamento de pagamento
 │   │   ├── finish-order/           # Finalizar pedido
 │   │   └── ...                     # + 28 outras ações
@@ -281,7 +278,6 @@ rd-fitness/
 │   │       ├── auth/                   # Better Auth handler
 │   │       ├── mercadopago/            # Webhooks Mercado Pago
 │   │       ├── stripe/                 # Webhooks Stripe
-│   │       ├── uber/                   # Webhooks Uber Direct
 │   │       ├── upload/                 # Upload de arquivos (R2)
 │   │       └── shipping-address/       # API de endereços
 │   ├── components/
@@ -315,9 +311,7 @@ rd-fitness/
 │   │   ├── admin-auth.ts          # Validação de admin
 │   │   ├── lookup-zipcode.ts      # Consulta de CEP e cálculo do frete tabelado
 │   │   ├── mercadopago.ts         # Client Mercado Pago
-│   │   ├── uber.ts                # Client Uber Direct (OAuth2, cotação, entrega)
 │   │   ├── cloudflare.ts          # Client Cloudflare R2
-│   │   ├── delivery-trigger.ts    # Trigger automático de entrega
 │   │   └── utils.ts               # Utilitários (cn)
 │   └── providers/
 │       └── react-query.tsx        # Provider do React Query
@@ -338,7 +332,6 @@ rd-fitness/
 - **Conta Google Cloud** com OAuth 2.0 configurado (para login social)
 - **Conta Mercado Pago** (para pagamentos)
 - **Conta Stripe** (opcional, para pagamentos alternativos)
-- **Conta Uber Direct** (opcional, para entregas automatizadas)
 
 ---
 
@@ -416,17 +409,6 @@ R2_ACCOUNT_ID=seu-account-id
 R2_ACCESS_KEY_ID=sua-access-key
 R2_SECRET_ACCESS_KEY=sua-secret-key
 
-# ─── Uber Direct (Entregas) ──────────────────────────
-UBER_CLIENT_ID=seu-uber-client-id
-UBER_CLIENT_SECRET=seu-uber-client-secret
-UBER_CUSTOMER_ID=seu-uber-customer-id
-UBER_PICKUP_ADDRESS="Endereço da loja"
-UBER_PICKUP_PHONE="+5511999999999"
-UBER_PICKUP_LATITUDE=-23.550520
-UBER_PICKUP_LONGITUDE=-46.633308
-UBER_PICKUP_BUSINESS_NAME="RD Fitness"
-UBER_PICKUP_CONTACT_NAME="Expedição"
-UBER_WEBHOOK_SIGNING_KEY=sua-signing-key
 ```
 
 ---
@@ -469,8 +451,6 @@ erDiagram
         enum status
         int total_price_in_cents
         int shipping_fee_in_cents
-        text uber_quote_id
-        text uber_delivery_id
         text payment_id
     }
 ```
@@ -489,7 +469,7 @@ erDiagram
 | `cart` | Carrinho vinculado ao usuário |
 | `cart_item` | Itens do carrinho |
 | `shipping_address` | Endereços de entrega |
-| `order` | Pedidos com status e dados de entrega Uber |
+| `order` | Pedidos com status e dados de entrega |
 | `order_item` | Itens de cada pedido |
 | `promotion` | Banners promocionais |
 
@@ -552,14 +532,6 @@ UPDATE "user" SET role = 'admin' WHERE email = 'seu-email@example.com';
 - **Webhooks** em `/api/stripe` para confirmação de pagamento
 - Suporte a cartão de crédito
 
-### Uber Direct
-
-- **OAuth2** com cache de token em memória
-- **Cotação de frete** em tempo real baseada no endereço de entrega, inclusive nas vendas do PDV
-- **Criação de entrega** automática após confirmação de pagamento
-- **Webhooks** em `/api/uber` para atualização de status de entrega
-- **Cancelamento** de entregas em andamento
-- **Verificação de assinatura HMAC** nos webhooks
 
 ### ViaCEP e frete tabelado
 

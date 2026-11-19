@@ -79,64 +79,73 @@ export function PdvReceiptDialog({
       />
 
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-md max-h-[92dvh] flex flex-col p-4 sm:p-6 print:hidden">
-          <DialogHeader className="text-center sm:text-center pb-2">
-            <div className="mx-auto size-12 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-2">
-              <CheckCircle2 className="size-6" />
-            </div>
-            <DialogTitle className="text-xl font-bold">
-              Venda Concluída com Sucesso!
-            </DialogTitle>
-            <DialogDescription className="text-xs">
-              Pedido #{data.orderId.slice(0, 8).toUpperCase()} registrado no
-              sistema.
-            </DialogDescription>
+        <DialogContent className="max-w-md max-h-[92dvh] overflow-hidden flex flex-col p-4 sm:p-6 print:hidden">
+          <DialogHeader className="shrink-0 text-center sm:text-center pb-2">
+            {data.orderId !== 'PREVIA' ? (
+              <>
+                <div className="mx-auto size-12 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-2">
+                  <CheckCircle2 className="size-6" />
+                </div>
+                <DialogTitle>
+                  Venda Concluída com Sucesso!
+                </DialogTitle>
+                <DialogDescription className="text-xs">
+                  Pedido #{data.orderId.slice(0, 8).toUpperCase()} registrado no
+                  sistema.
+                </DialogDescription>
+              </>
+            ) : (
+              <DialogTitle>
+                Visualização de Orçamento
+              </DialogTitle>
+            )}
           </DialogHeader>
 
           {/* Área de visualização do cupom */}
-          <div className="flex-1 min-h-0 bg-muted/30 p-2 sm:p-3 rounded-lg border">
-            <ScrollArea className="max-h-[50vh] pr-1">
+          <div className="flex-1 min-h-0 overflow-hidden bg-muted/30 p-2 sm:p-3 rounded-lg border">
+            <ScrollArea className="h-full min-h-0 pr-1">
               <PdvReceipt ref={receiptRef} data={data} />
             </ScrollArea>
           </div>
 
           {/* Ações */}
-          <div className="pt-4 space-y-2 border-t">
+          <div className="shrink-0 pt-4 space-y-2 border-t">
             <Button
               size="lg"
-              className="w-full font-bold text-sm bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
+              className="w-full"
               onClick={handlePrint}
             >
               <Printer className="size-4" />
-              Imprimir Comprovante
+              Imprimir
             </Button>
+            {data.orderId !== "PREVIA" ? (
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs"
+                  onClick={onNewSale}
+                  asChild
+                >
+                  <Link href="/admin/pdv">
+                    <Home className="mr-1.5 size-3.5" />
+                    Nova Venda
+                  </Link>
+                </Button>
 
-            <div className="grid grid-cols-2 gap-2 pt-1">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full text-xs"
-                onClick={onNewSale}
-                asChild
-              >
-                <Link href="/admin/pdv">
-                  <Home className="mr-1.5 size-3.5" />
-                  Nova Venda
-                </Link>
-              </Button>
-
-              <Button
-                variant="secondary"
-                size="sm"
-                className="w-full text-xs"
-                asChild
-              >
-                <Link href="/admin/orders">
-                  <Package className="mr-1.5 size-3.5" />
-                  Ver Pedidos
-                </Link>
-              </Button>
-            </div>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="w-full text-xs"
+                  asChild
+                >
+                  <Link href="/admin/orders">
+                    <Package className="mr-1.5 size-3.5" />
+                    Ver Pedidos
+                  </Link>
+                </Button>
+              </div>
+            ) : null}
           </div>
         </DialogContent>
       </Dialog>

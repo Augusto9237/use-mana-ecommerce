@@ -85,6 +85,13 @@
       "when": 1794887240292,
       "tag": "0011_allow_pickup_orders",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1795064451742,
+      "tag": "0012_useful_mister_fear",
+      "breakpoints": true
     }
   ]
 }

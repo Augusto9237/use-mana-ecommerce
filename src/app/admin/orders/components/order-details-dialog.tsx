@@ -29,7 +29,6 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatCentsToBRL } from "@/helpers/money";
 import { updateOrderStatus } from "@/actions/update-order-status";
-import { updateUberDeliveryStatus } from "@/actions/update-uber-delivery-status";
 
 interface OrderDetailsDialogProps {
   order: {
@@ -50,8 +49,6 @@ interface OrderDetailsDialogProps {
     totalPriceInCents: number;
     shippingFeeInCents: number;
     status: "pending" | "paid" | "canceled";
-    uberDeliveryId?: string | null;
-    uberDeliveryStatus?: string | null;
     createdAt: Date;
     user: {
       name: string;
@@ -81,7 +78,6 @@ export function OrderDetailsDialog({
 }: OrderDetailsDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [isUberUpdating, startUberTransition] = useTransition();
 
   const handleStatusChange = (newStatus: "pending" | "paid" | "canceled") => {
     startTransition(async () => {
@@ -98,21 +94,6 @@ export function OrderDetailsDialog({
     });
   };
 
-  const handleUberAction = (action: "sync" | "cancel") => {
-    startUberTransition(async () => {
-      try {
-        await updateUberDeliveryStatus(order.id, action);
-        toast.success(
-          action === "cancel"
-            ? "Entrega Uber cancelada com sucesso!"
-            : "Status da entrega Uber sincronizado com sucesso!"
-        );
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "Erro ao atualizar entrega Uber";
-        toast.error(message);
-      }
-    });
-  };
 
 
   return (

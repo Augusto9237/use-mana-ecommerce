@@ -15,7 +15,6 @@ import {
   userTable,
 } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { getUberDeliveryQuote } from "@/lib/uber";
 import {
   createShippingAddressSchema,
   type CreateShippingAddressSchema,
@@ -199,90 +198,12 @@ export const updatePdvCartShippingAddress = async ({
   return { success: true };
 };
 
-/**
- * Calcula a cotação Uber Direct para o carrinho do cliente no PDV
- */
-export const calculatePdvUberQuote = async (customerId: string) => {
-  await getAdminSession();
-
-  if (!customerId) {
-    throw new Error("Cliente não informado.");
-  }
-
-  const cart = await db.query.cartTable.findFirst({
-    where: eq(cartTable.userId, customerId),
-    with: {
-      shippingAddress: true,
-      items: {
-        with: {
-          productVariant: true,
-        },
-      },
-    },
-  });
-
-  if (!cart) {
-    throw new Error("Carrinho não encontrado.");
-  }
-
-  if (!cart.shippingAddress) {
-    return null;
-  }
-
-  const { shippingAddress, items } = cart;
-
-  if (items.length === 0) {
-    throw new Error("O carrinho está vazio.");
-  }
-
-  const cartTotalInCents = items.reduce(
-    (acc, item) =>
-      acc +
-      (item.productVariant.discountPriceInCents ||
-        item.productVariant.priceInCents) *
-        item.quantity,
-    0,
-  );
-
-  const dropoffAddress = `${shippingAddress.street}, ${shippingAddress.number} - ${shippingAddress.neighborhood}, ${shippingAddress.city} - ${shippingAddress.state}, ${shippingAddress.zipCode}, ${shippingAddress.country || "Brasil"}`;
-
-  try {
-    const quote = await getUberDeliveryQuote({
-      dropoffAddress,
-      dropoffPhoneNumber: shippingAddress.phone,
-      manifestTotalValueInCents: cartTotalInCents,
-    });
-
-    let feeInCents: number;
-    if (quote.fee >= 1000) {
-      feeInCents = Math.round(quote.fee);
-    } else {
-      feeInCents = Math.round(quote.fee * 100);
-    }
-
-    return {
-      quoteId: quote.id,
-      feeInCents,
-      pickupEta: quote.pickup_eta,
-      dropoffEta: quote.dropoff_eta,
-      duration: quote.duration,
-    };
-  } catch (error: any) {
-    console.error("Erro no cálculo do frete Uber para o PDV:", error);
-    return {
-      error: true,
-      message: error.message || "Erro ao calcular o frete.",
-    };
-  }
-};
-
 interface FinishPdvOrderParams {
   customerId: string;
   shippingAddressId?: string | null;
   paymentMethod: "money" | "pix" | "credit_card" | "debit_card";
   deliveryType: "pickup" | "delivery";
   shippingFeeInCents?: number;
-  uberQuoteId?: string;
 }
 
 /**
@@ -298,7 +219,6 @@ export const finishPdvOrder = async ({
   paymentMethod,
   deliveryType,
   shippingFeeInCents = 0,
-  uberQuoteId,
 }: FinishPdvOrderParams) => {
   const session = await getAdminSession();
 
@@ -375,11 +295,6 @@ export const finishPdvOrder = async ({
         cpfOrCnpj: shippingAddress?.cpfOrCnpj ?? null,
         totalPriceInCents,
         shippingFeeInCents: finalShippingFee,
-        uberQuoteId: deliveryType === "delivery" ? uberQuoteId ?? null : null,
-        uberDeliveryStatus:
-          deliveryType === "delivery" && uberQuoteId
-            ? "pending_dispatch"
-            : null,
         paymentId: `pdv_${paymentMethod}_${Date.now()}`,
         status: "paid",
       })

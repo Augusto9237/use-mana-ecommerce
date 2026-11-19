@@ -17,7 +17,7 @@ const checkoutSchema = z.object({
 // ─── Constants ─────────────────────────────────────────────────────────────
 const DEFAULT_CURRENCY = "BRL";
 const AUTO_RETURN = "approved";
-const SHIPPING_ITEM_ID = "shipping-uber";
+const SHIPPING_ITEM_ID = "shipping";
 
 // ─── Custom Errors ───────────────────────────────────────────────────────────
 class CheckoutError extends Error {
@@ -83,8 +83,8 @@ function buildOrderItems(order: OrderWithItems): MercadoPagoItem[] {
   if (order.shippingFeeInCents && order.shippingFeeInCents > 0) {
     items.push({
       id: SHIPPING_ITEM_ID,
-      title: "Frete (Uber Direct)",
-      description: "Entrega expressa via Uber Direct",
+      title: "Frete",
+      description: "Frete tabelado",
       picture_url: undefined,
       category_id: "shipping",
       quantity: 1,

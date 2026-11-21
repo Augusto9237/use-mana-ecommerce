@@ -216,7 +216,7 @@ export default async function AdminOrdersPage(props: {
                       <TableCell className="text-right font-medium tabular-nums">
                         {formatCentsToBRL(order.totalPriceInCents)}
                       </TableCell>
-                      <TableCell className="justify-end items-end text-right pr-4 flex">
+                      <TableCell className="justify-end items-end text-right pr-4 flex w-[72px]">
                         <OrderActionsDropdown order={order} />
                       </TableCell>
                     </TableRow>

@@ -53,50 +53,56 @@ function isValidWebhookSignature(
   }
 }
 
-async function clearCartForOrder(orderId: string) {
-  const order = await db.query.orderTable.findFirst({
-    where: eq(orderTable.id, orderId),
-    columns: { userId: true },
-  });
+async function markOrderAsPaid(orderId: string, paymentId: number | string) {
+  return db.transaction(async (tx) => {
+    const [existingOrder] = await tx
+      .select({
+        id: orderTable.id,
+        status: orderTable.status,
+        userId: orderTable.userId,
+      })
+      .from(orderTable)
+      .where(eq(orderTable.id, orderId))
+      .for("update");
 
-  if (!order) {
-    console.warn(`Order ${orderId} not found when clearing cart after payment.`);
-    return;
-  }
+    if (!existingOrder) {
+      console.warn(`Cannot mark order ${orderId} as paid: order not found.`);
+      return false;
+    }
 
-  const cart = await db.query.cartTable.findFirst({
-    where: eq(cartTable.userId, order.userId),
-    columns: { id: true },
-  });
+    if (existingOrder.status === "paid") {
+      console.log(`Order ${orderId} already marked as paid; skipping duplicate processing.`);
+      return true;
+    }
 
-  if (!cart) {
-    console.log(`No cart found for user ${order.userId} after payment confirmation.`);
-    return;
-  }
+    await tx
+      .update(orderTable)
+      .set({ status: "paid", paymentId: String(paymentId) })
+      .where(eq(orderTable.id, orderId));
 
-  await db.transaction(async (tx) => {
-    await tx.delete(cartItemTable).where(eq(cartItemTable.cartId, cart.id));
-    await tx.delete(cartTable).where(eq(cartTable.id, cart.id));
-  });
+    const items = await tx
+      .select({
+        productVariantId: orderItemTable.productVariantId,
+        quantity: orderItemTable.quantity,
+      })
+      .from(orderItemTable)
+      .where(eq(orderItemTable.orderId, orderId));
 
-  console.log(`Cart cleared for user ${order.userId} after payment confirmation of order ${orderId}.`);
-}
-
-async function decreaseStockForOrder(orderId: string) {
-  const items = await db.query.orderItemTable.findMany({
-    where: eq(orderItemTable.orderId, orderId),
-    columns: { productVariantId: true, quantity: true },
-    with: {
-      productVariant: {
-        columns: { sizeInStock: true },
-      },
-    },
-  });
-
-  await db.transaction(async (tx) => {
     for (const item of items) {
+      const [variant] = await tx
+        .select({ sizeInStock: productVariantTable.sizeInStock })
+        .from(productVariantTable)
+        .where(eq(productVariantTable.id, item.productVariantId))
+        .for("update");
+
+      if (!variant) {
+        throw new Error(
+          `Product variant ${item.productVariantId} not found for order ${orderId}.`,
+        );
+      }
+
       let quantityToSubtract = item.quantity;
-      const sizeInStock = item.productVariant.sizeInStock.map((stockItem) => {
+      const sizeInStock = variant.sizeInStock.map((stockItem) => {
         if (quantityToSubtract <= 0) return stockItem;
 
         const quantitySubtracted = Math.min(stockItem.stock, quantityToSubtract);
@@ -113,39 +119,23 @@ async function decreaseStockForOrder(orderId: string) {
         .set({ sizeInStock })
         .where(eq(productVariantTable.id, item.productVariantId));
     }
-  });
-}
 
-async function markOrderAsPaid(orderId: string, paymentId: number | string) {
-  const existingOrder = await db.query.orderTable.findFirst({
-    where: eq(orderTable.id, orderId),
-    columns: {
-      id: true,
-      status: true,
-      totalPriceInCents: true,
-      paymentId: true,
-    },
-  });
+    const [cart] = await tx
+      .select({ id: cartTable.id })
+      .from(cartTable)
+      .where(eq(cartTable.userId, existingOrder.userId))
+      .for("update");
 
-  if (!existingOrder) {
-    console.warn(`Cannot mark order ${orderId} as paid: order not found.`);
-    return false;
-  }
+    if (cart) {
+      await tx.delete(cartItemTable).where(eq(cartItemTable.cartId, cart.id));
+      await tx.delete(cartTable).where(eq(cartTable.id, cart.id));
+      console.log(
+        `Cart cleared for user ${existingOrder.userId} after payment confirmation of order ${orderId}.`,
+      );
+    }
 
-  if (existingOrder.status === "paid") {
-    console.log(`Order ${orderId} already marked as paid; skipping duplicate processing.`);
     return true;
-  }
-
-  await db
-    .update(orderTable)
-    .set({ status: "paid", paymentId: String(paymentId) })
-    .where(eq(orderTable.id, orderId));
-
-  await decreaseStockForOrder(orderId);
-  await clearCartForOrder(orderId);
-
-  return true;
+  });
 }
 
 export async function POST(req: Request) {
@@ -233,6 +223,16 @@ export async function POST(req: Request) {
     if (!order) {
       console.warn(`Payment ${paymentId} references unknown order ${externalReference}.`);
       return NextResponse.json({ ok: true, processed: false, reason: "unknown_order" });
+    }
+
+    const paymentCurrency = String(payment?.currency_id ?? "").toUpperCase();
+    const expectedCurrency = (process.env.MERCADOPAGO_CURRENCY || "BRL").toUpperCase();
+
+    if (paymentCurrency !== expectedCurrency) {
+      console.warn(
+        `Payment currency mismatch for order ${externalReference}: payment=${paymentCurrency || "missing"}, expected=${expectedCurrency}`,
+      );
+      return NextResponse.json({ ok: true, processed: false, reason: "currency_mismatch" });
     }
 
     const paymentTotalCents = Math.round(Number(payment?.total_amount ?? payment?.transaction_amount ?? 0) * 100);

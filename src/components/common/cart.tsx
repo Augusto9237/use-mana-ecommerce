@@ -22,11 +22,10 @@ import { Badge } from "../ui/badge";
 export const Cart = () => {
   const { data: cart } = useCart();
 
-  console.log("cart", cart);
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" size="icon" className="hover:bg-foreground relative">
+        <Button variant="outline" size="icon" className="hover:bg-foreground relative ">
           <ShoppingBasketIcon />
           {cart?.items.length ? (
             <Badge className="absolute -top-1 -right-1 rounded-full size-4.5 text-xs p-0">
@@ -35,7 +34,7 @@ export const Cart = () => {
           ) : null}
         </Button>
       </SheetTrigger>
-      <SheetContent className="max-sm:max-w-sm">
+      <SheetContent className="w-full lg:max-w-sm">
         <SheetHeader>
           <SheetTitle>Carrinho</SheetTitle>
         </SheetHeader>

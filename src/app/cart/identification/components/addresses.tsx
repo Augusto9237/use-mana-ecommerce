@@ -62,6 +62,9 @@ const Addresses = ({
   );
   const [carrier, setCarrier] = useState<string>("");
   const [shippingFeeInCents, setShippingFeeInCents] = useState<number>(0);
+  const [deliveryType, setDeliveryType] = useState<"delivery" | "pickup">(
+    "delivery",
+  );
   const updateCartShippingAddressMutation = useUpdateCartShippingAddress();
   const { data: addresses, isLoading } = useUserAddresses({
     initialData: shippingAddresses,
@@ -84,6 +87,7 @@ const Addresses = ({
       const shipping = await lookupZipcode(address.zipCode);
       setShippingFeeInCents(shipping.valorFrete);
       setCarrier(shipping.transportadora);
+      setDeliveryType("delivery");
       toast.success("Endereço selecionado para entrega!");
       router.refresh();
     } catch (error) {
@@ -161,13 +165,17 @@ const Addresses = ({
               </div>
             )}
           </CardContent>
-
-          <Separator />
-
-          <DeliverySummary
-            shippingFeeInCents={shippingFeeInCents}
-            carrier={carrier}
-          />
+          {shippingFeeInCents > 0 && carrier.length > 0 ? (
+            <>
+              <Separator />
+              <DeliverySummary
+                shippingFeeInCents={shippingFeeInCents}
+                carrier={carrier}
+                deliveryType={deliveryType}
+                onDeliveryTypeChange={setDeliveryType}
+              />
+            </>
+          ) : null}
         </div>
       </Card>
       <div className="flex max-sm:flex-col-reverse  w-full sm:justify-end gap-4 sm:gap-5  max-w-screen-xl mx-auto">
@@ -176,7 +184,10 @@ const Addresses = ({
         </Link>
 
         <Button disabled={shippingFeeInCents === 0} variant={shippingFeeInCents === 0 ? "outline" : "default"} className="max-sm:w-full">
-          <Link href="/cart/confirmation" aria-disabled={shippingFeeInCents === 0} >
+          <Link
+            href={`/cart/confirmation?deliveryType=${deliveryType}`}
+            aria-disabled={shippingFeeInCents === 0}
+          >
             Finalizar compra
           </Link>
         </Button>

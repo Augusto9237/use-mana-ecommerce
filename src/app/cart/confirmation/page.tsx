@@ -13,7 +13,16 @@ import FinishOrderButton from "./components/finish-order-button";
 import { lookupZipcode } from "@/lib/lookup-zipcode";
 import { MapPin } from "lucide-react";
 
-const ConfirmationPage = async () => {
+interface ConfirmationPageProps {
+  searchParams: Promise<{ deliveryType?: string | string[] }>;
+}
+
+const ConfirmationPage = async ({ searchParams }: ConfirmationPageProps) => {
+  const params = await searchParams;
+  const deliveryType = Array.isArray(params.deliveryType)
+    ? params.deliveryType[0]
+    : params.deliveryType;
+  const isPickup = deliveryType === "pickup";
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -46,7 +55,9 @@ const ConfirmationPage = async () => {
     redirect("/cart/identification");
   }
 
-  const delivery = (await lookupZipcode(cart.shippingAddress.zipCode)).valorFrete
+  const delivery = isPickup
+    ? 0
+    : (await lookupZipcode(cart.shippingAddress.zipCode)).valorFrete
   const totalInCents = delivery + cartTotalInCents
 
   return (
@@ -55,14 +66,16 @@ const ConfirmationPage = async () => {
       <div className="space-y-5 px-5 pt-24 pb-8 w-full max-w-7xl mx-auto flex-1 h-full">
         <Card>
           <CardHeader>
-            <CardTitle>Endereço de Entrega</CardTitle>
+            <CardTitle>{isPickup ? "Retirada" : "Endereço de Entrega"}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <Card className="p-0">
               <CardContent className="p-4 flex flex-row items-center gap-2">
                 <MapPin className="size-8 md:size-5" />
                 <p className="text-sm">
-                  {formatAddress(cart.shippingAddress)}
+                  {isPickup
+                    ? "Retirada na loja"
+                    : formatAddress(cart.shippingAddress)}
                 </p>
               </CardContent>
             </Card>

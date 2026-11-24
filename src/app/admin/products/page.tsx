@@ -152,7 +152,7 @@ export default async function AdminProductsPage(props: {
                   <TableHead>Categoria</TableHead>
                   <TableHead className="w-24">Variantes</TableHead>
                   <TableHead className="w-32">Criado em</TableHead>
-                  <TableHead className="w-20 text-right pr-4">Ações</TableHead>
+                  <TableHead className="w-[30px] text-right pr-4">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -181,7 +181,7 @@ export default async function AdminProductsPage(props: {
                       <TableCell className="text-sm text-muted-foreground">
                         {new Date(product.createdAt).toLocaleDateString("pt-BR")}
                       </TableCell>
-                      <TableCell className="text-right w-20 justify-end">
+                      <TableCell className="text-right w-[30px] justify-end">
                         <ProductActionsDropdown
                           product={product}
                           categories={categories}

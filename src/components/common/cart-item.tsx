@@ -62,7 +62,7 @@ const CartItem = ({
     });
   };
   return (
-    <div className="flex items-center justify-between min-h-0 flex-1 max-h-[110px] relative">
+    <div className="flex items-center justify-between min-h-0 flex-1 max-h-[110px] relative overflow-hidden w-full">
       <div className="flex items-center gap-4 h-full w-full">
         <Image
           src={productVariantImageUrl}
@@ -71,9 +71,9 @@ const CartItem = ({
           height={78}
           className="rounded-lg aspect-square object-cover"
         />
-        <div className="flex flex-col min-h-0 flex-1 h-full w-full jusftify-between ">
-          <p className="text-sm font-semibold">{productName}</p>
-          <p className="text-muted-foreground text-xs font-medium">
+        <div className="flex flex-col min-h-0 min-w-0 flex-1 h-full w-full justify-between">
+          <p className="w-full truncate text-sm font-semibold pr-6">{productName}</p>
+          <p className="w-full truncate text-muted-foreground text-xs font-medium">
             {productVariantName}
           </p>
 

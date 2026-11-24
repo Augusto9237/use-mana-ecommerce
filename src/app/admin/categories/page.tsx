@@ -121,7 +121,7 @@ export default async function AdminCategoriesPage(props: {
                   <TableHead className="min-w-48">Nome</TableHead>
                   <TableHead className="min-w-48">Slug</TableHead>
                   <TableHead className="w-36">Criada em</TableHead>
-                  <TableHead className="w-20 text-right">Ações</TableHead>
+                  <TableHead className="w-[30px] text-right pr-4">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -141,7 +141,7 @@ export default async function AdminCategoriesPage(props: {
                       <TableCell className="text-sm text-muted-foreground">
                         {new Date(category.createdAt).toLocaleDateString("pt-BR")}
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-right w-[30px] pr-4">
                         <CategoryActionsDropdown category={category} />
                       </TableCell>
                     </TableRow>

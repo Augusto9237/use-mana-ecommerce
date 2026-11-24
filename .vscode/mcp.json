@@ -8,6 +8,14 @@
 			],
 			"type": "stdio"
 		},
+		"mcp-mp": {
+			"url": "https://mcp.mercadopago.com/mcp",
+			"type": "http"
+		},
+		"my-mcp-server-mp": {
+			"url": "\"https://mcp.mercadopago.com/mcp\"",
+			"type": "http"
+		}
 	},
 	"inputs": []
 }

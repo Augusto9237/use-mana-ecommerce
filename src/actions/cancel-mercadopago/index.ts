@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { orderTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { MercadoPagoConfig, Payment } from "mercadopago";
+import { Payment } from "mercadopago";
 import {
   cancelCheckoutPaymentSchema,
   CancelCheckoutPaymentSchema,
@@ -35,6 +35,12 @@ export const cancelCheckoutPayment = async (
 
   if (!existingOrder) {
     throw new Error("Pedido não encontrado");
+  }
+
+  if (existingOrder.status !== "pending") {
+    throw new Error(
+      "Somente pedidos pendentes podem ser cancelados. Pagamentos aprovados precisam ser reembolsados.",
+    );
   }
 
   const user = session.user as UserWithRole;
@@ -71,8 +77,12 @@ export const cancelCheckoutPayment = async (
     }
 
     const paymentId = String(paymentData.id);
+    if (paymentData.status !== "pending") {
+      throw new Error("Somente pagamentos pendentes podem ser cancelados.");
+    }
+
     const cancelResponse = await paymentClient.cancel({
-      id: existingOrder.paymentId!,
+      id: paymentId,
     });
 
     await db.update(orderTable).set({ status: "canceled" }).where(eq(orderTable.id, orderId));
@@ -97,9 +107,11 @@ export const cancelCheckoutPayment = async (
     const safeCustomErrors = [
       "Não autorizado",
       "Pedido não encontrado",
+      "Somente pedidos pendentes podem ser cancelados. Pagamentos aprovados precisam ser reembolsados.",
       "Serviço de pagamento temporariamente indisponível. Tente novamente mais tarde.",
       "Nenhum pagamento foi encontrado para este pedido.",
       "Nenhum identificador de pagamento foi encontrado para este pedido.",
+      "Somente pagamentos pendentes podem ser cancelados.",
     ];
 
     if (error instanceof Error && safeCustomErrors.includes(error.message)) {

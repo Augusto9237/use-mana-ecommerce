@@ -41,7 +41,7 @@ const FinishOrderButton = ({
   return (
     <>
       <Button
-        className="w-full"
+        className="max-sm:w-full"
         size="lg"
         onClick={handleFinishOrder}
         disabled={finishOrderMutation.isPending || disabled}

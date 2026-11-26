@@ -12,6 +12,7 @@ import { formatAddress } from "../helpers/address";
 import FinishOrderButton from "./components/finish-order-button";
 import { lookupZipcode } from "@/lib/lookup-zipcode";
 import { MapPin } from "lucide-react";
+import { ButtonBack } from "@/components/ui/button-back";
 
 interface ConfirmationPageProps {
   searchParams: Promise<{ deliveryType?: string | string[] }>;
@@ -44,6 +45,7 @@ const ConfirmationPage = async ({ searchParams }: ConfirmationPageProps) => {
       },
     },
   });
+
   if (!cart || cart?.items.length === 0) {
     redirect("/");
   }
@@ -97,9 +99,13 @@ const ConfirmationPage = async ({ searchParams }: ConfirmationPageProps) => {
               : item.productVariant.imageUrl,
           }))}
         />
-        <FinishOrderButton
-          shippingFeeInCents={delivery}
-        />
+        <div className="flex max-sm:flex-col-reverse  w-full sm:justify-end gap-4 sm:gap-5  max-w-screen-xl">
+          <ButtonBack>Voltar</ButtonBack>
+          <FinishOrderButton
+            shippingFeeInCents={delivery}
+          />
+
+        </div>
       </div>
 
       <Footer />

@@ -2,7 +2,7 @@ import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { formatCentsToBRL } from "@/helpers/money";
-import { Motorbike, PackageCheck, Ship } from "lucide-react";
+import { Motorbike, PackageCheck, Ship, Store } from "lucide-react";
 
 interface DeliverySummaryProps {
   shippingFeeInCents?: number;
@@ -37,7 +37,7 @@ const DeliverySummary = ({
             onValueChange={(value) =>
               onDeliveryTypeChange?.(value as "delivery" | "pickup")
             }
-            className="gap-2"
+            className="gap-4"
           >
             <Label
               htmlFor="delivery"
@@ -62,7 +62,7 @@ const DeliverySummary = ({
               className="flex cursor-pointer items-center justify-between rounded-md border p-3"
             >
               <span className="flex items-center gap-2 text-sm">
-                <PackageCheck className="size-5" />
+                <Store className="size-5" />
                 Retira
               </span>
               <span className="flex items-center gap-3">

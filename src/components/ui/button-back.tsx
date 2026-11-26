@@ -12,8 +12,13 @@ export function ButtonBack({ children }: ButtonProps) {
     const router = useRouter()
 
     return (
-        <Button variant="ghost" size={children ? "default" : "icon-sm"} onClick={() => router.back()}>
-            {children || <ChevronLeft className="size-5" />}
-        </Button>
+        <>
+            {children
+                ||
+                <Button variant="ghost" size={children ? "default" : "icon-sm"} onClick={() => router.back()}>
+                    <ChevronLeft className="size-5" />
+                </Button>
+            }
+        </>
     )
 }

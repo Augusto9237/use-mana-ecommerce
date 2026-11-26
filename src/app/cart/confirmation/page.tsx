@@ -13,6 +13,7 @@ import FinishOrderButton from "./components/finish-order-button";
 import { lookupZipcode } from "@/lib/lookup-zipcode";
 import { MapPin } from "lucide-react";
 import { ButtonBack } from "@/components/ui/button-back";
+import { Button } from "@/components/ui/button";
 
 interface ConfirmationPageProps {
   searchParams: Promise<{ deliveryType?: string | string[] }>;
@@ -100,7 +101,11 @@ const ConfirmationPage = async ({ searchParams }: ConfirmationPageProps) => {
           }))}
         />
         <div className="flex max-sm:flex-col-reverse  w-full sm:justify-end gap-4 sm:gap-5  max-w-screen-xl">
-          <ButtonBack>Voltar</ButtonBack>
+          <ButtonBack>
+            <Button size="lg" variant="outline">
+              Cancelar
+            </Button>
+          </ButtonBack>
           <FinishOrderButton
             shippingFeeInCents={delivery}
           />

@@ -1,6 +1,6 @@
 "use client";
 
-import { LogInIcon, LogOutIcon, MapPinHouse, MenuIcon, Package, Settings } from "lucide-react";
+import { LogInIcon, LogOutIcon, MapPinHouse, MenuIcon, Package, Search, Settings } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -16,34 +16,58 @@ import {
   SheetTrigger,
 } from "../ui/sheet";
 import { Cart } from "./cart";
-import { Input } from "../ui/input";
 import { InputSearch } from "./input-search";
 import { AuthenticationModal } from "./authentication-modal";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export const Header = () => {
   const { data: session } = authClient.useSession();
   return (
     <header className="p-5 backdrop-blur-md fixed top-0 w-full bg-card/70 z-50">
       <div className="flex items-center gap-3 justify-between mx-auto w-full max-w-screen-xl xl:px-5">
-        <Link href="/" className="h-10 max-w-36 max-md:w-11 overflow-hidden flex">
-          <Image
-            src="/logo.png"
+        <Link href="/" className="h-10 max-w-36 overflow-hidden flex">
+          {/* <Image
+            src="/logo-lg.png"
             alt="RD Fitness Logo"
             width={40}
             height={22}
             className="object-contain md:hidden"
-          />
+          /> */}
           <Image
             src="/logo-lg.png"
             alt="RD Fitness Logo"
             width={120}
             height={80}
-            className="object-cover max-md:hidden"
+            className="object-cover"
           />
         </Link>
 
-        <InputSearch />
+
+        <div className="max-sm:hidden w-full max-w-sm">
+          <InputSearch />
+        </div>
+
+
         <div className="flex items-center gap-3 md:gap-6">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild className="sm:hidden">
+              <Button size="icon" variant="outline">
+                <Search />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" className="w-[100dvw] bg-transparent border-0 p-5 py-0 mt-5 ring-0 rounded-none sm:hidden">
+              <InputSearch />
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="hover:bg-foreground">
@@ -106,7 +130,7 @@ export const Header = () => {
                 ) : (
                   <div className="flex items-center justify-between">
                     <h2 className="font-semibold">Olá. Faça seu login!</h2>
-                    <AuthenticationModal/>
+                    <AuthenticationModal />
                   </div>
                 )}
               </div>

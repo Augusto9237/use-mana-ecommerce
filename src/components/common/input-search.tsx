@@ -16,11 +16,11 @@ export function InputSearch({ ...props }: React.ComponentPropsWithoutRef<"input"
         }
     }
     return (
-        <form onSubmit={handleSearch} className="relative w-full max-sm:max-w-[60%] sm:max-w-sm">
+        <form onSubmit={handleSearch} className="relative w-full sm:max-w-sm">
             <Input
                 type="text"
                 placeholder="Buscar produtos"
-                className="placeholder:max-sm:text-xs"
+                className="placeholder:max-sm:text-xs bg-background"
                 {...props}
                 value={value}
                 onChange={(e) => setValue(e.target.value)}

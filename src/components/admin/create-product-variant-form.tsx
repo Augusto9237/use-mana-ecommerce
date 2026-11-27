@@ -196,7 +196,7 @@ export function CreateProductVariantForm({
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-5">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="min-h-0 flex-1 space-y-6 overflow-y-auto p-5">
             <FormField
               control={form.control}
               name="name"

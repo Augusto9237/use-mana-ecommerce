@@ -203,7 +203,7 @@ export const PdvReceipt = forwardRef<HTMLDivElement, PdvReceiptProps>(
           <p className="font-semibold text-zinc-800">
             Obrigado pela preferência!
           </p>
-          <p>Volte sempre à RD Fitness</p>
+          <p>Volte sempre à Use Mana</p>
           <p className="text-[9px] text-zinc-400 pt-1">
             Emitido via Sistema PDV RD Fitness
           </p>

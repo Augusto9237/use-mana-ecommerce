@@ -37,7 +37,7 @@ export const Header = () => {
     <div className="fixed top-0 w-full z-50">
       <div className="w-full bg-background">
         <div className="w-full max-w-screen-xl px-5 py-1 mx-auto flex justify-end max-md:justify-between items-center gap-4 text-muted-foreground">
-          <Link href="https://www.instagram.com/usemana_3/" target="_blank" className="flex items-center gap-1 text-sm">
+          <Link href="https://www.instagram.com/usemana_3/" target="_blank" className="flex items-center gap-1 text-sm max-sm:text-xs">
             <FaInstagram />
             <span>@usemana_3</span>
           </Link>
@@ -46,7 +46,7 @@ export const Header = () => {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Iniciar conversa no WhatsApp"
-            className="flex items-center gap-1 text-sm"
+            className="flex items-center gap-1 text-sm max-sm:text-xs"
           >
             <FaWhatsapp />
             <span>(91) 99344-0434</span>

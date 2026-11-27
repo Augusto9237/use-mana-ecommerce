@@ -92,6 +92,13 @@
       "when": 1795064451742,
       "tag": "0012_useful_mister_fear",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1795747112631,
+      "tag": "0013_accent_insensitive_search",
+      "breakpoints": true
     }
   ]
 }

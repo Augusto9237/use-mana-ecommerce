@@ -25,7 +25,7 @@ export function InputSearch({ ...props }: React.ComponentPropsWithoutRef<"input"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
             />
-            <Button type="submit" variant="ghost" className="absolute right-3 max-sm:right-1 top-1/2 -translate-y-1/2 text-muted-foreground">
+            <Button type="submit" variant="ghost" size="icon" className="absolute right-0 text-muted-foreground">
                 <Search size={16} />
             </Button>
         </form>

@@ -1,4 +1,4 @@
-import { eq, ilike } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import { notFound } from "next/navigation";
 
 import { Header } from "@/components/common/header";
@@ -15,7 +15,7 @@ export default async function CategoryPage({ params }: CategoryPageProps){
   const decodedName = decodeURIComponent(name);
 
   const products = await db.query.productTable.findMany({
-    where: ilike(productTable.name, `%${decodedName}%`),
+    where: sql`unaccent(lower(${productTable.name})) LIKE unaccent(lower(${`%${decodedName}%`}))`,
     with: {
       variants: true,
     },

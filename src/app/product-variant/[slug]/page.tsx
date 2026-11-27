@@ -42,7 +42,7 @@ const ProductVariantPage = async ({ params }: ProductVariantPageProps) => {
   return (
     <>
       <Header />
-      <div className="flex flex-col space-y-6 pt-26 mx-auto max-w-screen-xl">
+      <div className="flex flex-col space-y-6 pt-28 mx-auto max-w-screen-xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 lg:pl-5">
           <CarouselProducts images={productVariant.imageUrl} />
           <div className="flex flex-col gap-6">

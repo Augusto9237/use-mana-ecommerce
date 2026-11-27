@@ -32,16 +32,9 @@ import {
 export const Header = () => {
   const { data: session } = authClient.useSession();
   return (
-    <header className="p-5 backdrop-blur-md fixed top-0 w-full bg-card/70 z-50">
+    <header className="p-5 backdrop-blur-md fixed top-0 w-full bg-card/70 z-50 shadow-md">
       <div className="flex items-center gap-3 justify-between mx-auto w-full max-w-screen-xl xl:px-5">
         <Link href="/" className="h-10 max-w-36 overflow-hidden flex">
-          {/* <Image
-            src="/logo-lg.png"
-            alt="RD Fitness Logo"
-            width={40}
-            height={22}
-            className="object-contain md:hidden"
-          /> */}
           <Image
             src="/logo-lg.png"
             alt="RD Fitness Logo"
@@ -64,7 +57,7 @@ export const Header = () => {
                 <Search />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="w-[100dvw] bg-transparent border-0 p-5 py-0 mt-5 ring-0 rounded-none sm:hidden">
+            <DropdownMenuContent align="center" className="w-[100dvw] bg-card/70 backdrop-blur-md border-0 px-5 py-2 mt-5 ring-0 rounded-none sm:hidden">
               <InputSearch />
             </DropdownMenuContent>
           </DropdownMenu>

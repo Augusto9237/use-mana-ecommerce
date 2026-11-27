@@ -66,7 +66,7 @@ const ConfirmationPage = async ({ searchParams }: ConfirmationPageProps) => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <div className="space-y-5 px-5 pt-24 pb-8 w-full max-w-7xl mx-auto flex-1 h-full">
+      <div className="space-y-5 px-5 pt-26 pb-8 w-full max-w-7xl mx-auto flex-1 h-full">
         <Card>
           <CardHeader>
             <CardTitle>{isPickup ? "Retirada" : "Endereço de Entrega"}</CardTitle>

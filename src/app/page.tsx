@@ -33,7 +33,7 @@ const Home = async () => {
   return (
     <>
       <Header />
-      <div className="pt-26 pb-8 w-full flex flex-col justify-center">
+      <div className="pt-24 pb-8 w-full flex flex-col justify-center">
         <CarouselWithProgress promotions={promotions} />
         <div className="max-w-screen-xl mx-auto flex flex-col w-full gap-5">
           <section className="grid grid-cols-3 max-sm:grid-cols-1 bg-card md:rounded-xl max-sm:gap-0 gap-6 justify-between">

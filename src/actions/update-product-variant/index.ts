@@ -92,6 +92,7 @@ export const updateProductVariant = async (data: UpdateProductVariantSchema) => 
   revalidatePath(`/admin/pdv/${existingVariant.slug}`);
   revalidatePath(`/admin/pdv/${updated.slug}`);
   revalidatePath("/admin/pdv");
+  revalidatePath("/admin/products");
   revalidatePath(`/admin/products/${data.productId}/variants`);
 
   return updated;

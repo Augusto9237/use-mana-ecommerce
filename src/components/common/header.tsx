@@ -37,7 +37,7 @@ export const Header = () => {
     <div className="fixed top-0 w-full z-50">
       <div className="w-full bg-background">
         <div className="w-full max-w-screen-xl px-5 py-1 mx-auto flex justify-center items-center gap-4 text-muted-foreground">
-          <span>Enviamos para todo o Brasil</span>
+          <span className="text-sm max-sm:text-xs">Enviamos para todo o Brasil</span>
         </div>
       </div>
       <header className="p-5 backdrop-blur-md fixed bg-card/70 w-full shadow-md">

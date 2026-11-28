@@ -1,7 +1,8 @@
 "use server";
 
 import { headers } from "next/headers";
-import { eq, and, ne } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { productVariantTable } from "@/db/schema";
@@ -82,6 +83,16 @@ export const updateProductVariant = async (data: UpdateProductVariantSchema) => 
     })
     .where(eq(productVariantTable.id, data.id))
     .returning();
+
+  revalidatePath("/");
+  revalidatePath("/category/[slug]", "page");
+  revalidatePath("/search/[name]", "page");
+  revalidatePath(`/product-variant/${existingVariant.slug}`);
+  revalidatePath(`/product-variant/${updated.slug}`);
+  revalidatePath(`/admin/pdv/${existingVariant.slug}`);
+  revalidatePath(`/admin/pdv/${updated.slug}`);
+  revalidatePath("/admin/pdv");
+  revalidatePath(`/admin/products/${data.productId}/variants`);
 
   return updated;
 };

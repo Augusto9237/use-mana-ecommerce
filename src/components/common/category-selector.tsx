@@ -17,7 +17,7 @@ const CategorySelector = ({ categories }: CategorySelectorProps) => {
             <img
               src={category.imageUrl || "/placeholder-category.png"}
               alt={category.name}
-              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300 absolute inset-0"
+              className="object-center object-contain w-full h-full group-hover:scale-105 transition-transform duration-300 absolute inset-0"
             />
           </div>
           <h4 className="text-sm max-sm:text-xs font-medium leading-tight mt-2">{category.name}</h4>

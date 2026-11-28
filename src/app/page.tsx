@@ -72,7 +72,7 @@ const Home = async () => {
 
           <ProductList products={products} title="Mais vendidos" />
 
-          <section className="grid grid-cols-2 gap-5">
+          <section className="grid grid-cols-2 gap-5 max-md:hidden">
             <Link href="https://www.instagram.com/usemana_3/" target="_blank">
               <Image src="/insta.png" alt="insta" sizes="100vw" width={0} height={0} className="h-60 w-full rounded-md object-cover object-center" />
             </Link>

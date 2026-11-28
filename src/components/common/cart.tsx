@@ -34,7 +34,7 @@ export const Cart = () => {
           ) : null}
         </Button>
       </SheetTrigger>
-      <SheetContent className="max-sm:max-w-[500px]">
+      <SheetContent className="max-sm:max-w-[500px] data-[side=right]:w-full data-[side=right]:sm:max-w-[400px]">
         <SheetHeader>
           <SheetTitle>Carrinho</SheetTitle>
         </SheetHeader>

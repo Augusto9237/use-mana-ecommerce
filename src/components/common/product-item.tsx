@@ -5,9 +5,8 @@ import { productTable, productVariantTable } from "@/db/schema";
 import { formatCentsToBRL } from "@/helpers/money";
 import { cn } from "@/lib/utils";
 import { Card } from "../ui/card";
-import AddToCartButton from "@/app/product-variant/[slug]/components/add-to-cart-button";
 import { Button } from "../ui/button";
-import { ShoppingCart } from "lucide-react";
+import { ChevronRight, ShoppingCart } from "lucide-react";
 
 interface ProductItemProps {
   product: typeof productTable.$inferSelect & {
@@ -66,15 +65,13 @@ const ProductItem = ({
               {formatCentsToBRL(firstVariant.discountPriceInCents || firstVariant.priceInCents)}
             </p>
           </div>
-          <AddToCartButton
-            productVariantId={firstVariant.id}
-            size={firstVariant.sizeInStock[0].size}
-            quantity={1}
-            tigger={
-              <Button size="icon" className="size-9">
-                <ShoppingCart />
-              </Button>}
-          />
+          <Link
+            href={`/product-variant/${firstVariant.slug}`}
+          >
+            <Button size="icon">
+              <ChevronRight />
+            </Button>
+          </Link>
         </div>
       </div>
     </Card>
